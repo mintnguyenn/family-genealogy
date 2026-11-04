@@ -3,7 +3,6 @@ import { describe, expect, test } from 'bun:test'
 import {
   BACKUP_VERSION,
   buildRestorePayload,
-  isMissingRestoreFunction,
   legacyCustomEventRows,
   legacyPersonRows,
   MAX_PERSONS,
@@ -22,7 +21,9 @@ const t: Translator = (key, values) =>
   values ? `${key}:${JSON.stringify(values)}` : key
 
 const A = '11111111-1111-4111-8111-111111111111'
+
 const B = '22222222-2222-4222-8222-222222222222'
+
 const E = '33333333-3333-4333-8333-333333333333'
 
 function person(id: string, overrides: Record<string, unknown> = {}) {
@@ -329,19 +330,6 @@ describe('buildRestorePayload', () => {
     expect(payload.person_details_private).toEqual([])
     expect(payload.custom_events).toEqual([])
     expect(payload.counts.custom_events).toBe(0)
-  })
-})
-
-describe('isMissingRestoreFunction', () => {
-  test('detects a database without the restore function', () => {
-    expect(isMissingRestoreFunction({ code: 'PGRST202' })).toBe(true)
-    expect(isMissingRestoreFunction({ code: '42883' })).toBe(true)
-  })
-
-  test('does not treat other errors as a missing function', () => {
-    expect(isMissingRestoreFunction(null)).toBe(false)
-    expect(isMissingRestoreFunction({ code: '23505' })).toBe(false)
-    expect(isMissingRestoreFunction({ code: '42501' })).toBe(false)
   })
 })
 

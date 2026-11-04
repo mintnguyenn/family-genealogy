@@ -6,7 +6,6 @@ import {
   findRelationshipIssues,
   type RelationshipLink
 } from '@/utils/relationshipValidation'
-import { isMissingDatabaseFunction } from '@/utils/supabase/missingFunction'
 import { isUuid } from '@/utils/uuid'
 
 /**
@@ -536,14 +535,4 @@ export function buildRestorePayload(input: ImportPayload): RestorePayload {
     person_details_private: privateDetails,
     custom_events: customEvents
   }
-}
-
-/**
- * True when the database does not have `restore_backup` yet (migration not
- * run): PostgREST answers PGRST202, Postgres itself 42883.
- */
-export function isMissingRestoreFunction(
-  error: { code?: string | null; message?: string | null } | null
-) {
-  return isMissingDatabaseFunction(error)
 }

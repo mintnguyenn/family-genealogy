@@ -7,13 +7,6 @@ import {
   vnToday
 } from '@/utils/dateHelpers'
 
-/** Person columns the stats need; select only these to keep the query small. */
-export const STATS_PERSON_COLUMNS =
-  'id, gender, is_in_law, is_deceased, birth_order, generation, birth_year, birth_month, birth_day, death_year, death_month, death_day, full_name'
-
-/** Relationship columns the stats need (only marriages are counted). */
-export const STATS_RELATIONSHIP_COLUMNS = 'type, person_a, person_b'
-
 export type StatsPerson = Pick<
   Person,
   | 'id'

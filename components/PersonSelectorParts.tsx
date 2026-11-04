@@ -7,9 +7,9 @@ import { useEffect, useId, useRef, useState } from 'react'
 
 import DefaultAvatar from '@/components/DefaultAvatar'
 import { FemaleIcon, MaleIcon } from '@/components/GenderIcons'
-import { useAvatarUrl } from '@/context/AvatarUrlContext'
 import { useI18n } from '@/lib/i18n/useI18n'
 import { Person } from '@/types'
+import { getAvatarUrl } from '@/utils/avatar'
 import { isImeComposing, pickerKeyNavigation } from '@/utils/pickerNavigation'
 import { getAvatarBg } from '@/utils/styleHelpers'
 
@@ -29,7 +29,7 @@ export function PersonAvatarBadge({
   fallback: React.ReactNode
 }) {
   const { t } = useI18n()
-  const avatarUrl = useAvatarUrl()
+  const avatarUrl = getAvatarUrl
   const url = avatarUrl(person.avatar_url)
   return (
     <div className='relative shrink-0'>

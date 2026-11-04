@@ -7,10 +7,10 @@ import { zoomIdentity, type ZoomBehavior } from 'd3-zoom'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import BubbleTreeToolbar from '@/components/tree/BubbleTreeToolbar'
-import { useAvatarUrl } from '@/context/AvatarUrlContext'
 import { useBubbleTreeRender } from '@/hooks/useBubbleTreeRender'
 import { useI18n } from '@/lib/i18n/useI18n'
 import { Person, Relationship } from '@/types'
+import { getAvatarUrl } from '@/utils/avatar'
 import { buildBubbleGraph, GraphLink, GraphNode } from '@/utils/bubbleGraph'
 import { bubbleNodeLabel } from '@/utils/bubbleLayout'
 
@@ -27,7 +27,7 @@ export default function BubbleMapTree({
   roots
 }: BubbleMapTreeProps) {
   const { t } = useI18n()
-  const avatarUrl = useAvatarUrl()
+  const avatarUrl = getAvatarUrl
   const containerRef = useRef<HTMLDivElement>(null)
   const fullscreenRef = useRef<HTMLDivElement>(null)
   const svgRef = useRef<SVGSVGElement>(null)

@@ -16,7 +16,6 @@ import {
   relationshipErrorKey,
   RelationshipValidationError
 } from '@/utils/relationshipValidation'
-import { createClient } from '@/utils/supabase/client'
 
 interface BulkAddChildrenSectionProps {
   person: Person
@@ -34,7 +33,6 @@ export default function BulkAddChildrenSection({
   onSaved
 }: BulkAddChildrenSectionProps) {
   const { t } = useI18n()
-  const supabase = createClient()
   const personId = person.id
 
   const [selectedSpouseId, setSelectedSpouseId] = useState<string>('')
@@ -61,7 +59,7 @@ export default function BulkAddChildrenSection({
     setError(null)
 
     try {
-      const { created, failures } = await bulkCreateChildren(supabase, {
+      const { created, failures } = await bulkCreateChildren({
         children: validChildren,
         parentId: personId,
         otherParentId: selectedSpouseId,

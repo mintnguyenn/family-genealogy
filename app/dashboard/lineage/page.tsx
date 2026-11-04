@@ -3,14 +3,9 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 import LineageManager from '@/components/LineageManager'
+import { getIsAdmin } from '@/lib/auth'
+import { getPersons, getRelationships } from '@/lib/data'
 import { getServerTranslations } from '@/lib/i18n/server'
-import { Person, Relationship } from '@/types'
-import {
-  PERSON_LIST_COLUMNS,
-  RELATIONSHIP_COLUMNS
-} from '@/utils/personColumns'
-import { fetchAllRowsOrThrow } from '@/utils/supabase/fetchAll'
-import { getIsAdmin, getSupabase } from '@/utils/supabase/queries'
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getServerTranslations()
@@ -28,32 +23,10 @@ export default async function LineagePage() {
     redirect('/dashboard')
   }
 
-  const supabase = await getSupabase()
-
-  const [{ data: personsData }, { data: relsData }] = await Promise.all([
-    fetchAllRowsOrThrow((from, to) =>
-      supabase
-        .from('persons')
-        .select(PERSON_LIST_COLUMNS)
-        .order('birth_year', { ascending: true, nullsFirst: false })
-        .order('id')
-        .range(from, to)
-    ),
-    fetchAllRowsOrThrow((from, to) =>
-      supabase
-        .from('relationships')
-        .select(RELATIONSHIP_COLUMNS)
-        .order('created_at')
-        .order('id')
-        .range(from, to)
-    )
+  const [persons, relationships] = await Promise.all([
+    getPersons(),
+    getRelationships()
   ])
-
-  // Identify "roots" - people with no parents
-  // PERSON_LIST_COLUMNS leaves out note/created_at; no view reads them.
-  const persons = (personsData || []) as Person[]
-  // RELATIONSHIP_COLUMNS leaves out note/updated_at; no view reads them.
-  const relationships = (relsData || []) as Relationship[]
 
   return (
     <main className='relative flex w-full flex-1 flex-col overflow-auto bg-stone-50/50 pt-8'>

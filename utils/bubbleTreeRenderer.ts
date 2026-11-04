@@ -27,7 +27,7 @@ interface CreateBubbleTreeRendererOptions {
   zoomRef: RefObject<ZoomBehavior<SVGSVGElement, unknown> | null>
   nodes: GraphNode[]
   links: GraphLink[]
-  /** Maps a stored `avatar_url` to a displayable URL (see useAvatarUrl). */
+  /** Maps a stored `avatar_url` to a displayable URL (see getAvatarUrl). */
   avatarUrl: (value: string | null | undefined) => string | null
   onZoomLevelChange: (level: number) => void
   onSelectionChange: () => void

@@ -3,10 +3,10 @@
 import Image from 'next/image'
 import { memo } from 'react'
 
-import { useAvatarUrl } from '@/context/AvatarUrlContext'
 import { useMemberListView } from '@/context/useMemberListView'
 import { useI18n } from '@/lib/i18n/useI18n'
 import { Person } from '@/types'
+import { getAvatarUrl } from '@/utils/avatar'
 import { lifeYearsLabel } from '@/utils/memberSearch'
 import { getAvatarBg } from '@/utils/styleHelpers'
 
@@ -25,7 +25,7 @@ function getGenderStyle(gender: string) {
 
 function PersonAvatar({ person }: { person: Person }) {
   const { t } = useI18n()
-  const avatarUrl = useAvatarUrl()
+  const avatarUrl = getAvatarUrl
   return (
     <div className='relative'>
       <div

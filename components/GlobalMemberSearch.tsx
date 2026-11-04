@@ -5,17 +5,15 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 
 import { useModalA11y } from '@/hooks/useModalA11y'
+import { getPersons } from '@/lib/data'
 import { useI18n } from '@/lib/i18n/useI18n'
 import {
-  GLOBAL_SEARCH_COLUMNS,
   rankMembers,
   searchStatusKey,
   type SearchableMember
 } from '@/utils/memberSearch'
 import { memberSearchCache } from '@/utils/memberSearchCache'
 import { isImeComposing } from '@/utils/pickerNavigation'
-import { createClient } from '@/utils/supabase/client'
-import { fetchAllRows } from '@/utils/supabase/fetchAll'
 
 export default function GlobalMemberSearch() {
   const { t } = useI18n()
@@ -56,24 +54,16 @@ export default function GlobalMemberSearch() {
     const cached = memberSearchCache.get()
     if (cached && memberSearchCache.isFresh()) return
     let cancelled = false
-    const supabase = createClient()
-    fetchAllRows<SearchableMember>((from, to) =>
-      supabase
-        .from('persons')
-        .select(GLOBAL_SEARCH_COLUMNS)
-        .order('full_name')
-        .order('id')
-        .range(from, to)
-    ).then(({ data, error }) => {
-      if (cancelled) return
-      if (error) {
-        // A failed background reload keeps the old list on screen.
-        if (!members) setLoadError(error.message)
-        return
-      }
-      memberSearchCache.set(data)
-      setMembers(data)
-    })
+    getPersons()
+      .then((data) => {
+        if (cancelled) return
+        memberSearchCache.set(data)
+        setMembers(data)
+      })
+      .catch((error: unknown) => {
+        if (!cancelled && !members)
+          setLoadError(error instanceof Error ? error.message : String(error))
+      })
     return () => {
       cancelled = true
     }

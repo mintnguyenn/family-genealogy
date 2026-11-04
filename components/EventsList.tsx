@@ -9,7 +9,6 @@ import EventCard from '@/components/events/EventCard'
 import CustomEventModal from '@/components/modal/CustomEventModal'
 import { useI18n } from '@/lib/i18n/useI18n'
 import { toggleButtonProps } from '@/utils/a11y'
-import { canEditCustomEvent } from '@/utils/customEventMutations'
 import { vnToday } from '@/utils/dateHelpers'
 import {
   computeEvents,
@@ -46,7 +45,6 @@ interface EventsListProps {
     is_deceased: boolean
   }[]
   customEvents?: CustomEventRecord[]
-  currentUserId?: string | null
   isAdmin?: boolean
 }
 
@@ -55,7 +53,6 @@ const EMPTY_CUSTOM_EVENTS: CustomEventRecord[] = []
 export default function EventsList({
   persons,
   customEvents = EMPTY_CUSTOM_EVENTS,
-  currentUserId = null,
   isAdmin = false
 }: EventsListProps) {
   const router = useRouter()
@@ -73,7 +70,7 @@ export default function EventsList({
 
   const handleOpenEditModal = (event: FamilyEvent) => {
     const rawEvent = customEvents.find((ce) => ce.id === event.personId)
-    if (rawEvent && canEditCustomEvent(rawEvent, currentUserId, isAdmin)) {
+    if (rawEvent && isAdmin) {
       setEditingCustomEvent(rawEvent)
       setIsModalOpen(true)
     }
@@ -81,9 +78,7 @@ export default function EventsList({
 
   const canEditEvent = (eventId: string | null) => {
     const rawEvent = customEvents.find((ce) => ce.id === eventId)
-    return Boolean(
-      rawEvent && canEditCustomEvent(rawEvent, currentUserId, isAdmin)
-    )
+    return Boolean(rawEvent && isAdmin)
   }
 
   const handleOpenCreateModal = () => {

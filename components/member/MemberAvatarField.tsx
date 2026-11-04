@@ -2,9 +2,9 @@
 
 import { AlertCircle, Image as ImageIcon, Loader2, Trash2 } from 'lucide-react'
 
-import { useAvatarUrl } from '@/context/AvatarUrlContext'
 import { useI18n } from '@/lib/i18n/useI18n'
 import { Gender } from '@/types'
+import { getAvatarUrl } from '@/utils/avatar'
 import { resizeAvatar } from '@/utils/image'
 import { IMAGE_ACCEPT, readImageType } from '@/utils/imageUpload'
 
@@ -29,7 +29,7 @@ export default function MemberAvatarField({
   onRemove,
   onError
 }: MemberAvatarFieldProps) {
-  const avatarUrl = useAvatarUrl()
+  const avatarUrl = getAvatarUrl
   const { t } = useI18n()
 
   const handleFile = async (event: React.ChangeEvent<HTMLInputElement>) => {

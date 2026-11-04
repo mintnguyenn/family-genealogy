@@ -2,7 +2,6 @@
 
 import { AnimatePresence, m } from 'framer-motion'
 import {
-  ArrowUpCircle,
   BarChart2,
   BookOpen,
   ChevronDown,
@@ -83,12 +82,6 @@ export default function HeaderMenu() {
       icon: Database,
       label: t('backupRestore'),
       hover: 'hover:bg-teal-50 hover:text-teal-700'
-    },
-    {
-      href: '/dashboard/upgrade',
-      icon: ArrowUpCircle,
-      label: t('upgrade'),
-      hover: 'hover:bg-amber-50 hover:text-amber-700'
     }
   ]
 

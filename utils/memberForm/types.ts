@@ -1,11 +1,8 @@
-import { SupabaseClient } from '@supabase/supabase-js'
-
 import type { TranslationKey, TranslationValues } from '@/lib/i18n/messages'
 import { Person } from '@/types'
 import { DeathDateValues, MemberFormFields } from '@/utils/memberFormHelpers'
 
 export interface SaveMemberOptions {
-  supabase: SupabaseClient
   isEditing: boolean
   initialData?: Person
   fields: MemberFormFields
@@ -64,7 +61,6 @@ export interface MemberSaveWarning {
 }
 
 export interface MemberFormSubmitContext {
-  supabase: SupabaseClient
   router: { push: (url: string) => void; refresh: () => void }
   t: (key: TranslationKey, values?: TranslationValues) => string
   isEditing: boolean

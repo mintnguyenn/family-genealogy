@@ -1,23 +1,5 @@
 export type Gender = 'male' | 'female' | 'other'
 export type RelationshipType = 'marriage' | 'biological_child' | 'adopted_child'
-export type UserRole = 'admin' | 'editor' | 'member'
-
-export interface Profile {
-  id: string
-  role: UserRole
-  is_active: boolean
-  created_at: string
-  updated_at: string
-}
-
-export interface AdminUserData {
-  id: string
-  email: string
-  role: UserRole
-  is_active: boolean
-  created_at: string
-}
-
 export interface Person {
   id: string
   full_name: string
@@ -78,8 +60,4 @@ export interface GalleryItem {
   event_date: string | null // ISO string or date string
   created_at: string
   created_by: string | null
-  // Storage path used to create signed URLs and delete the object.
-  storage_path?: string
-  // True when no signed URL could be made for the image (it is not shown).
-  image_error?: boolean
 }

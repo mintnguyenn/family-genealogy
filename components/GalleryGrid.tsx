@@ -12,9 +12,8 @@ import GalleryImage from '@/components/GalleryImage'
 import GalleryLightbox from '@/components/GalleryLightbox'
 import { useI18n } from '@/lib/i18n/useI18n'
 import { GalleryItem } from '@/types'
-import { deleteGalleryItem, GalleryItemNotDeletedError } from '@/utils/gallery'
+import { deleteGalleryItem } from '@/utils/gallery'
 import { idAfterDelete, stepIndex } from '@/utils/galleryNav'
-import { createClient } from '@/utils/supabase/client'
 
 interface GalleryGridProps {
   items: GalleryItem[]
@@ -109,7 +108,7 @@ export default function GalleryGrid({
     if (!confirm(t('deleteImageConfirm'))) return
     setIsDeleting(true)
     try {
-      await deleteGalleryItem(createClient(), item)
+      await deleteGalleryItem(item)
 
       setSelectedId(
         idAfterDelete(
@@ -120,11 +119,7 @@ export default function GalleryGrid({
       if (onDeleteSuccess) onDeleteSuccess(item.id)
     } catch (err) {
       console.error('Error deleting gallery item', err)
-      alert(
-        err instanceof GalleryItemNotDeletedError
-          ? t('deleteImageNotAllowed')
-          : t('deleteImageError')
-      )
+      alert(err instanceof Error ? err.message : t('deleteImageError'))
     } finally {
       setIsDeleting(false)
     }

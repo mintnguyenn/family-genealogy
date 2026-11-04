@@ -27,7 +27,6 @@ import {
   hasGenerationChanged,
   toNumberOrEmpty
 } from '@/utils/memberFormInit'
-import { createClient } from '@/utils/supabase/client'
 
 interface MemberFormProps {
   initialData?: Person
@@ -53,7 +52,6 @@ export default function MemberForm({
   onCancel
 }: MemberFormProps) {
   const router = useRouter()
-  const supabase = createClient()
   const { t } = useI18n()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -190,7 +188,6 @@ export default function MemberForm({
   const submit = (confirmed: boolean) => {
     void submitMemberForm({
       confirmed,
-      supabase,
       router,
       t,
       isEditing,

@@ -13,12 +13,14 @@ import { useModalA11y } from '@/hooks/useModalA11y'
 import { useI18n } from '@/lib/i18n/useI18n'
 import type { GalleryItem } from '@/types'
 import { isUploadFormDirty, uploadFormValuesFrom } from '@/utils/formDirty'
-import { saveGalleryItem } from '@/utils/gallery'
+import {
+  getGalleryStoragePath,
+  InvalidImageError,
+  saveGalleryItem,
+  uploadGalleryImage
+} from '@/utils/gallery'
 import { resizeGalleryImage } from '@/utils/image'
 import { validateGallerySource } from '@/utils/imageUpload'
-import { createClient } from '@/utils/supabase/client'
-import { InvalidImageError, uploadGalleryImage } from '@/utils/supabase/storage'
-import { getGalleryStoragePath } from '@/utils/supabase/storage-path'
 import { GalleryItemNotUpdatedError } from '@/utils/writeErrors'
 
 interface UploadModalProps {
@@ -100,8 +102,7 @@ export default function UploadModal({
 
     try {
       let finalPath = initialData
-        ? initialData.storage_path ||
-          getGalleryStoragePath(initialData.image_url)
+        ? getGalleryStoragePath(initialData.image_url)
         : ''
 
       // 1. Upload to storage (only if new file selected)
@@ -124,16 +125,15 @@ export default function UploadModal({
 
       // 2. Save to database (removes the new file if this fails, and the
       // replaced file once it succeeds)
-      const supabase = createClient()
 
-      await saveGalleryItem(supabase, {
+      await saveGalleryItem({
         initialData,
         fields: {
           title,
           description: description || null,
           event_date: eventDate || null
         },
-        imagePath: finalPath,
+        imagePath: finalPath ?? '',
         uploadedPath: file ? finalPath : null,
         createdBy: null
       })

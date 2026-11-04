@@ -12,7 +12,6 @@ import {
   relationshipErrorKey,
   RelationshipValidationError
 } from '@/utils/relationshipValidation'
-import { createClient } from '@/utils/supabase/client'
 import { PersonNotCreatedError, PersonOrphanedError } from '@/utils/writeErrors'
 
 interface QuickAddSpouseSectionProps {
@@ -29,7 +28,6 @@ export default function QuickAddSpouseSection({
   onSaved
 }: QuickAddSpouseSectionProps) {
   const { t } = useI18n()
-  const supabase = createClient()
 
   const [newSpouseName, setNewSpouseName] = useState('')
   const [newSpouseBirthYear, setNewSpouseBirthYear] = useState('')
@@ -60,7 +58,7 @@ export default function QuickAddSpouseSection({
     setError(null)
     setOrphanError(null)
     try {
-      await createSpouseWithMarriage(supabase, {
+      await createSpouseWithMarriage({
         person,
         name: newSpouseName,
         birthYear: newSpouseBirthYear,

@@ -1,7 +1,6 @@
-import { type NextRequest } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 
 import { localeFromAcceptLanguage } from '@/lib/i18n/locales'
-import { updateSession } from '@/utils/supabase/middleware'
 
 const LOCALE_COOKIE = 'locale'
 
@@ -14,7 +13,7 @@ export async function proxy(request: NextRequest) {
     : localeFromAcceptLanguage(request.headers.get('accept-language'))
   if (firstLocale) request.cookies.set(LOCALE_COOKIE, firstLocale)
 
-  const response = await updateSession(request)
+  const response = NextResponse.next({ request })
 
   if (firstLocale) {
     response.cookies.set(LOCALE_COOKIE, firstLocale, {

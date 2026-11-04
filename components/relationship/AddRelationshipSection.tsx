@@ -6,9 +6,9 @@ import AddRelationshipForm, {
   PickerPerson
 } from '@/components/relationship/AddRelationshipForm'
 import RelationshipErrorBanner from '@/components/relationship/RelationshipErrorBanner'
+import { getPersons } from '@/lib/data'
 import { useI18n } from '@/lib/i18n/useI18n'
 import { Person, RelationshipType } from '@/types'
-import { PERSON_PICKER_COLUMNS } from '@/utils/personColumns'
 import { addRelationshipWithTargetSync } from '@/utils/relationshipMutations'
 import {
   RELATIONSHIP_WARNING_KEYS,
@@ -17,8 +17,6 @@ import {
   RelationshipWarningError
 } from '@/utils/relationshipValidation'
 import { searchPersons } from '@/utils/search'
-import { createClient } from '@/utils/supabase/client'
-import { fetchAllRows } from '@/utils/supabase/fetchAll'
 import { PersonNotUpdatedError } from '@/utils/writeErrors'
 
 interface AddRelationshipSectionProps {
@@ -36,7 +34,6 @@ export default function AddRelationshipSection({
   onSaved
 }: AddRelationshipSectionProps) {
   const { t } = useI18n()
-  const supabase = createClient()
   const personId = person.id
 
   const [newRelType, setNewRelType] =
@@ -68,37 +65,27 @@ export default function AddRelationshipSection({
     let cancelled = false
     const load = async () => {
       setLoadError(null)
-      const [all, recent] = await Promise.all([
-        fetchAllRows<PickerPerson>((from, to) =>
-          supabase
-            .from('persons')
-            .select(PERSON_PICKER_COLUMNS)
-            .neq('id', personId) // Exclude self
-            .order('full_name')
-            .order('id')
-            .range(from, to)
-        ),
-        supabase
-          .from('persons')
-          .select(PERSON_PICKER_COLUMNS)
-          .neq('id', personId)
-          .order('created_at', { ascending: false })
-          .limit(10)
-      ])
-      if (cancelled) return
-      const failure = all.error ?? recent.error
-      if (failure) {
-        setLoadError(failure.message)
-        return
+      try {
+        const all = (await getPersons()).filter((p) => p.id !== personId)
+        if (cancelled) return
+        setAllPersons(
+          [...all].sort((a, b) => a.full_name.localeCompare(b.full_name, 'vi'))
+        )
+        setRecentMembers(
+          [...all]
+            .sort((a, b) => b.created_at.localeCompare(a.created_at))
+            .slice(0, 10)
+        )
+      } catch (error: unknown) {
+        if (!cancelled)
+          setLoadError(error instanceof Error ? error.message : String(error))
       }
-      setAllPersons(all.data)
-      setRecentMembers((recent.data ?? []) as PickerPerson[])
     }
     load()
     return () => {
       cancelled = true
     }
-  }, [open, personId, supabase, reloadKey])
+  }, [open, personId, reloadKey])
 
   const searchResults = useMemo(
     () => (searchTerm.length < 2 ? [] : searchPersons(allPersons, searchTerm)),
@@ -117,18 +104,15 @@ export default function AddRelationshipSection({
     setPendingWarning(null)
 
     try {
-      const { targetUpdateError } = await addRelationshipWithTargetSync(
-        supabase,
-        {
-          personId,
-          selectedTargetId,
-          direction: newRelDirection,
-          relType: newRelType,
-          note: newRelNote,
-          person,
-          acceptWarnings
-        }
-      )
+      const { targetUpdateError } = await addRelationshipWithTargetSync({
+        personId,
+        selectedTargetId,
+        direction: newRelDirection,
+        relType: newRelType,
+        note: newRelNote,
+        person,
+        acceptWarnings
+      })
 
       onClose()
       onSaved(

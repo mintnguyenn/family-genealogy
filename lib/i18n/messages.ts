@@ -12,6 +12,8 @@ export type { Locale, TranslationValues }
 export const messages = {
   vi: {
     ...globalErrorMessages.vi,
+    databaseNotConnected:
+      'Chưa kết nối cơ sở dữ liệu. Hiện chỉ xem giao diện; thay đổi chưa thể lưu.',
     language: 'Ngôn ngữ',
     vietnamese: 'Tiếng Việt',
     english: 'English',
@@ -141,8 +143,7 @@ export const messages = {
     importEventsError: 'Lỗi khi import custom_events (chunk {chunk}): {error}',
     restoreTransactionError:
       'Phục hồi thất bại, dữ liệu hiện tại vẫn được giữ nguyên: {error}',
-    restoreUpgradeDatabase:
-      'Database chưa được nâng cấp nên phục hồi chưa chạy trong một giao dịch (lỗi giữa chừng có thể làm mất dữ liệu). Hãy chạy migration ở trang Nâng cấp hệ thống (/dashboard/upgrade).',
+
     familyTreeDescription: 'Xem và tương tác với sơ đồ dòng họ',
     approvalEmailSubject: 'Có tài khoản mới đang chờ duyệt: {email}',
     approvalEmailTitle: 'Tài khoản mới chờ duyệt',
@@ -179,8 +180,7 @@ export const messages = {
     approvalFailureText:
       'Đã xảy ra lỗi khi cập nhật trạng thái. Vui lòng thử lại hoặc duyệt trong ứng dụng.',
     approvalUpgradeTitle: 'Cần nâng cấp database',
-    approvalUpgradeText:
-      'Database chưa có hàm duyệt mới nên liên kết này chưa duyệt được tài khoản. Hãy chạy migration ở trang Nâng cấp hệ thống (/dashboard/upgrade) rồi bấm lại liên kết, hoặc đăng nhập ứng dụng và duyệt ở Quản lý người dùng.',
+
     kinshipDescription: 'Hệ thống gọi tên họ hàng chuẩn xác',
     kinshipPageTitle: 'Tra cứu danh xưng',
     kinshipPageDescription:
@@ -383,8 +383,7 @@ export const messages = {
     galleryDescriptionShort: 'Lưu giữ và chia sẻ hình ảnh, kỷ niệm dòng họ',
     aboutDescriptionShort: 'Thông tin về ứng dụng và đội ngũ phát triển',
     manageUsersDescription: 'Phê duyệt tài khoản và phân quyền',
-    manageUsersLoadError:
-      'Không tải được danh sách người dùng. Nếu vừa cập nhật mã nguồn, hãy chạy migration ở trang Nâng cấp hệ thống (/dashboard/upgrade) rồi thử lại.',
+
     lineageDescription: 'Sắp xếp và xem cấu trúc hệ thống',
     backupDescriptionShort: 'Xuất/Nhập dữ liệu toàn hệ thống',
     upgradeDescriptionShort: 'Kiểm tra và đồng bộ source code, database',
@@ -430,8 +429,7 @@ export const messages = {
     descendantGenerationUpdateError:
       'Có lỗi xảy ra khi cập nhật một số thế hệ sau.',
     generationTransactionError: 'không có thay đổi nào được lưu ({error})',
-    generationUpgradeDatabase:
-      'Database chưa được nâng cấp nên thế hệ được cập nhật từng người một, không trong một giao dịch (lỗi giữa chừng có thể để lại thế hệ cập nhật dở). Hãy chạy migration ở trang Nâng cấp hệ thống (/dashboard/upgrade).',
+
     lineageTransactionError: 'Chưa áp dụng thay đổi nào: {error}',
     lineagePartialUpdateError:
       'Không cập nhật được {failed}/{total} thành viên ({error}); các thành viên còn lại đã được lưu.',
@@ -550,14 +548,12 @@ export const messages = {
     sourceOnly:
       'Dự án này chỉ cung cấp mã nguồn (source code). Không có bất kỳ dữ liệu cá nhân nào được thu thập hay lưu trữ bởi tác giả.',
     selfHostedTitle: 'Tự lưu trữ hoàn toàn (Self-hosted):',
-    selfHostedText:
-      'Khi bạn triển khai ứng dụng, toàn bộ dữ liệu gia phả được lưu trữ trong tài khoản Supabase của chính bạn. Tác giả dự án không có quyền truy cập vào database đó.',
+
     noDataTitle: 'Không thu thập dữ liệu:',
     noDataText:
       'Không có analytics, tracking, telemetry hay bất kỳ hình thức thu thập thông tin người dùng nào được tích hợp trong mã nguồn.',
     dataControlTitle: 'Bạn kiểm soát dữ liệu của bạn:',
-    dataControlText:
-      'Mọi dữ liệu gia đình và thông tin thành viên nằm hoàn toàn trong cơ sở dữ liệu Supabase mà bạn tạo và quản lý. Bạn có thể xóa, xuất hoặc di chuyển dữ liệu bất cứ lúc nào.',
+
     demoTitle: 'Demo công khai:',
     demoText:
       'Trang demo sử dụng dữ liệu mẫu hư cấu, không chứa thông tin của người thật. Không nên nhập thông tin cá nhân thật vào trang demo.',
@@ -681,8 +677,7 @@ export const messages = {
     saving: 'Đang lưu...',
     saveChanges: 'Lưu thay đổi',
     dbMissingTitle: 'Chưa kết nối cơ sở dữ liệu',
-    dbMissingDescription:
-      'Ứng dụng hiện chưa được cấu hình biến môi trường kết nối đến Supabase.',
+
     troubleshooting: 'Hướng dẫn khắc phục:',
     signInTo: 'Đăng nhập vào',
     getKeys:
@@ -699,8 +694,7 @@ export const messages = {
     copyAllSql: 'Copy toàn bộ SQL',
     copyBundleDescription:
       'ở bên dưới; bundle đã gồm schema và tất cả migration.',
-    openSqlEditor: 'Mở Supabase SQL Editor trong dự án của bạn.',
-    pasteSql: 'Dán mã vừa copy vào khung soạn thảo của Supabase.',
+
     runSql: 'Dán toàn bộ mã vừa copy và bấm nút RUN một lần.',
     returnAndReload: 'Quay lại đây và tải lại trang (hoặc bấm đăng nhập lại).',
     sqlBundle: 'SQL bundle (schema + migrations)',
@@ -783,7 +777,7 @@ export const messages = {
     backupDataDescription:
       'Tải xuống định dạng file JSON, GEDCOM hoặc CSV (Zip). Chọn một điểm gốc bên dưới để chỉ sao lưu nhánh gia đình đó, hoặc chọn "Toàn bộ" để xuất toàn bộ cây.',
     backupPhotosNote:
-      'Bản sao lưu JSON/CSV/GEDCOM không chứa ảnh đại diện và thư viện ảnh (cả tiêu đề, mô tả ảnh); tải riêng các bucket avatars và gallery từ Supabase Storage.',
+      'Bản sao lưu JSON/CSV/GEDCOM không chứa ảnh đại diện và thư viện ảnh; sao chép các file ảnh riêng.',
     exportRoot: 'Điểm gốc (Root) để xuất dữ liệu',
     exportPersonsLoadError:
       'Không tải được danh sách thành viên để chọn điểm gốc: {error}. Tải lại trang để thử lại; có thể vẫn xuất toàn bộ dữ liệu.',
@@ -1087,8 +1081,7 @@ export const messages = {
     galleryNextImage: 'Ảnh sau',
     galleryImagePosition: 'Ảnh {position}/{total}',
     galleryLoadErrorTitle: 'Không tải được ảnh của phòng trưng bày',
-    galleryLoadErrorDescription:
-      'Không tạo được đường dẫn xem ảnh. Hãy kiểm tra bucket Supabase Storage "gallery" đã được tạo và chính sách của nó khớp với docs/schema.sql (xem README, mục cài đặt), rồi thử lại.',
+
     galleryPageStatus: 'Trang {page}/{pageCount} · {total} ảnh',
     previousPage: 'Trang trước',
     nextPage: 'Trang sau',
@@ -1149,14 +1142,14 @@ export const messages = {
     databaseUnavailable: 'Chưa thể kết nối',
     databaseCanUpdate: 'Có thể kiểm tra và áp dụng thay đổi database.',
     databaseRetryConnection: 'Kiểm tra lại kết nối database trên server.',
-    databaseNeedsConfig: 'Cần cấu hình SUPABASE_DB_URL trên server.',
+
     migrationUnavailable: 'Chưa thể kiểm tra migration',
     sourceVersionUnknownError:
       'Không xác định được version trong package.json hiện tại.',
     sourceVersionFetchError:
       'Không thể kiểm tra version source code trên GitHub.',
     migrationAccessDenied: 'Từ chối truy cập.',
-    databaseConfigMissing: 'Chưa cấu hình SUPABASE_DB_URL trên server.',
+
     migrationStatusError: 'Không thể kết nối hoặc đọc trạng thái migration.',
     migrationConfigureRetry:
       'Hãy cấu hình kết nối database rồi bấm “Kiểm tra lại”.',
@@ -1166,8 +1159,7 @@ export const messages = {
       'Không thể xác minh version source code. Migration đã bị tạm khóa.',
     migrationsApplied: 'Đã chạy {count} migration.',
     databaseAlreadyCurrent: 'Database đã ở phiên bản mới nhất.',
-    migrationRunError:
-      'Không thể chạy migration. Kiểm tra SUPABASE_DB_URL và log server.',
+
     migrationFailed: 'Không thể chạy migration {file}.',
     databaseSetupGuide: 'Xem hướng dẫn cấu hình database',
     pendingChanges: 'Có thay đổi cần áp dụng',
@@ -1350,8 +1342,7 @@ export const messages = {
     appending: 'Đang thêm...',
     appendSuccess: 'Đã thêm {persons} người, {relationships} quan hệ.',
     appendImportError: 'Không thêm được, dữ liệu hiện tại giữ nguyên: {error}',
-    appendImportUpgradeDatabase:
-      'Database chưa được nâng cấp nên chưa thêm được vào cây hiện tại. Chạy migration ở trang Nâng cấp hệ thống (/dashboard/upgrade) rồi thử lại.',
+
     scanDuplicatesNow: 'Rà trùng ngay',
     memberPossibleDuplicate:
       'Có {count} người trùng tên và năm sinh: {names}. Vẫn tạo thêm người mới?',
@@ -1407,6 +1398,8 @@ export const messages = {
   },
   en: {
     ...globalErrorMessages.en,
+    databaseNotConnected:
+      'No database connected. You can preview the interface; changes cannot be saved yet.',
     language: 'Language',
     vietnamese: 'Tiếng Việt',
     english: 'English',
@@ -1538,8 +1531,7 @@ export const messages = {
       'Could not import custom events (chunk {chunk}): {error}',
     restoreTransactionError:
       'Restore failed, the current data is unchanged: {error}',
-    restoreUpgradeDatabase:
-      'The database is not upgraded, so the restore did not run in a single transaction (a failure halfway can lose data). Run the migrations on the System upgrade page (/dashboard/upgrade).',
+
     familyTreeDescription: 'View and interact with the family tree',
     approvalEmailSubject: 'A new account is waiting for approval: {email}',
     approvalEmailTitle: 'New account waiting for approval',
@@ -1578,8 +1570,7 @@ export const messages = {
     approvalFailureText:
       'An error occurred while updating the status. Please try again or approve it in the app.',
     approvalUpgradeTitle: 'Database upgrade needed',
-    approvalUpgradeText:
-      'The database does not have the new approval function yet, so this link cannot approve the account. Run the migrations on the System upgrade page (/dashboard/upgrade) and open the link again, or sign in and approve the account in Manage users.',
+
     kinshipDescription: 'Accurate family relationship terminology',
     kinshipPageTitle: 'Kinship finder',
     kinshipPageDescription:
@@ -1784,8 +1775,7 @@ export const messages = {
     galleryDescriptionShort: 'Preserve and share family photos and memories',
     aboutDescriptionShort: 'Information about the app and development team',
     manageUsersDescription: 'Approve accounts and manage permissions',
-    manageUsersLoadError:
-      "Couldn't load the user list. If you just updated the code, run the migrations on the System upgrade page (/dashboard/upgrade), then try again.",
+
     lineageDescription: 'Arrange and view the system structure',
     backupDescriptionShort: 'Export/import all system data',
     upgradeDescriptionShort: 'Check and synchronize source code and database',
@@ -1831,8 +1821,7 @@ export const messages = {
     descendantGenerationUpdateError:
       'Some descendant generations could not be updated.',
     generationTransactionError: 'nothing was saved ({error})',
-    generationUpgradeDatabase:
-      'The database is not upgraded, so generations are updated one member at a time, not in a single transaction (a failure halfway can leave generations partly updated). Run the migrations on the System upgrade page (/dashboard/upgrade).',
+
     lineageTransactionError: 'No changes were applied: {error}',
     lineagePartialUpdateError:
       'Could not update {failed} of {total} members ({error}); the other members were saved.',
@@ -1950,14 +1939,12 @@ export const messages = {
     sourceOnly:
       'This project provides source code only. The author does not collect or store any personal data.',
     selfHostedTitle: 'Fully self-hosted:',
-    selfHostedText:
-      'When you deploy the application, all family tree data is stored in your own Supabase account. The project author has no access to that database.',
+
     noDataTitle: 'No data collection:',
     noDataText:
       'The source code includes no analytics, tracking, telemetry, or other form of user data collection.',
     dataControlTitle: 'You control your data:',
-    dataControlText:
-      'All family data and member information stays in the Supabase database you create and manage. You can delete, export, or move it at any time.',
+
     demoTitle: 'Public demo:',
     demoText:
       'The demo uses fictional sample data and contains no real-person information. Do not enter real personal information on the demo site.',
@@ -2082,8 +2069,7 @@ export const messages = {
     saving: 'Saving...',
     saveChanges: 'Save changes',
     dbMissingTitle: 'Database is not connected',
-    dbMissingDescription:
-      'The application has not been configured with the environment variables required to connect to Supabase.',
+
     troubleshooting: 'How to fix it:',
     signInTo: 'Sign in to',
     getKeys:
@@ -2100,8 +2086,7 @@ export const messages = {
     copyAllSql: 'Copy all SQL',
     copyBundleDescription:
       'below; the bundle includes the schema and all migrations.',
-    openSqlEditor: 'Open the Supabase SQL Editor in your project.',
-    pasteSql: 'Paste the copied code into the Supabase editor.',
+
     runSql: 'Paste the full code and click RUN once.',
     returnAndReload: 'Return here and reload the page (or log in again).',
     sqlBundle: 'SQL bundle (schema + migrations)',
@@ -2182,7 +2167,7 @@ export const messages = {
     backupDataDescription:
       'Download JSON, GEDCOM, or CSV (Zip) files. Choose a root below to back up only that family branch, or choose "All data" to export the entire tree.',
     backupPhotosNote:
-      'JSON/CSV/GEDCOM backups do not include profile photos or the photo gallery (nor photo titles and descriptions); download the avatars and gallery buckets from Supabase Storage separately.',
+      'JSON/CSV/GEDCOM backups do not include profile photos or the photo gallery; copy image files separately.',
     exportRoot: 'Root for data export',
     exportPersonsLoadError:
       'Could not load the member list for choosing a root: {error}. Reload the page to retry; you can still export all data.',
@@ -2491,8 +2476,7 @@ export const messages = {
     galleryNextImage: 'Next image',
     galleryImagePosition: 'Image {position} of {total}',
     galleryLoadErrorTitle: 'The gallery images could not be loaded',
-    galleryLoadErrorDescription:
-      'Image links could not be created. Check that the Supabase Storage bucket "gallery" exists and its policies match docs/schema.sql (see the README setup section), then try again.',
+
     galleryPageStatus: 'Page {page} of {pageCount} · {total} images',
     previousPage: 'Previous page',
     nextPage: 'Next page',
@@ -2554,14 +2538,14 @@ export const messages = {
     databaseUnavailable: 'Could not connect',
     databaseCanUpdate: 'Database changes can be checked and applied.',
     databaseRetryConnection: 'Check the database connection on the server.',
-    databaseNeedsConfig: 'Configure SUPABASE_DB_URL on the server.',
+
     migrationUnavailable: 'Could not check migrations',
     sourceVersionUnknownError:
       'Could not determine the version in the current package.json.',
     sourceVersionFetchError:
       'Could not check the source code version on GitHub.',
     migrationAccessDenied: 'Access denied.',
-    databaseConfigMissing: 'SUPABASE_DB_URL is not configured on the server.',
+
     migrationStatusError: 'Could not connect to or read migration status.',
     migrationConfigureRetry:
       'Configure the database connection, then click “Check again”.',
@@ -2571,8 +2555,7 @@ export const messages = {
       'Could not verify the source code version. Migrations are locked.',
     migrationsApplied: 'Applied {count} migration(s).',
     databaseAlreadyCurrent: 'The database is already up to date.',
-    migrationRunError:
-      'Could not run migrations. Check SUPABASE_DB_URL and the server log.',
+
     migrationFailed: 'Could not run migration {file}.',
     databaseSetupGuide: 'View database setup guide',
     pendingChanges: 'Changes need to be applied',
@@ -2758,8 +2741,7 @@ export const messages = {
     appendSuccess: 'Added {persons} people and {relationships} relationships.',
     appendImportError:
       'Nothing was added, the current data is unchanged: {error}',
-    appendImportUpgradeDatabase:
-      'The database is not upgraded, so the file cannot be added to the current tree yet. Run the migrations on the System upgrade page (/dashboard/upgrade), then try again.',
+
     scanDuplicatesNow: 'Scan for duplicates now',
     memberPossibleDuplicate:
       '{count} existing people have the same name and birth year: {names}. Create another one anyway?',

@@ -1,14 +1,7 @@
 import FamilyStats from '@/components/FamilyStats'
+import { getPersons, getRelationships } from '@/lib/data'
 import { getServerTranslations } from '@/lib/i18n/server'
-import {
-  computeFamilyStats,
-  STATS_PERSON_COLUMNS,
-  STATS_RELATIONSHIP_COLUMNS,
-  type StatsPerson,
-  type StatsRelationship
-} from '@/utils/familyStats'
-import { fetchAllRowsOrThrow } from '@/utils/supabase/fetchAll'
-import { getSupabase } from '@/utils/supabase/queries'
+import { computeFamilyStats } from '@/utils/familyStats'
 
 export async function generateMetadata() {
   const { t } = await getServerTranslations()
@@ -17,29 +10,11 @@ export async function generateMetadata() {
 }
 
 export default async function StatsPage() {
-  const [{ t }, supabase] = await Promise.all([
-    getServerTranslations(),
-    getSupabase()
-  ])
+  const [{ t }] = await Promise.all([getServerTranslations()])
 
-  // Only the columns the counts need, and only marriages; the totals are
-  // computed here so the browser receives the numbers, not the whole family.
-  const [{ data: persons }, { data: relationships }] = await Promise.all([
-    fetchAllRowsOrThrow<StatsPerson>((from, to) =>
-      supabase
-        .from('persons')
-        .select(STATS_PERSON_COLUMNS)
-        .order('id')
-        .range(from, to)
-    ),
-    fetchAllRowsOrThrow<StatsRelationship>((from, to) =>
-      supabase
-        .from('relationships')
-        .select(STATS_RELATIONSHIP_COLUMNS)
-        .eq('type', 'marriage')
-        .order('id')
-        .range(from, to)
-    )
+  const [persons, relationships] = await Promise.all([
+    getPersons(),
+    getRelationships()
   ])
 
   const stats = computeFamilyStats(persons ?? [], relationships ?? [])

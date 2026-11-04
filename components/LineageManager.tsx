@@ -24,7 +24,6 @@ import {
   computeGenerations,
   computeInLaws
 } from '@/utils/lineageCompute'
-import { createClient } from '@/utils/supabase/client'
 
 interface LineageManagerProps {
   persons: Person[]
@@ -84,20 +83,17 @@ export default function LineageManager({
   relationships
 }: LineageManagerProps) {
   const { t } = useI18n()
-  const supabase = createClient()
 
   const [updates, setUpdates] = useState<ComputedUpdate[] | null>(null)
   const [computing, setComputing] = useState(false)
   const [applying, setApplying] = useState(false)
   const [applied, setApplied] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [warning, setWarning] = useState<string | null>(null)
 
   const handleCompute = () => {
     setComputing(true)
     setApplied(false)
     setError(null)
-    setWarning(null)
 
     try {
       const genMap = computeGenerations(persons, relationships)
@@ -149,25 +145,12 @@ export default function LineageManager({
     if (!updates) return
     setApplying(true)
     setError(null)
-    setWarning(null)
 
     try {
       const rows = buildLineageUpdates(updates)
-      const result = await applyGenerationUpdates(supabase, rows)
-      if (result.ok) {
-        setApplied(true)
-        if (result.legacy) setWarning(t('generationUpgradeDatabase'))
-      } else if (result.legacy) {
-        setError(
-          `${t('lineagePartialUpdateError', {
-            failed: result.failedIds.length,
-            total: rows.length,
-            error: result.error
-          })} ${t('generationUpgradeDatabase')}`
-        )
-      } else {
-        setError(t('lineageTransactionError', { error: result.error }))
-      }
+      const result = await applyGenerationUpdates(rows)
+      if (result.ok) setApplied(true)
+      else setError(t('lineageTransactionError', { error: result.error }))
     } catch (err) {
       setError((err as Error).message || t('lineageUpdateError'))
     } finally {
@@ -190,7 +173,7 @@ export default function LineageManager({
 
       <LineageStatusBanners
         error={error}
-        warning={warning}
+        warning={null}
         applied={applied}
         changedCount={changedCount}
       />

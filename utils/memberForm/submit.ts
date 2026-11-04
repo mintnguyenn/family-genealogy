@@ -127,10 +127,7 @@ export async function submitMemberForm(ctx: MemberFormSubmitContext) {
         (birthChanged && person.birth_year != null) ||
         deathOrGenderChanged(ctx.initialData, person)
       ) {
-        const { parents, children } = await loadSavedRelatives(
-          ctx.supabase,
-          personId
-        )
+        const { parents, children } = await loadSavedRelatives(personId)
         const conflict = birthChanged
           ? findBirthDateConflict(person, parents, children)
           : null
@@ -159,7 +156,6 @@ export async function submitMemberForm(ctx: MemberFormSubmitContext) {
       }
     } else {
       const duplicates = await findPossibleDuplicates(
-        ctx.supabase,
         fullName,
         toNullable(ctx.birthYear)
       )
@@ -192,7 +188,6 @@ export async function submitMemberForm(ctx: MemberFormSubmitContext) {
       createdPerson,
       savedUpdatedAt
     } = await saveMember({
-      supabase: ctx.supabase,
       isEditing: ctx.isEditing,
       initialData: ctx.initialData,
       fields: ctx.fields,
