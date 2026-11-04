@@ -8,10 +8,9 @@ type CookieToSet = {
 }
 type CookieMethods = { setAll: (cookies: CookieToSet[]) => void }
 
-let user: { id: string } | null = null
-let profileErrorCode: string | null = null
+let schemaErrorCode: string | null = null
 let refreshedCookies: CookieToSet[] = []
-let profileProbes = 0
+let schemaProbes = 0
 
 mock.module('@supabase/ssr', () => ({
   createServerClient: (
@@ -19,20 +18,15 @@ mock.module('@supabase/ssr', () => ({
     _key: string,
     { cookies }: { cookies: CookieMethods }
   ) => ({
-    auth: {
-      getUser: async () => {
-        // Like @supabase/ssr when the access token was refreshed.
-        if (refreshedCookies.length) cookies.setAll(refreshedCookies)
-        return { data: { user } }
-      }
-    },
     from: (table: string) => {
-      if (table === 'profiles') profileProbes++
+      if (table === 'persons') schemaProbes++
       return {
         select: () => ({
-          limit: async () => ({
-            error: profileErrorCode ? { code: profileErrorCode } : null
-          })
+          limit: async () => {
+            // The SDK may update cookies while making the schema query.
+            if (refreshedCookies.length) cookies.setAll(refreshedCookies)
+            return { error: schemaErrorCode ? { code: schemaErrorCode } : null }
+          }
         })
       }
     }
@@ -71,10 +65,10 @@ function expectSessionCookies(res: NextResponse) {
 beforeEach(() => {
   process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://example.supabase.co'
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY = 'dummy'
-  user = null
-  profileErrorCode = null
+
+  schemaErrorCode = null
   refreshedCookies = []
-  profileProbes = 0
+  schemaProbes = 0
   resetSchemaCheck()
 })
 
@@ -100,8 +94,8 @@ describe('updateSession', () => {
   })
 
   for (const code of ['PGRST205', '42P01']) {
-    test(`redirects to /setup when profiles table is missing (${code})`, async () => {
-      profileErrorCode = code
+    test(`redirects to /setup when persons table is missing (${code})`, async () => {
+      schemaErrorCode = code
       refreshedCookies = SESSION_COOKIES
       const response = await updateSession(request('/dashboard/members'))
       expect(response.headers.get('location')).toBe(
@@ -111,124 +105,69 @@ describe('updateSession', () => {
     })
   }
 
-  test('redirects a signed-out visitor from /dashboard to /login', async () => {
-    refreshedCookies = SESSION_COOKIES
-    const response = await updateSession(request('/dashboard'))
-    expect(response.status).toBe(307)
-    expect(response.headers.get('location')).toBe('http://localhost:3000/login')
-    expectSessionCookies(response)
-  })
-
-  test('carries the page and its query to /login as ?next=', async () => {
-    refreshedCookies = SESSION_COOKIES
-    const response = await updateSession(
-      request('/dashboard/members/abc-123?tab=x')
-    )
-    expect(response.status).toBe(307)
-    const location = new URL(response.headers.get('location')!)
-    expect(location.pathname).toBe('/login')
-    expect(location.searchParams.get('next')).toBe(
-      '/dashboard/members/abc-123?tab=x'
-    )
-    expect([...location.searchParams.keys()]).toEqual(['next'])
-    expectSessionCookies(response)
-  })
-
-  test('sends a signed-in user from /login to a safe ?next= page', async () => {
-    user = { id: 'user-1' }
-    refreshedCookies = SESSION_COOKIES
-    const response = await updateSession(
-      request('/login?next=%2Fdashboard%2Fevents%3Fview%3Dlist')
-    )
-    expect(response.headers.get('location')).toBe(
-      'http://localhost:3000/dashboard/events?view=list'
-    )
-    expectSessionCookies(response)
-  })
-
-  for (const next of [
-    '//evil.com',
-    'https://evil.com',
-    '/\\evil.com',
-    '/login'
-  ]) {
-    test(`ignores an unsafe ?next= for a signed-in user (${next})`, async () => {
-      user = { id: 'user-1' }
-      const response = await updateSession(
-        request(`/login?next=${encodeURIComponent(next)}`)
-      )
-      expect(response.headers.get('location')).toBe(
-        'http://localhost:3000/dashboard'
-      )
-    })
-  }
-
-  test('redirects a signed-in user from /login to /dashboard', async () => {
-    user = { id: 'user-1' }
-    refreshedCookies = SESSION_COOKIES
-    const response = await updateSession(request('/login'))
-    expect(response.status).toBe(307)
-    expect(response.headers.get('location')).toBe(
-      'http://localhost:3000/dashboard'
-    )
-    expectSessionCookies(response)
+  test.each([
+    '/dashboard',
+    '/dashboard/members/abc-123?tab=x',
+    '/dashboard/events?view=list'
+  ])('lets a guest browse %s without a login redirect', async (path) => {
+    const req = request(path)
+    const originalUrl = req.url
+    const response = await updateSession(req)
+    expect(response.headers.get('location')).toBeNull()
+    expect(req.url).toBe(originalUrl)
   })
 
   test('keeps refreshed cookies when no redirect is needed', async () => {
-    user = { id: 'user-1' }
     refreshedCookies = SESSION_COOKIES
     const response = await updateSession(request('/dashboard'))
     expect(response.headers.get('location')).toBeNull()
     expectSessionCookies(response)
   })
 
-  test('other profile errors do not redirect to /setup', async () => {
-    user = { id: 'user-1' }
-    profileErrorCode = '42501'
+  test('other schema errors do not redirect to /setup', async () => {
+    schemaErrorCode = '42501'
     const response = await updateSession(request('/dashboard'))
     expect(response.headers.get('location')).toBeNull()
   })
 
   test('probes the schema once, then skips it on later requests', async () => {
-    user = { id: 'user-1' }
     await updateSession(request('/dashboard'))
-    expect(profileProbes).toBe(1)
+    expect(schemaProbes).toBe(1)
 
     const second = await updateSession(request('/dashboard/members'))
     expect(second.headers.get('location')).toBeNull()
-    await updateSession(request('/login'))
-    expect(profileProbes).toBe(1)
+    await updateSession(request('/dashboard/events'))
+    expect(schemaProbes).toBe(1)
   })
 
   test('keeps probing and redirecting to /setup until the schema exists', async () => {
-    profileErrorCode = '42P01'
-    for (const path of ['/dashboard', '/login']) {
+    schemaErrorCode = '42P01'
+    for (const path of ['/dashboard', '/dashboard/members']) {
       const response = await updateSession(request(path))
       expect(response.headers.get('location')).toBe(
         'http://localhost:3000/setup'
       )
     }
-    expect(profileProbes).toBe(2)
+    expect(schemaProbes).toBe(2)
 
     // After /setup created the tables the next request finds them.
-    profileErrorCode = null
-    user = { id: 'user-1' }
+    schemaErrorCode = null
+
     const ready = await updateSession(request('/dashboard'))
     expect(ready.headers.get('location')).toBeNull()
-    expect(profileProbes).toBe(3)
+    expect(schemaProbes).toBe(3)
   })
 
-  test('an unrelated profile error does not mark the schema as checked', async () => {
-    user = { id: 'user-1' }
-    profileErrorCode = '42501'
+  test('an unrelated schema error does not mark the schema as checked', async () => {
+    schemaErrorCode = '42501'
     await updateSession(request('/dashboard'))
     await updateSession(request('/dashboard'))
-    expect(profileProbes).toBe(2)
+    expect(schemaProbes).toBe(2)
   })
 
   test('public pages never probe the schema', async () => {
     await updateSession(request('/'))
-    await updateSession(request('/about'))
-    expect(profileProbes).toBe(0)
+    await updateSession(request('/missing-db-config'))
+    expect(schemaProbes).toBe(0)
   })
 })

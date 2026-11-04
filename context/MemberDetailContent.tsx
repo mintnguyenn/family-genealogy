@@ -86,7 +86,6 @@ export default function MemberDetailContent({
               <div className='relative z-0 rounded-2xl border border-stone-200/60 bg-white/80 p-4 backdrop-blur-sm sm:p-6'>
                 <RelationshipManager
                   person={person}
-                  isAdmin={isAdmin}
                   canEdit={canEdit}
                   onStatsLoaded={handleStatsLoaded}
                 />

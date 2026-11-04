@@ -6,6 +6,8 @@
 
 [English](README.en.md) | [Tiếng Việt](README.md)
 
+This personal fork lets guests read the family tree at `/dashboard`. Admins use the login button at the top right to edit it. Data and images currently use Supabase.
+
 An open-source family genealogy application with an intuitive interface for exploring family trees, managing members, and finding Vietnamese kinship terms.
 
 The project was created to solve a practical need: a cloud-based system that allows family members in different places to update information together, such as marriages and births, instead of relying on a single local computer. Self-hosting this open-source project gives your family full control over sensitive data rather than handing it to third-party services. I initially built it for my own family, but decided to share it publicly after receiving interest from others.
@@ -14,16 +16,13 @@ Designed primarily for Vietnamese families.
 
 ## Table of contents
 
+- [Accessing the family tree](#accessing-the-family-tree)
 - [Key features](#key-features)
 - [Demo](#demo)
 - [Screenshots](#screenshots)
 - [Installation and running the project](#installation-and-running-the-project)
-  - [Option 1: Quick deploy to Vercel](#option-1-quick-deploy-to-vercel)
+  - [Option 1: Deploy to Vercel](#option-1-deploy-to-vercel)
   - [Option 2: Run locally](#option-2-run-locally)
-  - [Option 3: Run with Docker](#option-3-run-with-docker)
-- [First account](#first-account)
-- [Troubleshooting registration](#troubleshooting-registration)
-- [User roles](#user-roles)
 - [Contributing](#contributing)
 - [Disclaimer and privacy](#disclaimer-and-privacy)
 - [License](#license)
@@ -41,7 +40,6 @@ Designed primarily for Vietnamese families.
 - **Print a profile**: the member page has a "Print profile" button; the A4 printout has no header, footer or edit buttons and includes the photo, the full note and the family list, ready to hand out, keep at the ancestral hall or archive.
 - **Family book**: the Lineage page opens the "Family book", the whole tree as a printable book, generation by generation: a cover with the main surname, the print date and a table of contents; each generation starts on its own page with numbered members listing other names, birth and death dates, the lunar death date, the burial place, parents, spouses (in-law marked), children in birth order (tap to jump to their entry) and the note; members without a generation get their own section at the end.
 - **Data backup**: Export and import JSON, CSV, and GEDCOM files for easy storage or migration; the restore file is previewed before anything is replaced. A chosen file can be imported two ways: **Replace the whole tree** (restore a backup: the current data is deleted and replaced by the file) or **Add to the current tree** (e.g. a relative sends their branch as JSON, GEDCOM or CSV ZIP): every member and event of the file gets a new id and is inserted in one transaction, without deleting or changing existing data; profile photos are not imported. People in both the file and the tree end up as two profiles (adding a file twice also makes two copies): after adding, click "Scan for duplicates now" to run Possible duplicates and merge them, which also links the new branch to the tree. Photos (avatars, gallery) are not included in JSON/CSV/GEDCOM (the `gallery_items` table is also not included in backups); copy the Supabase Storage buckets `avatars` and `gallery` separately (Dashboard Storage → download, or `supabase storage` CLI). CSV cells starting with `=`, `+`, `-` or `@` get a leading `'` on export so spreadsheets don't run them as formulas (a phone number `+84…` shows as `'+84…` in Excel); that `'` is removed again on import. When restoring a CSV ZIP, a file with a row that has fewer or more cells than the header, or a broken double quote, is rejected as soon as it is chosen, with the file name and line (nothing is deleted); blank lines are skipped.
-- **Security**: Use Admin, Editor, and Member roles with data protection through Supabase.
 - **Responsive, bilingual**: A modern interface optimized for desktop and mobile devices, switchable between Vietnamese and English (the first visit follows the browser: English when it prefers English, Vietnamese otherwise).
 - **Install on the home screen**: a web app manifest and app icons, so "Add to Home Screen" on a phone shows the site name "Gia Phả OS" (change it with `SITE_NAME`/`SHORT_NAME`) and opens the dashboard directly. There is no service worker, so a connection is still required.
 
@@ -108,9 +106,9 @@ Export and import GEDCOM (7.0) to open the family tree in Gramps, MyHeritage… 
 
 ## Demo
 
+This is the upstream project demo; the personal fork uses an admin login dialog on the current page.
+
 - Demo: [giapha-os.homielab.com](https://giapha-os.homielab.com)
-- Account: `giaphaos@homielab.com`
-- Password: `giaphaos`
 
 ## Screenshots
 
@@ -144,35 +142,12 @@ You can set up a family genealogy system in about 10–15 minutes.
 4. Open **Project → Connect** or **Project Settings → API Keys** and obtain:
    - `Project URL`
    - `Publishable key` (starts with `sb_publishable_`; older projects may show an `anon` key)
-   - `Secret key` for server-side email notifications and administration when needed (starts with `sb_secret_`; older projects may use the `service_role` key in the **Legacy API Keys** tab)
 
 ---
 
-## Option 1: Quick deploy to Vercel
+## Option 1: Deploy to Vercel
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fhomielab%2Fgiapha-os&env=SITE_NAME,SHORT_NAME,NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY,NEXT_PUBLIC_DISABLE_SSO,APP_URL,SUPABASE_SERVICE_ROLE_KEY,SUPABASE_DB_URL,RESEND_API_KEY,RESEND_FROM_EMAIL,ADMIN_NOTIFICATION_EMAIL)
-
-1. Create a free account at https://vercel.com if you do not already have one. Signing up with GitHub is recommended for a faster setup.
-2. Click the Deploy button above.
-3. Enter the environment variables saved in **step 1**:
-   - `SITE_NAME` = the site name shown in titles and on the about page (default `Gia Phả OS`)
-   - `SHORT_NAME` = the short name under the home-screen icon (default `Gia Phả`)
-   - `NEXT_PUBLIC_SUPABASE_URL` = `Project URL`
-   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY` = `Publishable key` (or the `anon` key under **Legacy API Keys** in older projects)
-   - `NEXT_PUBLIC_DISABLE_SSO` = `false` to enable SSO; set it to `true` to hide SSO until it is configured
-   - `APP_URL` = the public application URL, for example `https://your-domain.vercel.app` (used for account-approval emails, Open Graph share links, JSON-LD structured data on the home and about pages, `sitemap.xml` and `robots.txt`; only the origin is used: `https://` is added when missing and any path is dropped; when empty or not an http(s) address, Vercel's production domain is used). The social share image is `public/og-image.png` (1200×630); you can replace it with your own family's image.
-   - `SUPABASE_SERVICE_ROLE_KEY` = the **Secret key** under **Project Settings → API Keys → Secret keys**. For older projects, copy the `service_role` key from **Legacy API Keys**. This key has high privileges: store it only in Vercel server environment variables, never use a publishable/anon key for this variable, and never use a `NEXT_PUBLIC_` prefix.
-   - `SUPABASE_DB_URL` = the PostgreSQL connection string under **Project Settings → Database → Connection Pooling** (Session mode). Store it only in the Vercel server environment. It allows administrators to check and run migrations from the Dashboard.
-   - `RESEND_API_KEY` = an API key from [Resend](https://resend.com)
-   - `RESEND_FROM_EMAIL` = a verified sender address on Resend, for example `Gia Pha OS <no-reply@your-domain.com>`
-   - `ADMIN_NOTIFICATION_EMAIL` = optional address for notifications. If omitted, notifications are sent to active administrator accounts.
-4. Click **Deploy** and wait 2–3 minutes.
-
-You will receive a website URL that is ready to use.
-
-> **If you are upgrading an existing installation with data:** open Supabase Dashboard → SQL Editor, click **Copy full SQL** on the `/setup` page, paste it, and run it once. The bundle includes the schema and all migrations in the correct order and is safe to run repeatedly. Existing active accounts are preserved; only newly registered accounts remain pending approval.
-
----
+Import your repository and select the `dev` branch. Configure `SITE_NAME`, `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY` using `.env.example`. `SUPABASE_DB_URL` is optional for the Dashboard migration tool that is still included. This fork does not require SSO, a service-role key or approval email configuration.
 
 ## Option 2: Run locally
 
@@ -203,119 +178,19 @@ Open a browser and visit `http://localhost:3000`.
 
 ---
 
-## Option 3: Run with Docker
+## Accessing the family tree
 
-For self-hosting on a VPS or your own server. Requirements: [Docker](https://docs.docker.com/get-docker/) with Docker Compose.
+Guests can open `/dashboard` directly without add/edit/delete controls. The **Log in** button opens a dialog on the current page. The default local account is **admin / admin**; email and Supabase Auth are not required. Override it with `ADMIN_USERNAME` and `ADMIN_PASSWORD` in `.env.local`, and change the password before a public deployment. There are no sign-up, SSO or account management screens.
 
-1. Clone the project, rename `.env.example` to `.env.local` and fill in the values from **step 1** (the same as Option 1: `NEXT_PUBLIC_*`, `APP_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_DB_URL`, `RESEND_*`...).
-2. Build and start:
+Logging in or out refreshes permissions while retaining the current view and filters. Logging out from a member creation/editing page returns to the corresponding reading page.
 
-```bash
-docker compose --env-file .env.local up -d --build
-```
+The server checks credentials and stores a signed HttpOnly session cookie that expires after one day in both the browser and the server; the code is in `app/actions/auth.ts`. Supabase still stores data and images. The local session is separate from Supabase Auth and does not grant database permissions. Database schema and policies are unchanged and will be handled separately.
 
-Open `http://localhost:3000` (or your domain behind a reverse proxy; add the domain to Supabase as described in [Troubleshooting registration](#troubleshooting-registration)).
-
-**Important about environment variables:**
-
-- Next.js writes `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY` and `NEXT_PUBLIC_DISABLE_SSO` into the JavaScript **at build time**, so they must be passed as build args. `--env-file .env.local` lets `docker-compose.yml` read them from `.env.local`; the build stops with an error when the two Supabase variables are missing. After changing them, rebuild (`--build`): restarting the container is not enough.
-- Server secrets (`SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_DB_URL`, `RESEND_API_KEY`...) are **not** stored in the image: the container reads them from `.env.local` when it starts (`env_file`). `.env*` files are not copied into the image.
-
-Without Compose (`docker run --env-file` keeps quotes as part of the value, so write values in `.env.local` without quotes, even with spaces: `SITE_NAME=Gia Phả OS`):
-
-```bash
-docker build -t giapha-os \
-  --build-arg NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co" \
-  --build-arg NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY="your-anon-key" \
-  --build-arg NEXT_PUBLIC_DISABLE_SSO=true \
-  .
-docker run -d -p 3000:3000 --env-file .env.local --restart always giapha-os
-```
-
-The image has a built-in `HEALTHCHECK` that requests the `/login` page every 30 seconds: `docker ps` shows `healthy` or `unhealthy` in the STATUS column, and `docker inspect --format '{{.State.Health.Status}}' <container>` reports the same. An `unhealthy` container means the app no longer answers; check `docker logs <container>`.
-
-The image includes `docs/schema.sql` and `docs/migrations/`, so `/setup` and `/dashboard/upgrade` work as on Vercel. **Updating:** `git pull`, run `docker compose --env-file .env.local up -d --build` again, then open `/dashboard/upgrade` to run new migrations (if any).
-
----
-
-## First account
-
-- Register a new account when you first open the website.
-- The first registered account automatically receives the **admin** role.
-- Later registrations default to **member** and remain **pending admin approval**.
-
-### Notifications and approving new accounts
-
-A new account stays **pending approval** until an administrator approves it. The system emails administrators a one-time approval link, valid for 7 days, as soon as the account first signs in:
-
-- **Supabase "Confirm email" on** (the default): after the user clicks the confirmation link in their email.
-- **Supabase "Confirm email" off**: right after signing up, because the user is signed in at once.
-- **SSO**: when the user comes back from Google/Facebook.
-
-Each account gets one email while its link is valid; a pending account that signs in again after the link expired sends administrators a new one. The email is always in Vietnamese (the app's default language), not in the language the new user picked. Administrators can also sign in and approve the account from **Manage users**.
-
-Locking an account in **Manage users** also revokes its open approval link: the link in the old email (or a forwarded copy) only shows "Request revoked" and does not turn the account back on. To restore access, unlock the account in the app. Needs the migration `20261031120000_revoke_approval_link_on_lock.sql`; until it is run, a link that has not expired can still reactivate a locked account.
-
-A locked account is no longer pending approval: signing in again opens no new approval request and sends administrators no new email. The approval link checks and activates the account in one database transaction, so locking the account while the approval page is open (even right as "Confirm approval" is pressed) leaves it locked. Needs the migration `20261031180000_lock_blocks_approval.sql`; until it is run, the approval link shows "Database upgrade needed" (administrators can still approve in **Manage users**) and a locked account that signs in again still sends an email as before.
-
-To enable email notifications on Vercel, configure `APP_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, and `RESEND_FROM_EMAIL`. `ADMIN_NOTIFICATION_EMAIL` is optional; when omitted, the system uses the email addresses of active administrators. Secret/service-role keys can bypass Row Level Security (RLS), so store them only on the server and never put them in source code, the browser, or Git. See the [Supabase API keys guide](https://supabase.com/docs/guides/getting-started/api-keys).
-
-## Troubleshooting registration
-
-If you see `Failed to fetch` while registering after setup:
-
-**Cause:** Supabase is blocking requests from a domain that has not been added to the allowlist.
-
-**Fix:**
-
-1. Open [Supabase Dashboard](https://supabase.com/dashboard) and select your project.
-2. Go to **Authentication → URL Configuration**.
-3. Under **Site URL**, enter the application’s primary URL, for example:
-   - Vercel: `https://your-domain.vercel.app`
-   - Local: `http://localhost:3000`
-4. Under **Redirect URLs**, click **Add URL** and add:
-   - `https://your-domain.vercel.app/**`
-   - `http://localhost:3000/**` (for local development)
-   - Or at minimum: `https://your-domain.vercel.app/auth/callback` and `http://localhost:3000/auth/callback`
-5. Click **Save** and try again.
-
-> **Note:** Replace `your-domain.vercel.app` with your actual domain. If you use a custom domain, add that domain as well.
-
-### Sign in with Google and Facebook
-
-The login screen supports Google and Facebook through Supabase Auth. To enable these providers:
-
-1. Open Supabase Dashboard → **Authentication → Sign In / Providers** and enable Google or Facebook.
-2. Create the corresponding OAuth app in Google Cloud Console or Facebook Developers.
-3. In the OAuth app configuration, set the Supabase callback URL, which looks like:
-   `https://<project-ref>.supabase.co/auth/v1/callback`
-4. In Supabase → **Authentication → URL Configuration**, set **Site URL** to `https://<your-domain>`. If the app also runs on another domain (a preview, `localhost`…), add that domain to **Redirect URLs** as:
-   `https://<other-domain>/**`
-   The callback carries the page to open (`/auth/callback?next=…`, when someone signs in from a shared member link), so an exact `https://<domain>/auth/callback` entry does not match; when nothing matches, Supabase sends the user to the Site URL instead of that page.
-
-Accounts registered through SSO are also created as **pending admin approval**, just like email registrations. See the official guides for [Google](https://supabase.com/docs/guides/auth/social-login/auth-google) and [Facebook](https://supabase.com/docs/guides/auth/social-login/auth-facebook).
-
-If SSO is not configured, set `NEXT_PUBLIC_DISABLE_SSO=true` in Vercel and deploy again. If the variable is omitted, the application also hides SSO by default to avoid displaying an unavailable feature. Users will then see a notice with a link to this guide. Because this is a `NEXT_PUBLIC_*` variable, you must rebuild and redeploy after changing it.
+The interface and genealogy operations continue to use upstream components; the login dialog reuses `AuthField` from `components/auth/AuthFormParts.tsx`. Sign-up, SSO, account management and approval flows have been removed. When updating upstream, preserve local login and guest read-only controls.
 
 ### System upgrades in the Dashboard
 
 Administrators can open **System upgrade** from the administration menu to check the source code version on GitHub and the database version, then run pending migrations. If the current source code is older than the latest GitHub version, the system requires the source code to be updated before migrations can run. Direct migration support requires `SUPABASE_DB_URL` on the server. Without it, `/dashboard/upgrade` still provides the SQL bundle from `/setup` for manual execution.
-
-**Restoring data needs the migration `20261026000000_add_restore_backup.sql`.** From this version, restore (Dashboard → Data) runs in a single database transaction through the `restore_backup` function: if anything fails halfway, the current data is kept as it was. Existing self-hosted installs must run this migration (run the migrations on `/dashboard/upgrade`, or run the file from `docs/migrations/` in the Supabase SQL Editor). Until then, restore still works the old way (delete, then insert in chunks, without a transaction) and shows a reminder to upgrade the database. Restore files can be up to 25 MB; on Vercel, request bodies are limited to about 4.5 MB, so very large family trees (several thousand members or more) are best restored on a self-hosted install.
-
-**Updating generations needs the migration `20261026120000_add_update_generations.sql`.** The "Apply" button on the Lineage page and the option to update descendants' generations when editing a member save all members with a single call to the database function `update_generations`, in one transaction: if one row fails (a member that was just deleted, or one you are not allowed to edit), no row is changed and the app reports the error. The function runs with the caller's rights (SECURITY INVOKER), so the Row Level Security of the `persons` table still applies. Until the migration is run, the app updates people one by one as before and shows a reminder to upgrade the database.
-
-**Merging duplicates needs the migration `20261027120000_add_merge_persons.sql`.** The "People that may be duplicates" tool (Dashboard → Backup & restore) can merge two profiles into one through the database function `merge_persons`, in one transaction: the merged-away member's relationships are re-pointed to the kept one (duplicates and the relationship between the two profiles are removed), private details fill the kept profile's empty fields, empty columns (birth and death dates, generation, birth order, avatar) take the merged-away values, other names are remembered, notes are appended, and the merged-away profile is deleted. The app requires a preview of what will move, recommends downloading a backup first, and requires typing the deleted profile's name to confirm. If the kept profile would end up with more than 2 birth parents, 2 birth parents of the same gender, or one profile is an ancestor of the other (the tree would loop), the preview shows a warning that must be acknowledged before the name can be typed. A merge cannot be undone; if anything fails halfway, nothing is changed. Admins only. Until the migration is run, the merge button shows a reminder to upgrade the database.
-
-**Yearly events need the migration `20261027180000_custom_events_recurrence.sql`.** It adds a `recurrence` column to `custom_events` (`none` = once, `yearly_solar` = every year on the solar day and month, `yearly_lunar` = every year on the lunar day and month of the event date, leap month kept like a death anniversary) with the default `none`: existing events stay as they are and no data is lost. It also updates `restore_backup` so a restore keeps each event's recurrence. The **System upgrade** page lists it automatically. Until it is run, one-off events can still be added and edited; choosing a yearly option shows a database error until you upgrade.
-
-**Adding a file to the current tree needs the migration `20261030180000_add_append_import.sql`.** It only adds the `append_import` function (insert only, never deletes or updates a row); no table changes. The **System upgrade** page lists it automatically. Until it is run, "Add to the current tree" asks for the upgrade and adds nothing; restore (replace the whole tree) works as before.
-
-**Burial places need the migration `20261028120000_add_burial_place.sql`.** It adds a nullable text column `burial_place` to `persons` to record where a member is buried. Like the dates of death it is public: every approved member can read it, and the Row Level Security is unchanged. It also updates `restore_backup` (a restore keeps the burial place; older backups without it restore it empty) and `merge_persons` (a merge fills the kept profile's empty burial place from the merged-away one). JSON backups (format v5) and CSV exports gain a `burial_place` column. The **System upgrade** page lists it automatically. Until it is run, the app works as before; burial places just cannot be stored yet.
-
-**Locking an account revokes its approval link with the migration `20261031120000_revoke_approval_link_on_lock.sql`.** It only redefines the lock/unlock function (`set_user_active_status`): locking marks the account's unused approval request as used. No table changes and no data removed; backup and restore are unchanged. The **System upgrade** page lists it automatically.
-
-**Locked accounts stop asking for approval, and approval is safe against a concurrent lock, with the migration `20261031180000_lock_blocks_approval.sql`.** It adds a nullable `locked_at` column to `profiles`: set when an administrator locks the account, cleared on unlock. Accounts already locked whose approval link was used or revoked are filled in; other inactive accounts stay "pending". It also redefines `set_user_active_status` (sets/clears `locked_at`) and adds `approve_user_request` (callable by the server's service role only) to approve in one transaction. No data removed; backup and restore are unchanged. The **System upgrade** page lists it automatically. An account locked before this migration without a used or revoked approval link (e.g. locked before the migration `20261031120000`) still counts as pending: lock it once more in **Manage users** to stop the emails.
 
 ### Source code updates
 
@@ -328,8 +203,8 @@ When `/dashboard/upgrade` reports that the source code is outdated, update the *
 
    ```bash
    git fetch origin
-   git pull --ff-only origin main
-   git push origin main
+   git pull --ff-only origin dev
+   git push origin dev
    ```
 
 3. Wait for Vercel to finish building and deploying. If it does not deploy automatically, open **Deployments** and choose **Redeploy** on the latest deployment.
@@ -339,7 +214,7 @@ When `/dashboard/upgrade` reports that the source code is outdated, update the *
 
 ```bash
 git fetch origin
-git pull --ff-only origin main
+git pull --ff-only origin dev
 bun install
 bun run build
 ```
@@ -348,32 +223,9 @@ Restart the application with the command you use, such as `bun run start`. Once 
 
 ---
 
-## User roles
-
-The system has three roles for controlling who can update the family tree:
-
-1. **Admin**: Full access to the system.
-2. **Editor**: Can add, edit, and delete member profiles and relationships.
-3. **Member**: Can view the family tree and visual statistics, and add, edit or delete the custom events they created themselves.
-
 ## Contributing
 
-This is an open-source project. Contributions, issue reports, and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide, and use the issue and pull request templates. Found a security problem? Report it privately as described in [SECURITY.md](SECURITY.md) (no public issue, and never share `SUPABASE_SERVICE_ROLE_KEY`).
-
-Before opening a pull request, run:
-
-```bash
-bun run test          # unit tests (bun test) for the utils/ functions
-bun run lint
-bun run format:check
-bun run typecheck     # tsc --noEmit
-```
-
-GitHub Actions (`.github/workflows/test.yml`) runs the same commands on every push to `main` and every pull request.
-
-Tests live next to the file they cover (`utils/csv.ts` → `utils/csv.test.ts`). Notable changes go in [CHANGELOG.md](CHANGELOG.md) under `## [Unreleased]`.
-
-Pages that only show numbers (such as `/dashboard/stats`) compute them on the server and `select` only the columns they need (see `STATS_PERSON_COLUMNS` in `utils/familyStats.ts`) instead of sending the whole `persons` table to the browser.
+This is an open-source project. Contributions, issue reports, and pull requests are welcome.
 
 ## Disclaimer and privacy
 

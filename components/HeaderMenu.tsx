@@ -8,22 +8,26 @@ import {
   ChevronDown,
   Database,
   GitMerge,
+  LogIn,
   Network,
-  UserCircle,
-  Users
+  UserCircle
 } from 'lucide-react'
 import Link from 'next/link'
+import { useState } from 'react'
 
 import { usePopupMenu } from '@/hooks/usePopupMenu'
 import { useI18n } from '@/lib/i18n/useI18n'
 
+import LanguageSwitcher from './LanguageSwitcher'
 import LogoutButton from './LogoutButton'
+import LoginModal from './modal/LoginModal'
 import { useUser } from './UserProvider'
 
 export default function HeaderMenu() {
-  const { user, isAdmin } = useUser()
+  const { isAdmin } = useUser()
   const { t } = useI18n()
-  const userEmail = user?.email
+  const userName = isAdmin ? t('admin') : null
+  const [showLogin, setShowLogin] = useState(false)
   const {
     isOpen,
     close,
@@ -69,12 +73,6 @@ export default function HeaderMenu() {
 
   const adminLinks = [
     {
-      href: '/dashboard/users',
-      icon: Users,
-      label: t('manageUsers'),
-      hover: 'hover:bg-rose-50 hover:text-rose-700'
-    },
-    {
       href: '/dashboard/lineage',
       icon: Network,
       label: t('lineageOrder'),
@@ -95,7 +93,19 @@ export default function HeaderMenu() {
   ]
 
   return (
-    <div className='relative' ref={containerRef}>
+    <div className='relative flex items-center gap-2' ref={containerRef}>
+      {!isAdmin && (
+        <button
+          type='button'
+          onClick={() => {
+            close()
+            setShowLogin(true)
+          }}
+          className='flex shrink-0 items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-medium whitespace-nowrap text-surface transition-colors hover:bg-primary/90'>
+          <LogIn className='size-4' />
+          {t('login')}
+        </button>
+      )}
       <button
         type='button'
         ref={buttonRef}
@@ -104,8 +114,8 @@ export default function HeaderMenu() {
         onClick={toggle}
         className='flex items-center gap-2 rounded-full border border-transparent py-1.5 pr-4 pl-2 transition-colors duration-200 hover:border-stone-200 hover:bg-stone-100'>
         <div className='flex size-8 items-center justify-center rounded-full bg-linear-to-br from-amber-200 to-amber-100 font-medium text-amber-800 shadow-sm ring-1 ring-amber-300/50'>
-          {userEmail ? (
-            userEmail.charAt(0).toUpperCase()
+          {userName ? (
+            userName.charAt(0).toUpperCase()
           ) : (
             <UserCircle className='size-5' />
           )}
@@ -123,16 +133,19 @@ export default function HeaderMenu() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
-            className='absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-3xl border border-border bg-surface py-2'>
+            className='absolute top-full right-0 z-50 mt-2 w-56 overflow-hidden rounded-3xl border border-border bg-surface py-2'>
             <div className='border-b border-stone-100 bg-stone-50/50 px-4 py-3'>
               <p className='mb-0.5 text-sm font-medium text-stone-400'>
                 {t('account')}
               </p>
               <p className='truncate text-sm font-medium text-stone-900'>
-                {userEmail}
+                {userName ?? t('guest')}
               </p>
             </div>
             <div className='py-1'>
+              <div className='px-4 py-2 sm:hidden'>
+                <LanguageSwitcher />
+              </div>
               {links.map(({ href, icon: Icon, label, hover }) => (
                 <Link
                   key={href}
@@ -164,13 +177,17 @@ export default function HeaderMenu() {
                 </>
               )}
 
-              <div className='mx-4 my-1 h-px bg-stone-100' />
-
-              <LogoutButton />
+              {isAdmin && (
+                <>
+                  <div className='mx-4 my-1 h-px bg-stone-100' />
+                  <LogoutButton onSuccess={close} />
+                </>
+              )}
             </div>
           </m.div>
         )}
       </AnimatePresence>
+      {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
     </div>
   )
 }

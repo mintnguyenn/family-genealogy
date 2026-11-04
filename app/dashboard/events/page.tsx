@@ -6,7 +6,7 @@ import { MemberListProvider } from '@/context/MemberListContext'
 import { getServerTranslations } from '@/lib/i18n/server'
 import { EVENT_PERSON_COLUMNS, EVENT_PERSON_FILTER } from '@/utils/eventPersons'
 import { fetchAllRowsOrThrow } from '@/utils/supabase/fetchAll'
-import { getIsAdmin, getSupabase, getUser } from '@/utils/supabase/queries'
+import { getIsAdmin, getSupabase } from '@/utils/supabase/queries'
 
 export async function generateMetadata() {
   const { t } = await getServerTranslations()
@@ -14,10 +14,9 @@ export async function generateMetadata() {
 }
 
 export default async function EventsPage() {
-  const [{ t }, supabase, user, isAdmin] = await Promise.all([
+  const [{ t }, supabase, isAdmin] = await Promise.all([
     getServerTranslations(),
     getSupabase(),
-    getUser(),
     getIsAdmin()
   ])
 
@@ -58,7 +57,6 @@ export default async function EventsPage() {
             <EventsList
               persons={persons ?? []}
               customEvents={customEvents ?? []}
-              currentUserId={user?.id ?? null}
               isAdmin={Boolean(isAdmin)}
             />
           </main>

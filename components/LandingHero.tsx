@@ -78,7 +78,7 @@ export default function LandingHero({ siteName }: LandingHeroProps) {
         variants={fadeIn}>
         <div className='absolute top-1/2 left-1/2 z-0 hidden h-16 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-500/30 blur-2xl sm:block'></div>
         <Link
-          href='/login'
+          href='/dashboard'
           className='group relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl border border-stone-800 bg-primary px-8 py-4 text-sm font-medium text-white transition duration-300 hover:-translate-y-1 hover:border-stone-700 hover:bg-stone-800 active:translate-y-0 sm:w-auto sm:px-10 sm:py-5'>
           <span className='relative z-10 flex items-center gap-3'>
             {t('landingCta')}

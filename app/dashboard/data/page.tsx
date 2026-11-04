@@ -7,7 +7,7 @@ import DuplicateScan from '@/components/DuplicateScan'
 import LunarRecompute from '@/components/LunarRecompute'
 import { getServerTranslations } from '@/lib/i18n/server'
 import { restoreMaxBytes } from '@/utils/restoreLimit'
-import { getProfile } from '@/utils/supabase/queries'
+import { getIsAdmin } from '@/utils/supabase/queries'
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getServerTranslations()
@@ -16,12 +16,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function DataManagementPage() {
-  const [{ t }, profile] = await Promise.all([
+  const [{ t }, isAdmin] = await Promise.all([
     getServerTranslations(),
-    getProfile()
+    getIsAdmin()
   ])
 
-  if (profile?.role !== 'admin' || !profile.is_active) {
+  if (!isAdmin) {
     redirect('/dashboard')
   }
 

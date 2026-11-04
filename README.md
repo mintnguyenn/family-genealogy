@@ -6,6 +6,8 @@
 
 [Tiếng Việt](README.md) | [English](README.en.md)
 
+Đây là bản fork cá nhân: khách xem gia phả trực tiếp qua `/dashboard`, quản trị viên đăng nhập ở góc phải để chỉnh sửa. Dữ liệu và ảnh hiện vẫn dùng Supabase.
+
 Đây là mã nguồn mở cho ứng dụng quản lý gia phả dòng họ, cung cấp giao diện trực quan để xem sơ đồ phả hệ, quản lý thành viên và tìm kiếm danh xưng.
 
 Dự án ra đời từ nhu cầu thực tế: cần một hệ thống Cloud để con cháu ở nhiều nơi có thể cùng cập nhật thông tin (kết hôn, sinh con...), thay vì phụ thuộc vào một máy cục bộ. Việc tự triển khai mã nguồn mở giúp gia đình bạn nắm trọn quyền kiểm soát dữ liệu nhạy cảm, thay vì phó mặc cho các dịch vụ bên thứ ba. Ban đầu mình chỉ làm cho gia đình sử dụng, nhưng vì được nhiều người quan tâm nên mình quyết định chia sẻ công khai.
@@ -14,16 +16,13 @@ Phù hợp với người Việt Nam.
 
 ## Mục lục
 
+- [Truy cập gia phả](#truy-cập-gia-phả)
 - [Các tính năng chính](#các-tính-năng-chính)
 - [Demo](#demo)
 - [Hình ảnh Giao diện](#hình-ảnh-giao-diện)
 - [Cài đặt và Chạy dự án](#cài-đặt-và-chạy-dự-án)
-  - [Cách 1: Deploy nhanh lên Vercel](#cách-1-deploy-nhanh-lên-vercel)
+  - [Cách 1: Deploy lên Vercel](#cách-1-deploy-lên-vercel)
   - [Cách 2: Chạy trên máy cá nhân](#cách-2-chạy-trên-máy-cá-nhân)
-  - [Cách 3: Chạy bằng Docker](#cách-3-chạy-bằng-docker)
-- [Tài khoản đầu tiên](#tài-khoản-đầu-tiên)
-- [Xử lý lỗi khi đăng ký](#xử-lý-lỗi-khi-đăng-ký)
-- [Phân quyền người dùng (User Roles)](#phân-quyền-người-dùng-user-roles)
 - [Đóng góp (Contributing)](#đóng-góp-contributing)
 - [Tuyên bố từ chối trách nhiệm & Quyền riêng tư](#tuyên-bố-từ-chối-trách-nhiệm--quyền-riêng-tư)
 - [Giấy phép (License)](#giấy-phép-license)
@@ -41,7 +40,6 @@ Phù hợp với người Việt Nam.
 - **In hồ sơ**: Trang thành viên có nút "In hồ sơ" — bản in A4 gọn (không thanh đầu/cuối trang, không nút sửa), có ảnh, ghi chú đầy đủ và danh sách gia đình; để biếu, lưu trữ hoặc để ở nhà thờ họ.
 - **Phả ký**: Trang Thứ tự gia phả mở "Phả ký" — bản in gia phả dạng sách theo đời: bìa ghi họ chính, ngày in và mục lục; mỗi đời bắt đầu một trang riêng, người trong đời đánh số thứ tự kèm tên khác, sinh–mất, ngày giỗ âm, nơi an táng, cha/mẹ, vợ/chồng (dâu/rể ghi rõ), con theo thứ tự sinh (bấm nhảy tới mục của con) và ghi chú; người chưa rõ đời để mục riêng cuối sách.
 - **Sao lưu dữ liệu**: Xuất/nhập file JSON, CSV, GEDCOM để lưu trữ hoặc di chuyển dễ dàng; xem trước nội dung file trước khi phục hồi. Khi chọn file có hai chế độ: **Thay toàn bộ cây** (phục hồi bản sao lưu: xoá dữ liệu hiện tại rồi thay bằng file) và **Thêm vào cây hiện tại** (ví dụ người thân gửi nhánh của họ dạng JSON, GEDCOM hay ZIP CSV): mọi thành viên và sự kiện trong file được cấp mã mới rồi thêm trong một transaction, không xoá hay sửa dữ liệu đang có; ảnh đại diện không được nhập. Người có cả trong file lẫn trong cây thành hai hồ sơ (nhập một file hai lần cũng thành hai bản): sau khi thêm, bấm "Rà trùng ngay" để quét Người có thể trùng rồi gộp, đó cũng là cách nối nhánh mới vào cây. Xuất theo nhánh (chọn một người làm gốc): lấy người đó, mọi con cháu (con đẻ và con nuôi) cùng vợ/chồng của họ, không lấy cha mẹ của gốc hay gia đình bên vợ/chồng; sự kiện tuỳ chỉnh không gắn với người nên luôn xuất đủ. Ảnh (avatars, gallery) không nằm trong JSON/CSV/GEDCOM (bảng `gallery_items` cũng không nằm trong bản sao lưu); sao chép bucket Supabase Storage `avatars` và `gallery` riêng (Dashboard Storage → download, hoặc `supabase storage` CLI). Ô CSV bắt đầu bằng `=`, `+`, `-`, `@` được thêm dấu `'` ở đầu khi xuất (để Excel không chạy như công thức; số điện thoại `+84…` hiện `'+84…` trong Excel) và tự bỏ dấu `'` đó khi nhập lại. Trên Vercel (như bản demo) dữ liệu phục hồi tối đa khoảng 4,5 MB (giới hạn request của Vercel): file lớn hơn bị từ chối ngay khi chọn kèm lời giải thích; bản tự host (Docker, máy chủ riêng) nhận tới 25 MB. Khi phục hồi từ ZIP CSV, file có dòng thiếu/thừa ô so với dòng tiêu đề hoặc dấu nháy kép hỏng bị từ chối ngay khi chọn, kèm tên file và số dòng (chưa xoá dữ liệu gì); dòng trống được bỏ qua.
-- **Bảo mật**: Phân quyền (Admin, Editor, Member) và bảo vệ dữ liệu bằng Supabase.
 - **Đa thiết bị, hai ngôn ngữ**: Giao diện hiện đại, tối ưu cho cả máy tính và điện thoại; chuyển giữa tiếng Việt và tiếng Anh (lần đầu mở theo ngôn ngữ trình duyệt: tiếng Anh nếu trình duyệt ưu tiên tiếng Anh, còn lại tiếng Việt).
 - **Cài lên màn hình chính**: có web manifest và biểu tượng ứng dụng, nên "Thêm vào màn hình chính" trên điện thoại hiện đúng tên "Gia Phả OS" (đổi bằng `SITE_NAME`/`SHORT_NAME`) và mở thẳng vào bảng điều khiển. Không có service worker nên vẫn cần mạng.
 
@@ -118,9 +116,9 @@ Xuất/nhập GEDCOM (7.0) để mở gia phả trong Gramps, MyHeritage… ho�
 
 ## Demo
 
+Đây là demo của dự án upstream; bản fork cá nhân dùng hộp đăng nhập quản trị ngay trên trang đang xem.
+
 - Demo: [giapha-os.homielab.com](https://giapha-os.homielab.com)
-- Tài khoản: `giaphaos@homielab.com`
-- Mật khẩu: `giaphaos`
 
 ## Hình ảnh Giao diện
 
@@ -154,35 +152,12 @@ Chỉ cần khoảng 10 -> 15 phút là bạn có thể tự dựng hệ thống
 4. Vào **Project → Connect** hoặc **Project Settings → API Keys** để lấy:
    - `Project URL`
    - `Publishable key` (bắt đầu bằng `sb_publishable_`; project cũ có thể hiển thị key `anon`)
-   - `Secret key` cho server (bắt đầu bằng `sb_secret_`) nếu cần gửi email thông báo và quản trị server. Project cũ có thể dùng key `service_role` trong tab **Legacy API Keys**.
 
 ---
 
-## Cách 1: Deploy nhanh lên Vercel
+## Cách 1: Deploy lên Vercel
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fhomielab%2Fgiapha-os&env=SITE_NAME,SHORT_NAME,NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY,NEXT_PUBLIC_DISABLE_SSO,APP_URL,SUPABASE_SERVICE_ROLE_KEY,SUPABASE_DB_URL,RESEND_API_KEY,RESEND_FROM_EMAIL,ADMIN_NOTIFICATION_EMAIL)
-
-1. Tạo tài khoản miễn phí tại https://vercel.com nếu chưa có (khuyên dùng đăng ký bằng tài khoản GitHub cho nhanh).
-2. Nhấn nút Deploy bên trên.
-3. Điền các biến môi trường đã lưu ở **bước 1**:
-   - `SITE_NAME` = tên site hiện ở tiêu đề và trang giới thiệu (mặc định `Gia Phả OS`)
-   - `SHORT_NAME` = tên ngắn dưới biểu tượng khi thêm vào màn hình chính (mặc định `Gia Phả`)
-   - `NEXT_PUBLIC_SUPABASE_URL` = `Project URL`
-   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY` = `Publishable key` (hoặc key `anon` trong **Legacy API Keys**)
-   - `NEXT_PUBLIC_DISABLE_SSO` = `false` để bật SSO; đặt `true` để ẩn SSO khi chưa cấu hình
-   - `APP_URL` = URL public của ứng dụng, ví dụ `https://your-domain.vercel.app` (dùng cho email duyệt tài khoản, link chia sẻ Open Graph, dữ liệu có cấu trúc JSON-LD ở trang chủ và giới thiệu, `sitemap.xml` và `robots.txt`; chỉ lấy phần gốc: thiếu `https://` sẽ tự thêm, đường dẫn phía sau bị bỏ; nếu bỏ trống hoặc không phải địa chỉ http(s), trên Vercel sẽ dùng domain production). Ảnh chia sẻ mạng xã hội là `public/og-image.png` (1200×630), có thể thay bằng ảnh của dòng họ bạn.
-   - `SUPABASE_SERVICE_ROLE_KEY` = **Secret key** trong **Project Settings → API Keys → Secret keys**. Nếu project dùng giao diện cũ, vào tab **Legacy API Keys** và copy key `service_role`. Đây là key có quyền cao, chỉ lưu ở Vercel server environment; tuyệt đối không dùng publishable/anon key cho biến này và không đặt tên biến với tiền tố `NEXT_PUBLIC_`.
-   - `SUPABASE_DB_URL` = PostgreSQL connection string trong **Project Settings → Database → Connection Pooling** (Session mode, chỉ lưu ở Vercel server environment). Biến này cho phép admin kiểm tra/chạy migration ngay trong Dashboard.
-   - `RESEND_API_KEY` = API key của [Resend](https://resend.com)
-   - `RESEND_FROM_EMAIL` = địa chỉ gửi đã xác minh domain trên Resend, ví dụ `Gia Phả OS <no-reply@your-domain.com>`
-   - `ADMIN_NOTIFICATION_EMAIL` = tuỳ chọn; email nhận thông báo. Nếu bỏ trống, hệ thống tự gửi tới email của các admin đang hoạt động
-4. Nhấn **Deploy** và chờ 2 -> 3 phút.
-
-Bạn sẽ có một đường link website để sử dụng ngay.
-
-> **Nếu đang nâng cấp hệ thống đã có dữ liệu:** chỉ cần mở Supabase Dashboard → SQL Editor, bấm **Copy toàn bộ SQL** ở trang `/setup`, dán và chạy một lần. Bundle này bao gồm schema và tất cả migration theo đúng thứ tự, đồng thời có thể chạy lặp lại an toàn. Không cần copy hoặc chạy từng file riêng lẻ. Các tài khoản đang hoạt động được giữ nguyên; chỉ tài khoản đăng ký mới ở trạng thái chờ duyệt.
-
----
+Import repository của bạn và chọn nhánh `dev`. Cấu hình `SITE_NAME`, `NEXT_PUBLIC_SUPABASE_URL` và `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY` theo `.env.example`. `SUPABASE_DB_URL` là tùy chọn cho công cụ migration còn giữ trong Dashboard. Bản fork này không cần cấu hình SSO, service-role key hoặc email duyệt tài khoản.
 
 ## Cách 2: Chạy trên máy cá nhân
 
@@ -213,120 +188,19 @@ Mở trình duyệt và truy cập: `http://localhost:3000`
 
 ---
 
-## Cách 3: Chạy bằng Docker
+## Truy cập gia phả
 
-Phù hợp khi tự host trên VPS hoặc máy chủ riêng. Yêu cầu: [Docker](https://docs.docker.com/get-docker/) có Docker Compose.
+Bản fork cá nhân này cho khách xem trực tiếp tại `/dashboard`, không hiện nút thêm/sửa/xoá. Nút **Đăng nhập** ở góc phải mở hộp đăng nhập ngay trên trang hiện tại. Tài khoản cục bộ mặc định là **admin / admin**, không cần email hay Supabase Auth. Có thể đổi bằng `ADMIN_USERNAME` và `ADMIN_PASSWORD` trong `.env.local`; đổi mật khẩu trước khi đưa lên domain công khai. Không có đăng ký, SSO hay UI quản lý tài khoản.
 
-1. Clone project, đổi tên `.env.example` thành `.env.local` và điền các giá trị ở **bước 1** (giống Cách 1: `NEXT_PUBLIC_*`, `APP_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_DB_URL`, `RESEND_*`...).
-2. Build và chạy:
+Đăng nhập/đăng xuất làm mới quyền trên trang hiện tại, giữ chế độ xem và bộ lọc. Nếu đăng xuất ở trang tạo/sửa thành viên thì quay về trang xem tương ứng.
 
-```bash
-docker compose --env-file .env.local up -d --build
-```
+Đăng nhập được kiểm tra ở server và lưu bằng cookie HttpOnly có chữ ký, hết hạn sau một ngày cả ở trình duyệt lẫn server; code nằm ở `app/actions/auth.ts`. Supabase hiện chỉ giữ dữ liệu và ảnh: phiên đăng nhập cục bộ không phải phiên Supabase và không cấp thêm quyền database. Schema và policy database được giữ nguyên để xử lý riêng ở bước backend.
 
-Mở `http://localhost:3000` (hoặc domain của bạn qua reverse proxy, nhớ thêm domain vào Supabase như mục [Xử lý lỗi khi đăng ký](#xử-lý-lỗi-khi-đăng-ký)).
-
-**Lưu ý quan trọng về biến môi trường:**
-
-- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY` và `NEXT_PUBLIC_DISABLE_SSO` được Next.js ghi thẳng vào JavaScript **lúc build**, nên phải truyền dưới dạng build arg. `--env-file .env.local` giúp `docker-compose.yml` đọc chúng từ `.env.local`; thiếu hai biến Supabase thì build dừng với thông báo lỗi. Đổi các biến này thì phải build lại (`--build`), chỉ khởi động lại container là không đủ.
-- Tự host cả Supabase/PostgREST: giữ `max_rows` (`PGRST_DB_MAX_ROWS`) ≥ 1000 (mặc định của Supabase). Ứng dụng vẫn đọc đủ dữ liệu với mức nhỏ hơn nhưng tốn nhiều request hơn.
-- Các biến bí mật của server (`SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_DB_URL`, `RESEND_API_KEY`...) **không** nằm trong image: container đọc chúng từ `.env.local` lúc chạy (`env_file`). File `.env*` không được copy vào image.
-
-Không dùng Compose (`docker run --env-file` giữ nguyên dấu nháy, nên trong `.env.local` viết giá trị không bọc nháy, kể cả khi có khoảng trắng: `SITE_NAME=Gia Phả OS`):
-
-```bash
-docker build -t giapha-os \
-  --build-arg NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co" \
-  --build-arg NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY="your-anon-key" \
-  --build-arg NEXT_PUBLIC_DISABLE_SSO=true \
-  .
-docker run -d -p 3000:3000 --env-file .env.local --restart always giapha-os
-```
-
-Image có sẵn `HEALTHCHECK` gọi trang `/login` mỗi 30 giây: `docker ps` hiện `healthy` hoặc `unhealthy` ở cột STATUS, và `docker inspect --format '{{.State.Health.Status}}' <container>` cho kết quả tương tự. Container báo `unhealthy` nghĩa là ứng dụng không còn trả lời; xem `docker logs <container>`.
-
-Image đã có sẵn `docs/schema.sql` và `docs/migrations/`, nên trang `/setup` và `/dashboard/upgrade` hoạt động như bản Vercel. **Cập nhật:** `git pull`, chạy lại lệnh `docker compose --env-file .env.local up -d --build`, rồi vào `/dashboard/upgrade` để chạy migration mới (nếu có).
-
----
-
-## Tài khoản đầu tiên
-
-- Đăng ký tài khoản mới khi vào web lần đầu.
-- Người đăng ký đầu tiên sẽ tự động có quyền **admin**.
-- Các tài khoản đăng ký sau sẽ mặc định là **member** và ở trạng thái **chờ admin duyệt**.
-
-### Thông báo và duyệt tài khoản mới
-
-Tài khoản mới giữ trạng thái **chờ duyệt** cho tới khi admin duyệt. Hệ thống gửi email cho admin kèm liên kết duyệt một lần, có hiệu lực 7 ngày, ngay khi tài khoản đăng nhập lần đầu:
-
-- **Supabase bật "Confirm email"** (mặc định): sau khi người dùng bấm liên kết xác nhận trong email.
-- **Supabase tắt "Confirm email"**: ngay khi đăng ký xong, vì người dùng được đăng nhập luôn.
-- **SSO**: khi quay về từ Google/Facebook.
-
-Mỗi tài khoản chỉ gửi một email khi liên kết còn hiệu lực; tài khoản còn chờ duyệt đăng nhập lại sau khi liên kết hết hạn thì admin nhận email mới. Email luôn viết bằng tiếng Việt (ngôn ngữ mặc định của ứng dụng), không theo ngôn ngữ người đăng ký đang chọn. Admin cũng có thể đăng nhập ứng dụng và duyệt tại **Quản lý người dùng**.
-
-Khoá một tài khoản ở **Quản lý người dùng** cũng thu hồi liên kết duyệt còn hiệu lực của tài khoản đó: bấm liên kết trong email cũ (hoặc bản được chuyển tiếp) chỉ hiện "Yêu cầu đã bị thu hồi" và không mở lại tài khoản. Muốn mở lại, admin mở khoá ngay trong ứng dụng. Cần migration `20261031120000_revoke_approval_link_on_lock.sql`; khi chưa chạy, liên kết còn hạn vẫn kích hoạt lại được tài khoản đã khoá.
-
-Tài khoản bị khoá không còn ở trạng thái chờ duyệt: đăng nhập lại không tạo yêu cầu duyệt mới và admin không nhận thêm email. Liên kết duyệt kiểm tra và kích hoạt tài khoản trong một giao dịch của database, nên khoá tài khoản trong lúc trang duyệt đang mở (kể cả đúng lúc bấm "Xác nhận duyệt") thì tài khoản vẫn bị khoá. Cần migration `20261031180000_lock_blocks_approval.sql`; khi chưa chạy, liên kết duyệt báo "Cần nâng cấp database" (admin vẫn duyệt được ở **Quản lý người dùng**) và tài khoản bị khoá đăng nhập lại vẫn gửi email như trước.
-
-Để bật email thông báo trên Vercel, khai báo `APP_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY` và `RESEND_FROM_EMAIL`. `ADMIN_NOTIFICATION_EMAIL` là tuỳ chọn; nếu không khai báo, hệ thống sẽ tự lấy email từ các tài khoản admin đang hoạt động. Secret key/service role key có thể bỏ qua Row Level Security (RLS), vì vậy chỉ được lưu ở server và không được đưa vào source code, trình duyệt hoặc Git. Xem thêm [hướng dẫn API keys của Supabase](https://supabase.com/docs/guides/getting-started/api-keys).
-
-## Xử lý lỗi khi đăng ký
-
-Sau khi cài đặt xong, nếu bạn gặp lỗi `Failed to fetch` khi đăng ký:
-
-**Nguyên nhân:** Supabase chặn các request từ domain chưa được thêm vào danh sách cho phép.
-
-**Cách khắc phục:**
-
-1. Vào [Supabase Dashboard](https://supabase.com/dashboard) → chọn Project của bạn.
-2. Vào **Authentication → URL Configuration**.
-3. Ở mục **Site URL**, điền URL chính của ứng dụng, ví dụ:
-   - Vercel: `https://your-domain.vercel.app`
-   - Máy cá nhân: `http://localhost:3000`
-4. Ở mục **Redirect URLs**, nhấn **Add URL** và thêm:
-   - `https://your-domain.vercel.app/**`
-   - `http://localhost:3000/**` (nếu chạy local)
-   - Hoặc tối thiểu: `https://your-domain.vercel.app/auth/callback` và `http://localhost:3000/auth/callback`
-5. Nhấn **Save** và thử lại.
-
-> **Lưu ý:** Thay `your-domain.vercel.app` bằng domain thực tế của bạn. Nếu dùng domain tùy chỉnh, hãy thêm cả domain đó vào danh sách.
-
-### Đăng nhập bằng Google và Facebook
-
-Màn hình đăng nhập đã hỗ trợ Google và Facebook thông qua Supabase Auth. Để bật hai nút này:
-
-1. Vào Supabase Dashboard → **Authentication → Sign In / Providers** và bật Google hoặc Facebook.
-2. Tạo OAuth app tương ứng trên Google Cloud Console/Facebook Developers.
-3. Trong cấu hình OAuth app, đặt callback URL do Supabase cung cấp, có dạng:
-   `https://<project-ref>.supabase.co/auth/v1/callback`
-4. Trong Supabase → **Authentication → URL Configuration**, đặt **Site URL** là `https://<domain-cua-ban>`. Nếu ứng dụng chạy ở domain khác Site URL (bản preview, `localhost`…), thêm domain đó vào **Redirect URLs** dạng:
-   `https://<domain-khac>/**`
-   Callback mang theo trang cần mở (`/auth/callback?next=…`, khi người dùng đăng nhập từ link thành viên được chia sẻ), nên mục chính xác `https://<domain>/auth/callback` không khớp; khi không khớp, Supabase đưa người dùng về Site URL thay vì trang đó.
-
-Tài khoản đăng ký bằng SSO cũng được tạo ở trạng thái **chờ admin duyệt**, giống đăng ký bằng email. Xem thêm hướng dẫn chính thức cho [Google](https://supabase.com/docs/guides/auth/social-login/auth-google) và [Facebook](https://supabase.com/docs/guides/auth/social-login/auth-facebook).
-
-Nếu chưa cấu hình SSO, đặt `NEXT_PUBLIC_DISABLE_SSO=true` trong biến môi trường của Vercel rồi deploy lại. Nếu không khai báo biến này, ứng dụng cũng mặc định ẩn SSO để tránh hiển thị chức năng chưa sẵn sàng. Khi đó người dùng sẽ thấy thông báo kèm link tới phần hướng dẫn này. Vì đây là biến `NEXT_PUBLIC_*`, cần build/deploy lại sau khi thay đổi.
+Phần giao diện và thao tác gia phả tiếp tục dùng component của upstream; hộp đăng nhập tái sử dụng `AuthField` trong `components/auth/AuthFormParts.tsx`. Các phần đăng ký, SSO, quản lý nhiều tài khoản và duyệt tài khoản đã được gỡ. Khi cập nhật upstream, giữ phần đăng nhập cục bộ và các điều kiện cho khách chỉ xem.
 
 ### Nâng cấp hệ thống trong Dashboard
 
 Admin có thể mở mục **Nâng cấp hệ thống** trong menu quản trị để kiểm tra version source code trên GitHub và version database, sau đó chạy các migration còn thiếu. Nếu source code hiện tại cũ hơn version mới nhất trên GitHub, hệ thống sẽ yêu cầu cập nhật source code trước khi cho phép chạy migration. Tính năng migration trực tiếp chỉ hoạt động khi đã cấu hình `SUPABASE_DB_URL` ở server. Nếu chưa cấu hình, trang `/dashboard/upgrade` vẫn cho phép copy SQL bundle tại `/setup` để chạy thủ công.
-
-**Phục hồi dữ liệu cần migration `20261026000000_add_restore_backup.sql`.** Từ bản này, chức năng phục hồi (Dashboard → Dữ liệu) chạy trong một transaction của database qua hàm `restore_backup`: nếu có lỗi giữa chừng, dữ liệu hiện tại được giữ nguyên. Bản tự host đã cài từ trước cần chạy migration này (bấm chạy migration ở `/dashboard/upgrade`, hoặc chạy file trong `docs/migrations/` bằng Supabase SQL Editor). Khi chưa chạy, phục hồi vẫn hoạt động theo cách cũ (xoá rồi chèn từng phần, không có transaction) và hiển thị nhắc nâng cấp database. File phục hồi tối đa 25 MB; trên Vercel, request gửi lên server bị giới hạn khoảng 4,5 MB, nên gia phả rất lớn (vài nghìn thành viên trở lên) nên phục hồi trên bản self-host.
-
-**Cập nhật thế hệ cần migration `20261026120000_add_update_generations.sql`.** Nút "Áp dụng" ở trang Phả hệ và tuỳ chọn cập nhật thế hệ con cháu khi sửa thành viên lưu tất cả thành viên bằng một lần gọi hàm `update_generations` của database, trong một transaction: một dòng lỗi (thành viên vừa bị xoá, không có quyền sửa) thì không dòng nào bị đổi và ứng dụng báo lỗi. Hàm chạy với quyền của người gọi (SECURITY INVOKER) nên RLS của bảng `persons` vẫn áp dụng. Khi chưa chạy migration, ứng dụng cập nhật từng người như trước và nhắc nâng cấp database.
-
-**Gộp hồ sơ trùng cần migration `20261027120000_add_merge_persons.sql`.** Công cụ "Người có thể trùng" (Dashboard → Sao lưu & phục hồi) có nút gộp hai hồ sơ thành một qua hàm `merge_persons` của database, trong một transaction: quan hệ của hồ sơ bị gộp được chuyển sang hồ sơ giữ (quan hệ trùng và quan hệ giữa hai hồ sơ bị bỏ), chi tiết riêng tư điền vào trường trống của hồ sơ giữ, các trường trống (ngày sinh/mất, đời, thứ tự con, ảnh đại diện) lấy giá trị của hồ sơ bị gộp, tên khác được nhớ lại và ghi chú được nối thêm, rồi hồ sơ bị gộp bị xoá. Ứng dụng bắt buộc xem trước nội dung sẽ chuyển, khuyến nghị tải bản sao lưu trước và phải gõ đúng tên hồ sơ bị xoá mới cho chạy. Nếu sau khi gộp hồ sơ giữ sẽ có hơn 2 cha mẹ ruột, 2 cha mẹ ruột cùng giới, hoặc một hồ sơ là tổ tiên của hồ sơ kia (cây thành vòng lặp), phần xem trước hiện cảnh báo và phải tick "Tôi hiểu" mới gõ tên xác nhận được. Gộp không thể hoàn tác; một lỗi giữa chừng thì không gì bị đổi. Chỉ admin dùng được. Khi chưa chạy migration, nút gộp nhắc nâng cấp database.
-
-**Sự kiện lặp hằng năm cần migration `20261027180000_custom_events_recurrence.sql`.** Migration thêm cột `recurrence` vào bảng `custom_events` (`none` = một lần, `yearly_solar` = hằng năm theo ngày/tháng dương lịch, `yearly_lunar` = hằng năm theo ngày/tháng âm lịch của ngày diễn ra, giữ tháng nhuận như ngày giỗ) với mặc định `none`: sự kiện cũ giữ nguyên, không mất dữ liệu, và cập nhật hàm `restore_backup` để phục hồi giữ kiểu lặp. Trang **Nâng cấp hệ thống** tự liệt kê migration này. Khi chưa chạy migration, sự kiện một lần vẫn thêm/sửa bình thường; chọn kiểu lặp hằng năm sẽ báo lỗi database cho tới khi nâng cấp.
-
-**Thêm file vào cây hiện tại cần migration `20261030180000_add_append_import.sql`.** Migration chỉ thêm hàm `append_import` (chỉ chèn, không xoá/sửa dòng nào), không đổi bảng. Trang **Nâng cấp hệ thống** tự liệt kê migration này. Khi chưa chạy, chế độ "Thêm vào cây hiện tại" báo cần nâng cấp và không thêm gì; phục hồi (thay toàn bộ cây) vẫn như cũ.
-
-**Nơi an táng cần migration `20261028120000_add_burial_place.sql`.** Migration thêm cột `burial_place` (văn bản, có thể để trống) vào bảng `persons` để ghi nơi an táng của thành viên. Cột công khai như ngày mất: mọi thành viên đã được duyệt đều xem được, quyền (RLS) không đổi. Migration cũng cập nhật hàm `restore_backup` (phục hồi giữ nơi an táng; bản sao lưu cũ không có trường này thì để trống) và `merge_persons` (gộp hồ sơ điền nơi an táng còn trống của hồ sơ giữ từ hồ sơ bị gộp). Sao lưu JSON (định dạng v5) và CSV có thêm cột `burial_place`. Trang **Nâng cấp hệ thống** tự liệt kê migration này. Khi chưa chạy migration, ứng dụng vẫn hoạt động như cũ, chỉ chưa lưu được nơi an táng.
-
-**Khoá tài khoản thu hồi liên kết duyệt cần migration `20261031120000_revoke_approval_link_on_lock.sql`.** Migration chỉ định nghĩa lại hàm khoá/mở khoá tài khoản (`set_user_active_status`): khi khoá, yêu cầu duyệt chưa dùng của tài khoản đó được đánh dấu đã dùng. Không đổi bảng, không xoá dữ liệu; sao lưu/phục hồi không đổi. Trang **Nâng cấp hệ thống** tự liệt kê migration này.
-
-**Tài khoản bị khoá không xin duyệt lại và duyệt an toàn khi đang khoá cần migration `20261031180000_lock_blocks_approval.sql`.** Migration thêm cột `locked_at` (có thể trống) vào bảng `profiles`: được ghi khi admin khoá tài khoản, xoá khi mở khoá. Tài khoản đang khoá có liên kết duyệt đã dùng hoặc đã thu hồi được điền sẵn; tài khoản chưa kích hoạt khác vẫn là "chờ duyệt". Migration cũng định nghĩa lại `set_user_active_status` (ghi/xoá `locked_at`) và thêm hàm `approve_user_request` (chỉ server gọi được bằng service role) để duyệt trong một giao dịch. Không xoá dữ liệu; sao lưu/phục hồi không đổi. Trang **Nâng cấp hệ thống** tự liệt kê migration này. Tài khoản bị khoá trước migration này mà không có liên kết duyệt đã dùng hoặc đã thu hồi (ví dụ khoá trước migration `20261031120000`) vẫn được coi là chờ duyệt: khoá lại một lần ở **Quản lý người dùng** để ngừng email.
 
 ### Hướng dẫn cập nhật source code
 
@@ -339,8 +213,8 @@ Khi trang `/dashboard/upgrade` thông báo source code đang cũ, hãy cập nh�
 
    ```bash
    git fetch origin
-   git pull --ff-only origin main
-   git push origin main
+   git pull --ff-only origin dev
+   git push origin dev
    ```
 
 3. Chờ Vercel build/deploy hoàn tất. Nếu Vercel không tự deploy, vào **Deployments** và chọn **Redeploy** deployment mới nhất.
@@ -350,7 +224,7 @@ Khi trang `/dashboard/upgrade` thông báo source code đang cũ, hãy cập nh�
 
 ```bash
 git fetch origin
-git pull --ff-only origin main
+git pull --ff-only origin dev
 bun install
 bun run build
 ```
@@ -359,32 +233,9 @@ Sau đó khởi động lại ứng dụng bằng lệnh đang dùng, ví dụ `
 
 ---
 
-## Phân quyền người dùng (User Roles)
-
-Hệ thống có 3 cấp độ phân quyền để dễ dàng quản lý ai được phép cập nhật gia phả:
-
-1. **Admin (Quản trị viên):** Có toàn quyền đối với hệ thống.
-2. **Editor (Biên soạn):** Cho phép thêm, sửa, xóa thông tin hồ sơ và các mối quan hệ.
-3. **Member (Thành viên):** Xem sơ đồ gia phả và các thống kê trực quan; có thể thêm, sửa, xóa các sự kiện riêng do chính mình tạo.
-
 ## Đóng góp (Contributing)
 
-Dự án này là mã nguồn mở, hoan nghênh mọi đóng góp, báo cáo lỗi (issues) và yêu cầu sửa đổi (pull requests) để phát triển ứng dụng ngày càng tốt hơn. Xem hướng dẫn đầy đủ ở [CONTRIBUTING.md](CONTRIBUTING.md); khi báo lỗi hoặc gửi pull request hãy dùng mẫu có sẵn. Phát hiện lỗi bảo mật? Báo riêng theo [SECURITY.md](SECURITY.md) (không mở issue công khai, không gửi `SUPABASE_SERVICE_ROLE_KEY`).
-
-Trước khi gửi pull request, hãy chạy:
-
-```bash
-bun run test          # unit test (bun test) cho các hàm trong utils/
-bun run lint          # eslint, no warnings allowed (--max-warnings 0)
-bun run format:check
-bun run typecheck     # tsc --noEmit
-```
-
-GitHub Actions (`.github/workflows/test.yml`) chạy đúng các lệnh này cho mỗi push lên `main` và mỗi pull request.
-
-Test đặt cạnh file được kiểm tra (`utils/csv.ts` → `utils/csv.test.ts`). Hàm gọi Supabase được test với client giả `utils/testing/fakeSupabase.ts` (trả `{ data, error }` theo từng lệnh). Server action (`app/actions/`) được test bằng cách `mock.module` `@/utils/supabase/queries`, `@/lib/i18n/server` và `next/cache` (xem `utils/adminActions.test.ts`, `utils/memberActions.test.ts`); `mock.module` có hiệu lực qua cả các file test nên mock `queries` phải đủ mọi export. Thay đổi đáng chú ý ghi vào [CHANGELOG.md](CHANGELOG.md), mục `## [Unreleased]`.
-
-Trang chỉ hiển thị số liệu (như `/dashboard/stats`) tính kết quả trên server và chỉ `select` các cột cần (xem `STATS_PERSON_COLUMNS` trong `utils/familyStats.ts`), không gửi cả bảng `persons` xuống trình duyệt.
+Dự án này là mã nguồn mở, hoan nghênh mọi đóng góp, báo cáo lỗi (issues) và yêu cầu sửa đổi (pull requests) để phát triển ứng dụng ngày càng tốt hơn.
 
 ## Tuyên bố từ chối trách nhiệm & Quyền riêng tư
 
