@@ -1,4 +1,3 @@
-import Footer from '@/components/Footer'
 import JsonLd from '@/components/JsonLd'
 import LandingHero from '@/components/LandingHero'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
@@ -40,8 +39,6 @@ export default async function HomePage() {
       <main className='relative z-10 flex w-full flex-1 flex-col items-center justify-center px-4 py-20 md:py-32'>
         <LandingHero siteName={config.siteName} />
       </main>
-
-      <Footer className='relative z-10 border-none bg-transparent' />
     </div>
   )
 }

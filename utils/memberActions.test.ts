@@ -57,7 +57,8 @@ mock.module('@/lib/i18n/server', () => ({
   })
 }))
 mock.module('next/cache', () => ({ revalidatePath }))
-mock.module('next/navigation', () => ({ redirect }))
+const navigation = await import('next/navigation')
+mock.module('next/navigation', () => ({ ...navigation, redirect }))
 
 const { deleteMemberProfile, updateDescendantGenerationsAction } =
   await import('@/app/actions/member')

@@ -12,6 +12,8 @@ export type { Locale, TranslationValues }
 export const messages = {
   vi: {
     ...globalErrorMessages.vi,
+    relationshipMemberList: 'Hoặc chọn trực tiếp từ danh sách thành viên',
+    relationshipSelectMember: '-- Chọn thành viên --',
     language: 'Ngôn ngữ',
     vietnamese: 'Tiếng Việt',
     english: 'English',
@@ -1396,6 +1398,8 @@ export const messages = {
   },
   en: {
     ...globalErrorMessages.en,
+    relationshipMemberList: 'Or choose directly from the member list',
+    relationshipSelectMember: '-- Select a member --',
     language: 'Language',
     vietnamese: 'Tiếng Việt',
     english: 'English',
