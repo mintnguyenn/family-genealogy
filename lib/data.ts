@@ -1,22 +1,30 @@
+'use server'
+
+import { cache } from 'react'
+
+import { getIsAdmin } from '@/lib/auth'
+import { readFamilyWorkbook } from '@/lib/excel'
 import type { GalleryItem, Person, Relationship } from '@/types'
 import type { CustomEventRecord } from '@/utils/eventHelpers'
 
-// No persistence backend has been selected yet. These functions are the data
-// boundary for pages and forms; replace their implementations when adding one.
+// Share one workbook snapshot within each server request. A new request reads
+// the file again, so saving it in Excel and reloading the page shows changes.
+const getFamilyData = cache(readFamilyWorkbook)
+
 export async function getPersons(): Promise<Person[]> {
-  return []
+  return (await getFamilyData()).persons
 }
 
 export async function getRelationships(): Promise<Relationship[]> {
-  return []
+  return (await getFamilyData()).relationships
 }
 
 export async function getCustomEvents(): Promise<CustomEventRecord[]> {
-  return []
+  return (await getFamilyData()).custom_events
 }
 
 export async function getGalleryItems(): Promise<GalleryItem[]> {
-  return []
+  return (await getFamilyData()).gallery
 }
 
 export async function getPersonById(id: string): Promise<Person | null> {
@@ -33,10 +41,10 @@ export interface PrivateDetails extends Record<string, unknown> {
 export async function getPrivateDetails(
   personId: string
 ): Promise<PrivateDetails | null> {
-  void personId
-  return null
-}
-
-export function databaseNotConfigured(): never {
-  throw new Error('No database is connected. Changes cannot be saved.')
+  if (!(await getIsAdmin())) return null
+  return (
+    (await getFamilyData()).person_details_private.find(
+      (row) => row.person_id === personId
+    ) ?? null
+  )
 }

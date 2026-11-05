@@ -7,6 +7,8 @@ import {
   getPrivateDetails,
   getRelationships
 } from '@/lib/data'
+import { performExcelWrite } from '@/lib/excelAction'
+import { mergeFamily } from '@/lib/familyMutations'
 import { getServerTranslations } from '@/lib/i18n/server'
 import {
   mergeIdsProblem,
@@ -62,15 +64,14 @@ export async function mergePersons(
   keepId: string,
   dropId: string
 ): Promise<{ summary: MergeSummary } | { error: string }> {
-  const [{ t }, isAdmin] = await Promise.all([
-    getServerTranslations(),
-    getIsAdmin()
-  ])
-  if (!isAdmin) return { error: t('dataAccessDenied') }
+  const { t } = await getServerTranslations()
   const problem = mergeIdsProblem(keepId, dropId)
   if (problem)
     return {
       error: t(problem === 'same' ? 'mergeSameMember' : 'mergeInvalidMember')
     }
-  return { error: t('databaseNotConnected') }
+  const result = await performExcelWrite((data) =>
+    mergeFamily(data, keepId, dropId)
+  )
+  return result.ok ? { summary: result.value } : { error: result.error }
 }

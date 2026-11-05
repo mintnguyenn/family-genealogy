@@ -7,12 +7,13 @@ import {
   getPrivateDetails,
   getRelationships
 } from '@/lib/data'
+import { performExcelWrite } from '@/lib/excelAction'
+import { importFamily } from '@/lib/familyMutations'
 import { getServerTranslations } from '@/lib/i18n/server'
 import {
   BACKUP_VERSION,
   toCustomEventExport,
   toPersonExport,
-  validateImportPayload,
   type BackupPayload,
   type ImportPayload,
   type RestoreCounts
@@ -56,17 +57,21 @@ type ImportResult =
 export async function importData(
   payload: ImportPayload
 ): Promise<ImportResult> {
-  const [{ t }, isAdmin] = await Promise.all([
-    getServerTranslations(),
-    getIsAdmin()
-  ])
-  if (!isAdmin) return { error: t('dataAccessDenied') }
-  const error = validateImportPayload(payload, t)
-  return { error: error ?? t('databaseNotConnected') }
+  const result = await performExcelWrite((data, timestamp) =>
+    importFamily(data, payload, false, timestamp)
+  )
+  return result.ok
+    ? { success: true, imported: result.value }
+    : { error: result.error }
 }
 
 export async function appendImportData(
   payload: ImportPayload
 ): Promise<ImportResult> {
-  return importData(payload)
+  const result = await performExcelWrite((data, timestamp) =>
+    importFamily(data, payload, true, timestamp)
+  )
+  return result.ok
+    ? { success: true, imported: result.value }
+    : { error: result.error }
 }

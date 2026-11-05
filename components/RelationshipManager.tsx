@@ -10,7 +10,6 @@ import { Person } from '@/types'
 import { createLatestGuard } from '@/utils/latestOnly'
 import { fetchRelationshipData } from '@/utils/relationshipFetch'
 import { deleteRelationship } from '@/utils/relationshipMutations'
-import { RelationshipNotDeletedError } from '@/utils/writeErrors'
 
 import AddRelationshipSection from './relationship/AddRelationshipSection'
 import BulkAddChildrenSection from './relationship/BulkAddChildrenSection'
@@ -109,11 +108,7 @@ export default function RelationshipManager({
       router.refresh()
     } catch (err: unknown) {
       const e = err as Error
-      setDeleteError(
-        err instanceof RelationshipNotDeletedError
-          ? t('relationshipNotDeleted')
-          : t('deleteRelationshipError', { error: e.message })
-      )
+      setDeleteError(t('deleteRelationshipError', { error: e.message }))
       setTimeout(() => setDeleteError(null), 5000)
     }
   }

@@ -41,6 +41,9 @@ RUN mkdir .next && chown nextjs:nodejs .next
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Start with fictional data. Mount /app/data to retain your own workbook and uploads.
+COPY --from=builder --chown=nextjs:nodejs /app/data/Family_Genealogy.example.xlsx ./data/Family_Genealogy.xlsx
+RUN chown nextjs:nodejs ./data
 
 USER nextjs
 
@@ -50,10 +53,10 @@ ENV PORT=3000
 # set hostname to localhost
 ENV HOSTNAME="0.0.0.0"
 
-# Reports "healthy" in `docker ps` once the public /login page answers.
+# Reports "healthy" in `docker ps` once the public member list answers.
 # The bun image has no curl, so the check runs through bun itself.
 HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
-  CMD ["bun", "-e", "fetch('http://127.0.0.1:' + (process.env.PORT || 3000) + '/login').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+  CMD ["bun", "-e", "fetch('http://127.0.0.1:' + (process.env.PORT || 3000) + '/dashboard/members').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
 
 # server.js is created by next build from the standalone output
 # https://nextjs.org/docs/pages/api-reference/next-config-js/output

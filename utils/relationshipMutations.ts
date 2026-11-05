@@ -1,5 +1,10 @@
+import {
+  addRelationshipToExcel,
+  createChildrenInExcel,
+  createSpouseInExcel,
+  deleteRelationshipFromExcel
+} from '@/app/actions/excel'
 import type { BulkChildRow } from '@/components/relationship/relationshipTypes'
-import { databaseNotConfigured } from '@/lib/data'
 import type { Person, RelationshipType } from '@/types'
 import { vnToday } from '@/utils/dateHelpers'
 import { checkTextLength, MAX_NAME } from '@/utils/limits'
@@ -9,7 +14,7 @@ import {
   type DatedPerson,
   type RelationshipValidationCode
 } from '@/utils/relationshipValidation'
-import { PersonNotUpdatedError } from '@/utils/writeErrors'
+import { PersonNotUpdatedError, unwrapWriteResult } from '@/utils/writeErrors'
 
 export type RelationshipDirection = 'parent' | 'child' | 'spouse'
 
@@ -97,18 +102,15 @@ export interface SpouseInput {
 export async function addRelationshipWithTargetSync(
   input: NewRelationshipInput
 ): Promise<AddRelationshipResult> {
-  void input
-  return databaseNotConfigured()
+  return unwrapWriteResult(await addRelationshipToExcel(input))
 }
 export async function deleteRelationship(id: string): Promise<void> {
-  void id
-  return databaseNotConfigured()
+  return unwrapWriteResult(await deleteRelationshipFromExcel(id))
 }
 export async function createSpouseWithMarriage(
   input: SpouseInput
 ): Promise<string> {
-  void input
-  return databaseNotConfigured()
+  return unwrapWriteResult(await createSpouseInExcel(input))
 }
 export async function bulkCreateChildren(input: {
   children: BulkChildRow[]
@@ -127,5 +129,5 @@ export async function bulkCreateChildren(input: {
     input.children.map((row) => ({ birthYear: parseBirthYear(row.birthYear) }))
   )
   if (problem) throw new RelationshipValidationError(problem.code)
-  return databaseNotConfigured()
+  return unwrapWriteResult(await createChildrenInExcel(input))
 }

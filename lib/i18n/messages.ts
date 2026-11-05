@@ -12,8 +12,6 @@ export type { Locale, TranslationValues }
 export const messages = {
   vi: {
     ...globalErrorMessages.vi,
-    databaseNotConnected:
-      'Chưa kết nối cơ sở dữ liệu. Hiện chỉ xem giao diện; thay đổi chưa thể lưu.',
     language: 'Ngôn ngữ',
     vietnamese: 'Tiếng Việt',
     english: 'English',
@@ -1398,8 +1396,6 @@ export const messages = {
   },
   en: {
     ...globalErrorMessages.en,
-    databaseNotConnected:
-      'No database connected. You can preview the interface; changes cannot be saved yet.',
     language: 'Language',
     vietnamese: 'Tiếng Việt',
     english: 'English',

@@ -194,7 +194,7 @@ function findInvalidNumberField(row: Record<string, unknown>) {
 }
 
 /** The events table stores a calendar date as a `YYYY-MM-DD` string. */
-function isValidEventDate(value: unknown): value is string {
+export function isValidEventDate(value: unknown): value is string {
   if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value))
     return false
   const [year, month, day] = value.split('-').map(Number)
@@ -209,7 +209,8 @@ export type Translator = (
 /** Returns a translated error message, or null when the payload is valid. */
 export function validateImportPayload(
   input: unknown,
-  t: Translator
+  t: Translator,
+  allowEmpty = false
 ): string | null {
   if (!input || typeof input !== 'object') return t('invalidData')
   const payload = input as Record<string, unknown>
@@ -227,7 +228,7 @@ export function validateImportPayload(
       version,
       supported: BACKUP_VERSION
     })
-  if (persons.length === 0) return t('emptyBackup')
+  if (!allowEmpty && persons.length === 0) return t('emptyBackup')
   if (persons.length > MAX_PERSONS)
     return t('tooManyPersons', { count: MAX_PERSONS })
   if (relationships.length > MAX_RELATIONSHIPS)

@@ -11,13 +11,11 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 
+import { applyGenerationsToExcel as applyGenerationUpdates } from '@/app/actions/excel'
 import LineagePreviewTable from '@/components/lineage/LineagePreviewTable'
 import { useI18n } from '@/lib/i18n/useI18n'
 import { Person, Relationship } from '@/types'
-import {
-  applyGenerationUpdates,
-  buildLineageUpdates
-} from '@/utils/generationUpdates'
+import { buildLineageUpdates } from '@/utils/generationUpdates'
 import {
   computeBirthOrders,
   ComputedUpdate,

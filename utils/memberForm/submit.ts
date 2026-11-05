@@ -1,6 +1,5 @@
 import { Person } from '@/types'
 import { findPossibleDuplicates } from '@/utils/duplicatePeople'
-import { InvalidAvatarError, LaterStepError } from '@/utils/memberForm/errors'
 import { finishMemberSave } from '@/utils/memberForm/finish'
 import { loadSavedRelatives } from '@/utils/memberForm/relatives'
 import { saveMember } from '@/utils/memberForm/save'
@@ -228,20 +227,15 @@ export async function submitMemberForm(ctx: MemberFormSubmitContext) {
       return
     }
     finishMemberSave(ctx, currentPersonId)
-  } catch (caught) {
-    console.error('Error saving member:', caught)
-    if (caught instanceof LaterStepError && caught.savedUpdatedAt)
-      ctx.onUpdated?.(caught.savedUpdatedAt)
-    const err = caught instanceof LaterStepError ? caught.original : caught
+  } catch (err) {
+    console.error('Error saving member:', err)
     if (err instanceof PersonChangedError) ctx.setChanged?.(true)
     setError(
-      err instanceof InvalidAvatarError
-        ? t('invalidImageType')
-        : err instanceof PersonChangedError
-          ? t('personChanged')
-          : err instanceof PersonNotUpdatedError
-            ? t('personNotUpdated')
-            : (err as Error).message || t('saveMemberError')
+      err instanceof PersonChangedError
+        ? t('personChanged')
+        : err instanceof PersonNotUpdatedError
+          ? t('personNotUpdated')
+          : (err as Error).message || t('saveMemberError')
     )
   } finally {
     setLoading(false)

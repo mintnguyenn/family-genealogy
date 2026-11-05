@@ -10,3 +10,5 @@ README.md
 .env.*
 !.env.example
 dist
+data/*
+!data/Family_Genealogy.example.xlsx

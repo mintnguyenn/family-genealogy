@@ -1,6 +1,12 @@
-import { databaseNotConfigured, getGalleryItems } from '@/lib/data'
+import {
+  deleteGalleryFromExcel,
+  saveGalleryToExcel,
+  uploadGalleryToLocal
+} from '@/app/actions/excel'
+import { getGalleryItems } from '@/lib/data'
 import type { GalleryItem } from '@/types'
 import { validateImageFile } from '@/utils/imageUpload'
+import { unwrapWriteResult } from '@/utils/writeErrors'
 
 export const GALLERY_PAGE_SIZE = 24
 export function parseGalleryPage(value: string | string[] | undefined) {
@@ -38,14 +44,12 @@ export async function saveGalleryItem(options: {
   uploadedPath?: string | null
   createdBy?: string | null
 }): Promise<void> {
-  void options
-  return databaseNotConfigured()
+  return unwrapWriteResult(await saveGalleryToExcel(options))
 }
 export async function deleteGalleryItem(
   item: Pick<GalleryItem, 'id' | 'image_url'>
 ): Promise<{ fileRemoved: boolean }> {
-  void item
-  return databaseNotConfigured()
+  return unwrapWriteResult(await deleteGalleryFromExcel(item.id))
 }
 export class InvalidImageError extends Error {
   constructor(readonly reason: 'too-large' | 'unsupported-type') {
@@ -59,7 +63,10 @@ export async function uploadGalleryImage(
   try {
     const validation = await validateImageFile(file)
     if (!validation.ok) throw new InvalidImageError(validation.reason)
-    return databaseNotConfigured()
+    return {
+      path: unwrapWriteResult(await uploadGalleryToLocal(file)),
+      error: null
+    }
   } catch (error) {
     return {
       path: null,

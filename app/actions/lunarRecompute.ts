@@ -2,10 +2,12 @@
 
 import { getIsAdmin } from '@/lib/auth'
 import { getPersons } from '@/lib/data'
+import { performExcelWrite } from '@/lib/excelAction'
 import { getServerTranslations } from '@/lib/i18n/server'
 import {
   findLunarMismatches,
   parseRecomputeIds,
+  recomputeLunarDeathDate,
   type LunarRecomputeRow
 } from '@/utils/lunarRecompute'
 
@@ -35,12 +37,22 @@ export async function previewLunarRecompute(): Promise<
 export async function applyLunarRecompute(
   ids: string[]
 ): Promise<LunarRecomputeApplyResult | { error: string }> {
-  const [{ t }, isAdmin] = await Promise.all([
-    getServerTranslations(),
-    getIsAdmin()
-  ])
-  if (!isAdmin) return { error: t('dataAccessDenied') }
-  if (!parseRecomputeIds(ids))
-    return { error: t('lunarRecomputeInvalidSelection') }
-  return { error: t('databaseNotConnected') }
+  const { t } = await getServerTranslations()
+  const parsed = parseRecomputeIds(ids)
+  if (!parsed) return { error: t('lunarRecomputeInvalidSelection') }
+  const selected = new Set(parsed)
+  const result = await performExcelWrite((data) => {
+    let updated = 0
+    for (const person of data.persons) {
+      if (!selected.has(person.id)) continue
+      const row = recomputeLunarDeathDate(person)
+      if (!row) continue
+      person.death_lunar_year = row.recomputed.year
+      person.death_lunar_month = row.recomputed.month
+      person.death_lunar_day = row.recomputed.day
+      updated++
+    }
+    return { updated, skipped: selected.size - updated, failed: 0 }
+  })
+  return result.ok ? result.value : { error: result.error }
 }

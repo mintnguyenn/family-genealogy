@@ -1,6 +1,7 @@
-import { databaseNotConfigured } from '@/lib/data'
+import { deleteEventFromExcel, saveEventToExcel } from '@/app/actions/excel'
 import type { CustomEventRecurrence } from '@/utils/eventHelpers'
 import { checkTextLength, MAX_NAME, MAX_NOTE } from '@/utils/limits'
+import { unwrapWriteResult } from '@/utils/writeErrors'
 
 export interface CustomEventPayload {
   name: string
@@ -10,7 +11,6 @@ export interface CustomEventPayload {
   recurrence?: CustomEventRecurrence
 }
 
-// Persistence is supplied by the future database backend.
 export async function saveCustomEvent(
   payload: CustomEventPayload,
   eventId?: string
@@ -18,11 +18,9 @@ export async function saveCustomEvent(
   checkTextLength('eventName', payload.name, MAX_NAME)
   checkTextLength('location', payload.location, MAX_NOTE)
   checkTextLength('details', payload.content, MAX_NOTE)
-  void eventId
-  return databaseNotConfigured()
+  return unwrapWriteResult(await saveEventToExcel(payload, eventId))
 }
 
 export async function deleteCustomEvent(eventId: string): Promise<void> {
-  void eventId
-  return databaseNotConfigured()
+  return unwrapWriteResult(await deleteEventFromExcel(eventId))
 }

@@ -1,4 +1,3 @@
-import { databaseNotConfigured } from '@/lib/data'
 import type { ComputedUpdate } from '@/utils/lineageCompute'
 
 /**
@@ -70,11 +69,4 @@ export function buildLineageUpdates(
       birth_order: u.new_birth_order,
       is_in_law: u.new_is_in_law
     }))
-}
-
-export async function applyGenerationUpdates(
-  updates: GenerationUpdate[]
-): Promise<{ ok: true; count: number } | { ok: false; error: string }> {
-  if (!updates.length) return { ok: true, count: 0 }
-  return databaseNotConfigured()
 }
