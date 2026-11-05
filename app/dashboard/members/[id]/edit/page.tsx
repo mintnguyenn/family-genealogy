@@ -4,9 +4,9 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import MemberForm from '@/components/MemberForm'
+import { getIsAdmin } from '@/lib/auth'
+import { getPersonById, getPrivateDetails } from '@/lib/data'
 import { getServerTranslations } from '@/lib/i18n/server'
-import { fetchPrivateDetails } from '@/utils/privateDetails'
-import { getIsAdmin, getSupabase } from '@/utils/supabase/queries'
 import { isUuid } from '@/utils/uuid'
 
 interface PageProps {
@@ -41,24 +41,17 @@ export default async function EditMemberPage({ params }: PageProps) {
     )
   }
 
-  const supabase = await getSupabase()
-
   // Fetch Public Data
   // A database error is thrown to the dashboard error page; only a missing
   // row is a 404.
-  const { data: person, error } = await supabase
-    .from('persons')
-    .select('*')
-    .eq('id', id)
-    .maybeSingle()
+  const person = await getPersonById(id)
 
-  if (error) throw error
   if (!person) notFound()
 
   // Fetch Private Data
   let privateData = null
   if (isAdmin) {
-    privateData = await fetchPrivateDetails(supabase, id)
+    privateData = await getPrivateDetails(id)
   }
 
   const initialData = isAdmin ? { ...person, ...privateData } : { ...person }

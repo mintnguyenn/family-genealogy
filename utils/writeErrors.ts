@@ -1,8 +1,30 @@
-/**
- * Row-level security hides rows from an UPDATE or DELETE without raising an
- * error, so the query succeeds with zero rows. These errors name that case so
- * the UI can tell the user the change was not saved.
- */
+import {
+  RelationshipValidationError,
+  RelationshipWarningError,
+  type RelationshipValidationCode,
+  type RelationshipWarningCode
+} from '@/utils/relationshipValidation'
+
+export type WriteResult<T> =
+  | { ok: true; value: T }
+  | { ok: false; error: string; kind?: string; detail?: string }
+
+// Server actions return errors explicitly so production builds preserve the
+// message and the existing form's conflict/warning handling.
+export function unwrapWriteResult<T>(result: WriteResult<T>): T {
+  if (result.ok) return result.value
+  if (result.kind === 'PersonChangedError') throw new PersonChangedError()
+  if (result.kind === 'PersonNotUpdatedError') throw new PersonNotUpdatedError()
+  if (result.kind === 'GalleryItemNotUpdatedError')
+    throw new GalleryItemNotUpdatedError()
+  if (result.kind === 'RelationshipValidationError')
+    throw new RelationshipValidationError(
+      result.detail as RelationshipValidationCode
+    )
+  if (result.kind === 'RelationshipWarningError')
+    throw new RelationshipWarningError(result.detail as RelationshipWarningCode)
+  throw new Error(result.error)
+}
 
 /** An update changed no row: the person is gone or the user may no longer edit it. */
 export class PersonNotUpdatedError extends Error {
@@ -12,49 +34,11 @@ export class PersonNotUpdatedError extends Error {
   }
 }
 
-/** A delete removed no row: the relationship is gone or the user may not delete it. */
-export class RelationshipNotDeletedError extends Error {
-  constructor() {
-    super('Relationship not deleted')
-    this.name = 'RelationshipNotDeletedError'
-  }
-}
-
 /** An update of a gallery item changed no row. */
 export class GalleryItemNotUpdatedError extends Error {
   constructor() {
     super('Gallery item not updated')
     this.name = 'GalleryItemNotUpdatedError'
-  }
-}
-
-/** A delete of a person removed no row: the person is gone or the user may not delete it. */
-export class PersonNotDeletedError extends Error {
-  constructor() {
-    super('Person not deleted')
-    this.name = 'PersonNotDeletedError'
-  }
-}
-
-/** Inserting a person returned no row (and no error): the user may not create it. */
-export class PersonNotCreatedError extends Error {
-  constructor() {
-    super('Person not created')
-    this.name = 'PersonNotCreatedError'
-  }
-}
-
-/**
- * A new person was created but linking it failed, and removing it again was
- * refused or failed: the person is left without the intended relationship.
- */
-export class PersonOrphanedError extends Error {
-  constructor(
-    readonly personId: string,
-    readonly reason: string
-  ) {
-    super(`Person ${personId} created but not linked: ${reason}`)
-    this.name = 'PersonOrphanedError'
   }
 }
 

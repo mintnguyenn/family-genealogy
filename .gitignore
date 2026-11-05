@@ -49,3 +49,6 @@ skills-lock.json
 
 # Mimosa security-scan hook state (workspace tooling, not part of the app)
 /.mimosa
+
+# Personal family data stays outside Git.
+/data/*

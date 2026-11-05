@@ -2,7 +2,6 @@ import { describe, expect, test } from 'bun:test'
 
 import { remapImportIds } from '@/utils/appendImport'
 import {
-  buildRestorePayload,
   type ImportPayload,
   type PersonExport,
   type RelationshipExport
@@ -146,11 +145,10 @@ describe('remapImportIds', () => {
   })
 
   test('adding the same file twice keeps the tree and makes two copies', () => {
-    // A stand-in for the database: append_import only inserts rows.
-    const existing = buildRestorePayload({
+    const existing = {
       persons: [person(A, 'Nguyễn Văn An'), person(B, 'Lê Văn Bảo')],
       relationships: [{ type: 'biological_child', person_a: A, person_b: B }]
-    })
+    }
     const tree = {
       persons: [...existing.persons],
       relationships: [...existing.relationships]
@@ -159,7 +157,7 @@ describe('remapImportIds', () => {
 
     for (let i = 0; i < 2; i++) {
       const taken = tree.persons.map((p) => p.id)
-      const rows = buildRestorePayload(remapImportIds(branch(), { taken }))
+      const rows = remapImportIds(branch(), { taken })
       tree.persons.push(...rows.persons)
       tree.relationships.push(...rows.relationships)
     }

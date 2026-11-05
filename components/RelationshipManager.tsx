@@ -3,23 +3,13 @@
 import { useRouter } from 'next/navigation'
 import { useCallback, useContext, useEffect, useState } from 'react'
 
-import {
-  AvatarUrlProvider,
-  useInAvatarUrlProvider
-} from '@/context/AvatarUrlContext'
 import { MemberListContext } from '@/context/memberListViewContext'
 import { useMemberListView } from '@/context/useMemberListView'
 import { useI18n } from '@/lib/i18n/useI18n'
 import { Person } from '@/types'
-import { NO_SIGNED_AVATAR_URLS } from '@/utils/avatar'
 import { createLatestGuard } from '@/utils/latestOnly'
-import {
-  fetchRelationshipData,
-  signRelationshipAvatars
-} from '@/utils/relationshipFetch'
+import { fetchRelationshipData } from '@/utils/relationshipFetch'
 import { deleteRelationship } from '@/utils/relationshipMutations'
-import { createClient } from '@/utils/supabase/client'
-import { RelationshipNotDeletedError } from '@/utils/writeErrors'
 
 import AddRelationshipSection from './relationship/AddRelationshipSection'
 import BulkAddChildrenSection from './relationship/BulkAddChildrenSection'
@@ -44,13 +34,9 @@ export default function RelationshipManager({
   onStatsLoaded
 }: RelationshipManagerProps) {
   const { t } = useI18n()
-  const supabase = createClient()
   const memberListContext = useContext(MemberListContext)
   const { setMemberModalId } = useMemberListView()
   const router = useRouter()
-  // A page that already signed every avatar (members list, kinship) shares
-  // its URLs; alone (member page) the relatives' avatars are signed here.
-  const inAvatarProvider = useInAvatarUrlProvider()
 
   const personId = person.id
 
@@ -64,14 +50,9 @@ export default function RelationshipManager({
   }
 
   const [relationships, setRelationships] = useState<EnrichedRelationship[]>([])
-  const [signedAvatarUrls, setSignedAvatarUrls] = useState(
-    NO_SIGNED_AVATAR_URLS
-  )
   const [loading, setLoading] = useState(true)
   // Set when loading failed: show it with a retry instead of an empty list
   const [loadError, setLoadError] = useState<string | null>(null)
-  // "Saved, but…" warning from the add forms
-  const [saveWarning, setSaveWarning] = useState<string | null>(null)
 
   // Which admin form is open (mutually exclusive)
   const [isAdding, setIsAdding] = useState(false)
@@ -87,18 +68,9 @@ export default function RelationshipManager({
   const fetchRelationships = useCallback(async () => {
     const token = fetchGuard.begin()
     try {
-      const { relationships, stats } = await fetchRelationshipData(
-        supabase,
-        personId,
-        t
-      )
-      // Signed before the list shows, so no photo starts on `/api/avatar`.
-      const signed = inAvatarProvider
-        ? NO_SIGNED_AVATAR_URLS
-        : await signRelationshipAvatars(supabase, relationships)
+      const { relationships, stats } = await fetchRelationshipData(personId, t)
       if (!fetchGuard.isCurrent(token)) return
       setRelationships(relationships)
-      setSignedAvatarUrls(signed)
       setLoadError(null)
       onStatsLoaded?.(stats)
     } catch (err) {
@@ -109,7 +81,7 @@ export default function RelationshipManager({
     } finally {
       if (fetchGuard.isCurrent(token)) setLoading(false)
     }
-  }, [fetchGuard, inAvatarProvider, personId, supabase, onStatsLoaded, t])
+  }, [fetchGuard, personId, onStatsLoaded, t])
 
   useEffect(() => {
     const timeoutId = window.setTimeout(fetchRelationships, 0)
@@ -120,8 +92,7 @@ export default function RelationshipManager({
     }
   }, [fetchGuard, fetchRelationships])
 
-  const handleSaved = (warning?: string) => {
-    setSaveWarning(warning ?? null)
+  const handleSaved = () => {
     fetchRelationships()
     router.refresh()
   }
@@ -129,16 +100,12 @@ export default function RelationshipManager({
   const handleDelete = async (relId: string) => {
     if (!confirm(t('confirmDeleteRelationship'))) return
     try {
-      await deleteRelationship(supabase, relId)
+      await deleteRelationship(relId)
       fetchRelationships()
       router.refresh()
     } catch (err: unknown) {
       const e = err as Error
-      setDeleteError(
-        err instanceof RelationshipNotDeletedError
-          ? t('relationshipNotDeleted')
-          : t('deleteRelationshipError', { error: e.message })
-      )
+      setDeleteError(t('deleteRelationshipError', { error: e.message }))
       setTimeout(() => setDeleteError(null), 5000)
     }
   }
@@ -176,13 +143,7 @@ export default function RelationshipManager({
 
   return (
     <div className='space-y-6'>
-      {inAvatarProvider ? (
-        relationshipList
-      ) : (
-        <AvatarUrlProvider signedUrls={signedAvatarUrls}>
-          {relationshipList}
-        </AvatarUrlProvider>
-      )}
+      {relationshipList}
 
       {/* Add Buttons (Admin) */}
       {canEdit && !isAdding && !isAddingBulk && !isAddingSpouse && (
@@ -192,18 +153,6 @@ export default function RelationshipManager({
           onAddSpouse={() => setIsAddingSpouse(true)}
         />
       )}
-
-      {canEdit &&
-        saveWarning &&
-        !isAdding &&
-        !isAddingBulk &&
-        !isAddingSpouse && (
-          <RelationshipErrorBanner
-            tone='warning'
-            error={saveWarning}
-            onDismiss={() => setSaveWarning(null)}
-          />
-        )}
 
       {canEdit &&
         deleteError &&

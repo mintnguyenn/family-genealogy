@@ -20,25 +20,6 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV BUILD_STANDALONE=1
 
-# Next.js writes NEXT_PUBLIC_* values into the browser JavaScript (and the
-# server bundle) at build time, so they must be passed as build args:
-#   docker build --build-arg NEXT_PUBLIC_SUPABASE_URL=... \
-#     --build-arg NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=... .
-# Setting them only when the container starts has no effect.
-# Server secrets (SUPABASE_SERVICE_ROLE_KEY, SUPABASE_DB_URL, RESEND_API_KEY...)
-# stay out of the image: pass them at runtime (env_file / -e).
-ARG NEXT_PUBLIC_SUPABASE_URL
-ARG NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY
-ARG NEXT_PUBLIC_DISABLE_SSO
-ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
-ENV NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY
-ENV NEXT_PUBLIC_DISABLE_SSO=$NEXT_PUBLIC_DISABLE_SSO
-
-RUN if [ -z "$NEXT_PUBLIC_SUPABASE_URL" ] || [ -z "$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY" ]; then \
-      echo "Missing build args NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY (see README, Docker section)." >&2; \
-      exit 1; \
-    fi
-
 RUN bun run build
 
 # Production image, copy all the files and run next
@@ -60,6 +41,8 @@ RUN mkdir .next && chown nextjs:nodejs .next
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Supply your workbook and uploads through the mounted data volume.
+RUN mkdir -p ./data && chown nextjs:nodejs ./data
 
 USER nextjs
 
@@ -69,10 +52,10 @@ ENV PORT=3000
 # set hostname to localhost
 ENV HOSTNAME="0.0.0.0"
 
-# Reports "healthy" in `docker ps` once the public /login page answers.
+# Reports "healthy" in `docker ps` once the public member list answers.
 # The bun image has no curl, so the check runs through bun itself.
 HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
-  CMD ["bun", "-e", "fetch('http://127.0.0.1:' + (process.env.PORT || 3000) + '/login').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+  CMD ["bun", "-e", "fetch('http://127.0.0.1:' + (process.env.PORT || 3000) + '/dashboard/members').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
 
 # server.js is created by next build from the standalone output
 # https://nextjs.org/docs/pages/api-reference/next-config-js/output

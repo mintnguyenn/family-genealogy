@@ -15,7 +15,6 @@ import { useModalA11y } from '@/hooks/useModalA11y'
 import { useI18n } from '@/lib/i18n/useI18n'
 import { resolveLunarEventDate } from '@/utils/customEventLunar'
 import {
-  CustomEventNotAllowedError,
   deleteCustomEvent,
   saveCustomEvent
 } from '@/utils/customEventMutations'
@@ -27,7 +26,6 @@ import {
 } from '@/utils/eventHelpers'
 import { isCustomEventFormDirty } from '@/utils/formDirty'
 import { TextTooLongError } from '@/utils/limits'
-import { createClient } from '@/utils/supabase/client'
 
 interface CustomEventModalProps {
   isOpen: boolean
@@ -148,34 +146,27 @@ export default function CustomEventModal({
     setError(null)
 
     try {
-      const supabase = createClient()
       const payload = {
         name,
         event_date: date,
         location: location || null,
         content: content || null,
-        // Sent only when needed, so a database without the recurrence
-        // column (migration not run yet) still saves one-off events.
-        ...(recurrence !== 'none' || eventToEdit?.recurrence != null
-          ? { recurrence }
-          : {})
+        recurrence
       }
 
-      await saveCustomEvent(supabase, payload, eventToEdit?.id)
+      await saveCustomEvent(payload, eventToEdit?.id)
 
       onSuccess()
       onClose()
     } catch (err) {
       console.error(err)
-      if (err instanceof CustomEventNotAllowedError) {
-        setError(t('eventNotAllowed'))
-      } else if (err instanceof TextTooLongError) {
-        setError(t('textTooLong', { field: t(err.label), max: err.max }))
-      } else if (err instanceof Error) {
-        setError(err.message || t('saveEventError'))
-      } else {
-        setError(t('saveEventError'))
-      }
+      setError(
+        err instanceof TextTooLongError
+          ? t('textTooLong', { field: t(err.label), max: err.max })
+          : err instanceof Error
+            ? err.message
+            : t('systemError')
+      )
     } finally {
       setLoading(false)
     }
@@ -188,20 +179,19 @@ export default function CustomEventModal({
     setLoading(true)
     setError(null)
     try {
-      const supabase = createClient()
-      await deleteCustomEvent(supabase, eventToEdit.id)
+      await deleteCustomEvent(eventToEdit.id)
 
       onSuccess()
       onClose()
     } catch (err) {
       console.error(err)
-      if (err instanceof CustomEventNotAllowedError) {
-        setError(t('eventNotAllowed'))
-      } else if (err instanceof Error) {
-        setError(err.message || t('deleteEventError'))
-      } else {
-        setError(t('deleteEventError'))
-      }
+      setError(
+        err instanceof TextTooLongError
+          ? t('textTooLong', { field: t(err.label), max: err.max })
+          : err instanceof Error
+            ? err.message
+            : t('systemError')
+      )
     } finally {
       setLoading(false)
     }

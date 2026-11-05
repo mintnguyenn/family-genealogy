@@ -1,6 +1,5 @@
 /**
- * Preview of merging two possibly-duplicate members, mirroring what the
- * `merge_persons` RPC (docs/migrations/…add_merge_persons.sql) does: the kept
+ * Preview of merging two possibly-duplicate members: the kept
  * member wins everywhere, the dropped member's unique data moves over and the
  * dropped member is deleted. Pure: reads nothing, writes nothing.
  */
@@ -73,7 +72,7 @@ export type MergeFillKey =
   | 'burialPlace'
 
 /**
- * Damage the merge would do to the tree, which neither the RPC nor the Data
+ * Damage the merge would do to the tree, which neither the merge operation nor the Data
  * check stops before it happens: more than two birth parents, two birth
  * parents of the same gender, or a member who becomes their own ancestor.
  */
@@ -191,7 +190,7 @@ export function previewMerge(input: {
     personFills.push({ key: 'isInLaw', value: true })
   const empty = (value: string | null | undefined) =>
     (value ?? '').trim() === ''
-  // Text column: an empty string counts as empty, like in the RPC.
+  // Text column: an empty string counts as empty, like in the merge operation.
   if (empty(keep.burial_place) && !empty(drop.burial_place))
     personFills.push({
       key: 'burialPlace',
@@ -215,7 +214,7 @@ export function previewMerge(input: {
         )
 
   const otherNamesAdded = splitOtherNames(drop.other_names)
-  // Plain lowercase like the RPC: 'Nguyen Van An' is kept as an aka of
+  // Plain lowercase like the merge operation: 'Nguyen Van An' is kept as an aka of
   // 'Nguyễn Văn An', only the exact spelling is dropped.
   if (drop.full_name.toLowerCase() !== keep.full_name.toLowerCase())
     otherNamesAdded.unshift(drop.full_name)
@@ -306,15 +305,7 @@ export function canConfirmMerge(input: {
 }
 
 /**
- * Columns the merge preview reads from `persons`: the whole row, because the
- * RPC may change or move almost every column, and '*' still works on a
- * database without the burial_place column yet.
- */
-export const MERGE_PERSON_COLUMNS = '*'
-
-/**
- * Checks the two ids before they go into a PostgREST filter string: both must
- * be UUIDs (anything else could change the filter) and differ.
+ * Checks that a merge targets two distinct, valid member ids.
  */
 export function mergeIdsProblem(
   keepId: string,

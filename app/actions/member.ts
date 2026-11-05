@@ -1,130 +1,24 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
+import { performExcelWrite } from '@/lib/excelAction'
+import { removePerson } from '@/lib/familyMutations'
 import { getServerTranslations } from '@/lib/i18n/server'
-import { deleteMember } from '@/utils/deleteMember'
-import {
-  applyGenerationUpdates,
-  buildDescendantGenerationUpdates,
-  collectDescendants
-} from '@/utils/generationUpdates'
-import { fetchAllRows, fetchInChunks } from '@/utils/supabase/fetchAll'
-import { getIsAdmin, getSupabase } from '@/utils/supabase/queries'
+import { removeUnusedImage } from '@/lib/localImages'
 import { isUuid } from '@/utils/uuid'
-import { PersonNotDeletedError } from '@/utils/writeErrors'
 
 export async function deleteMemberProfile(memberId: string) {
   const { t } = await getServerTranslations()
-
-  if (!isUuid(memberId)) {
-    return { error: t('invalidProfile') }
-  }
-
-  if (!(await getIsAdmin())) {
-    return {
-      error: t('memberDeleteAccessDenied')
-    }
-  }
-
-  const supabase = await getSupabase()
-  // ON DELETE CASCADE removes relationships atomically with the person.
-  try {
-    await deleteMember(supabase, memberId)
-  } catch (err) {
-    if (err instanceof PersonNotDeletedError) {
-      return { error: t('memberDeleteAccessDenied') }
-    }
-    console.error('Error deleting person:', err)
-    return { error: t('memberDeleteError') }
-  }
-
-  revalidatePath('/dashboard/members')
+  if (!isUuid(memberId)) return { error: t('invalidProfile') }
+  let avatar: string | null | undefined
+  const result = await performExcelWrite((data) => {
+    avatar = data.persons.find((person) => person.id === memberId)?.avatar_url
+    removePerson(data, memberId)
+  }, t('memberDeleteAccessDenied'))
+  if (!result.ok) return { error: result.error }
+  await removeUnusedImage(avatar).catch((error) =>
+    console.error('Could not clean up deleted avatar:', error)
+  )
   redirect('/dashboard/members')
-}
-
-export async function updateDescendantGenerationsAction(
-  personId: string,
-  generationDelta: number
-) {
-  const { t } = await getServerTranslations()
-
-  if (!isUuid(personId)) {
-    return { error: t('invalidProfile') }
-  }
-
-  if (
-    generationDelta === 0 ||
-    !Number.isInteger(generationDelta) ||
-    Math.abs(generationDelta) > 100
-  ) {
-    return generationDelta === 0
-      ? { success: true }
-      : { error: t('invalidGenerationDelta') }
-  }
-
-  if (!(await getIsAdmin())) {
-    return {
-      error: t('memberEditAccessDenied')
-    }
-  }
-
-  const supabase = await getSupabase()
-  // 1. Fetch all parent-child relationships
-  const { data: relationships, error: relError } = await fetchAllRows<{
-    person_a: string
-    person_b: string
-    type: string
-  }>((from, to) =>
-    supabase
-      .from('relationships')
-      .select('person_a, person_b, type')
-      .in('type', ['biological_child', 'adopted_child'])
-      .order('id')
-      .range(from, to)
-  )
-
-  if (relError) {
-    console.error('Error fetching relationships:', relError)
-    return { error: t('relationshipsFetchError') }
-  }
-
-  // 2. Find all descendants
-  const descendantIds = collectDescendants(relationships, personId)
-  if (descendantIds.length === 0) return { success: true }
-
-  // 3. Fetch current generations of descendants
-  const { data: persons, error: personsError } = await fetchInChunks<
-    string,
-    { id: string; generation: number | null }
-  >(descendantIds, (ids) =>
-    supabase.from('persons').select('id, generation').in('id', ids)
-  )
-
-  if (personsError) {
-    console.error('Error fetching persons:', personsError)
-    return { error: t('generationsFetchError') }
-  }
-
-  // 4. Save all new generations at once, in one transaction.
-  const result = await applyGenerationUpdates(
-    supabase,
-    buildDescendantGenerationUpdates(persons, generationDelta)
-  )
-
-  if (!result.ok) {
-    console.error('Error updating descendant generations:', result.error)
-    return {
-      error: result.legacy
-        ? `${t('descendantGenerationUpdateError')} ${t('generationUpgradeDatabase')}`
-        : t('generationTransactionError', { error: result.error })
-    }
-  }
-
-  if (result.legacy) {
-    return { success: true, warning: t('generationUpgradeDatabase') }
-  }
-
-  return { success: true }
 }

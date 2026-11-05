@@ -1,11 +1,8 @@
 import { Suspense } from 'react'
 
 import KinshipFinder from '@/components/KinshipFinder'
-import { AvatarUrlProvider } from '@/context/AvatarUrlContext'
+import { getPersons, getRelationships } from '@/lib/data'
 import { getServerTranslations } from '@/lib/i18n/server'
-import { signAvatarUrls } from '@/utils/avatarSigning'
-import { fetchAllRowsOrThrow } from '@/utils/supabase/fetchAll'
-import { getSupabase } from '@/utils/supabase/queries'
 
 export async function generateMetadata() {
   const { t } = await getServerTranslations()
@@ -13,32 +10,12 @@ export async function generateMetadata() {
 }
 
 export default async function KinshipPage() {
-  const [{ t }, supabase] = await Promise.all([
-    getServerTranslations(),
-    getSupabase()
-  ])
+  const { t } = await getServerTranslations()
 
-  const [{ data: persons }, { data: relationships }] = await Promise.all([
-    fetchAllRowsOrThrow((from, to) =>
-      supabase
-        .from('persons')
-        .select(
-          'id, full_name, gender, birth_year, birth_month, birth_day, birth_order, generation, is_in_law, avatar_url, updated_at'
-        )
-        .order('birth_year', { ascending: true, nullsFirst: false })
-        .order('id')
-        .range(from, to)
-    ),
-    fetchAllRowsOrThrow((from, to) =>
-      supabase
-        .from('relationships')
-        .select('type, person_a, person_b')
-        .order('id')
-        .range(from, to)
-    )
+  const [persons, relationships] = await Promise.all([
+    getPersons(),
+    getRelationships()
   ])
-
-  const signedAvatarUrls = await signAvatarUrls(supabase, persons ?? [])
 
   return (
     <div className='relative flex w-full flex-1 flex-col pb-12'>
@@ -51,12 +28,10 @@ export default async function KinshipPage() {
 
       <main className='mx-auto w-full max-w-3xl flex-1 px-4 sm:px-6 lg:px-8'>
         <Suspense fallback={null}>
-          <AvatarUrlProvider signedUrls={signedAvatarUrls}>
-            <KinshipFinder
-              persons={persons ?? []}
-              relationships={relationships ?? []}
-            />
-          </AvatarUrlProvider>
+          <KinshipFinder
+            persons={persons ?? []}
+            relationships={relationships ?? []}
+          />
         </Suspense>
       </main>
     </div>

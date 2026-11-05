@@ -1,6 +1,5 @@
 import { Person } from '@/types'
 import { findPossibleDuplicates } from '@/utils/duplicatePeople'
-import { InvalidAvatarError, LaterStepError } from '@/utils/memberForm/errors'
 import { finishMemberSave } from '@/utils/memberForm/finish'
 import { loadSavedRelatives } from '@/utils/memberForm/relatives'
 import { saveMember } from '@/utils/memberForm/save'
@@ -57,10 +56,9 @@ function deathOrGenderChanged(
 // The component only wires state; every branch lives here so the React
 // function stays simple.
 export async function submitMemberForm(ctx: MemberFormSubmitContext) {
-  const { t, setLoading, setError, setWarning, setConfirmation } = ctx
+  const { t, setLoading, setError, setConfirmation } = ctx
   setLoading(true)
   setError(null)
-  setWarning(null)
   setConfirmation(null)
   ctx.setChanged?.(false)
 
@@ -127,10 +125,7 @@ export async function submitMemberForm(ctx: MemberFormSubmitContext) {
         (birthChanged && person.birth_year != null) ||
         deathOrGenderChanged(ctx.initialData, person)
       ) {
-        const { parents, children } = await loadSavedRelatives(
-          ctx.supabase,
-          personId
-        )
+        const { parents, children } = await loadSavedRelatives(personId)
         const conflict = birthChanged
           ? findBirthDateConflict(person, parents, children)
           : null
@@ -159,7 +154,6 @@ export async function submitMemberForm(ctx: MemberFormSubmitContext) {
       }
     } else {
       const duplicates = await findPossibleDuplicates(
-        ctx.supabase,
         fullName,
         toNullable(ctx.birthYear)
       )
@@ -185,14 +179,7 @@ export async function submitMemberForm(ctx: MemberFormSubmitContext) {
       return
     }
 
-    const {
-      personId: currentPersonId,
-      generationUpdateError,
-      warnings: savedWarnings,
-      createdPerson,
-      savedUpdatedAt
-    } = await saveMember({
-      supabase: ctx.supabase,
+    const { personId: currentPersonId } = await saveMember({
       isEditing: ctx.isEditing,
       initialData: ctx.initialData,
       fields: ctx.fields,
@@ -200,53 +187,22 @@ export async function submitMemberForm(ctx: MemberFormSubmitContext) {
       avatarUrl: ctx.avatarUrl,
       avatarFile: ctx.avatarFile,
       removeExistingAvatar: ctx.removeExistingAvatar,
-      isAdmin: ctx.isAdmin,
       privateLoaded: ctx.privateLoaded,
       privateFields: ctx.privateFields,
-      hasGenerationChanged: ctx.hasGenerationChanged,
       updateDescendantGenerations: ctx.updateDescendantGenerations
     })
 
     memberSearchCache.clear()
-    if (!currentPersonId) throw new Error(t('saveIdError'))
-    // The member exists now: edit it from here on, never insert it again.
-    if (createdPerson && (savedWarnings.length > 0 || generationUpdateError))
-      ctx.onCreated?.(createdPerson)
-    else if (generationUpdateError && savedUpdatedAt)
-      ctx.onUpdated?.(savedUpdatedAt)
-    if (savedWarnings.length > 0) {
-      setWarning({
-        message: t('memberSavedPartially', {
-          error: savedWarnings.join('; ')
-        }),
-        personId: currentPersonId
-      })
-      return
-    }
-    if (generationUpdateError) {
-      setWarning({
-        message: t('memberSavedGenerationNotUpdated', {
-          error: generationUpdateError
-        }),
-        personId: currentPersonId
-      })
-      return
-    }
     finishMemberSave(ctx, currentPersonId)
-  } catch (caught) {
-    console.error('Error saving member:', caught)
-    if (caught instanceof LaterStepError && caught.savedUpdatedAt)
-      ctx.onUpdated?.(caught.savedUpdatedAt)
-    const err = caught instanceof LaterStepError ? caught.original : caught
+  } catch (err) {
+    console.error('Error saving member:', err)
     if (err instanceof PersonChangedError) ctx.setChanged?.(true)
     setError(
-      err instanceof InvalidAvatarError
-        ? t('invalidImageType')
-        : err instanceof PersonChangedError
-          ? t('personChanged')
-          : err instanceof PersonNotUpdatedError
-            ? t('personNotUpdated')
-            : (err as Error).message || t('saveMemberError')
+      err instanceof PersonChangedError
+        ? t('personChanged')
+        : err instanceof PersonNotUpdatedError
+          ? t('personNotUpdated')
+          : (err as Error).message || t('saveMemberError')
     )
   } finally {
     setLoading(false)

@@ -4,8 +4,8 @@ import Image from 'next/image'
 
 import DefaultAvatar from '@/components/DefaultAvatar'
 import { EnrichedRelationship } from '@/components/relationship/relationshipTypes'
-import { useAvatarUrl } from '@/context/AvatarUrlContext'
 import { useI18n } from '@/lib/i18n/useI18n'
+import { getAvatarUrl } from '@/utils/avatar'
 import { sortRelationshipGroup } from '@/utils/relationshipOrder'
 import { getAvatarBg } from '@/utils/styleHelpers'
 
@@ -24,7 +24,7 @@ export default function RelationshipList({
   onPersonClick,
   onDelete
 }: RelationshipListProps) {
-  const avatarUrl = useAvatarUrl()
+  const avatarUrl = getAvatarUrl
   const { t } = useI18n()
 
   const groupByType = (type: (typeof GROUP_ORDER)[number]) =>

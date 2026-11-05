@@ -2,14 +2,12 @@ import { describe, expect, test } from 'bun:test'
 
 import {
   BACKUP_VERSION,
-  buildRestorePayload,
-  isMissingRestoreFunction,
-  legacyCustomEventRows,
-  legacyPersonRows,
   MAX_PERSONS,
   MAX_RELATIONSHIPS,
   MAX_REPORTED_ISSUES,
-  RESTORE_PAYLOAD_VERSION,
+  sanitizeCustomEvent,
+  sanitizePerson,
+  sanitizeRelationship,
   toCustomEventExport,
   toPersonExport,
   validateImportPayload,
@@ -22,7 +20,9 @@ const t: Translator = (key, values) =>
   values ? `${key}:${JSON.stringify(values)}` : key
 
 const A = '11111111-1111-4111-8111-111111111111'
+
 const B = '22222222-2222-4222-8222-222222222222'
+
 const E = '33333333-3333-4333-8333-333333333333'
 
 function person(id: string, overrides: Record<string, unknown> = {}) {
@@ -267,81 +267,52 @@ describe('validateImportPayload', () => {
   })
 })
 
-describe('buildRestorePayload', () => {
-  test('versions the payload and counts each section', () => {
-    const payload = buildRestorePayload(validPayload())
-    expect(payload.version).toBe(RESTORE_PAYLOAD_VERSION)
-    expect(payload.counts).toEqual({
-      persons: 2,
-      relationships: 1,
-      person_details_private: 1,
-      custom_events: 1
-    })
-  })
-
+describe('import sanitizers', () => {
   test('strips database-managed fields', () => {
-    const payload = buildRestorePayload(validPayload())
-    expect(payload.persons[0]).not.toHaveProperty('created_at')
-    expect(payload.persons[0]).not.toHaveProperty('updated_at')
-    expect(payload.relationships[0]).toEqual({
+    const payload = validPayload()
+    expect(sanitizePerson(payload.persons[0])).not.toHaveProperty('created_at')
+    expect(sanitizePerson(payload.persons[0])).not.toHaveProperty('updated_at')
+    expect(sanitizeRelationship(payload.relationships[0])).toEqual({
       type: 'marriage',
       person_a: A,
       person_b: B,
       note: null,
       created_at: '2024-01-02T03:04:05.000Z'
     })
-    expect(payload.custom_events[0]).not.toHaveProperty('created_by')
+    expect(sanitizeCustomEvent(payload.custom_events![0])).not.toHaveProperty(
+      'created_by'
+    )
   })
 
   test('keeps a valid relationship created_at (spouse order), drops a bad one', () => {
     const base = validPayload()
     const rel0 = base.relationships[0]
-    const payload = buildRestorePayload({
-      ...base,
-      relationships: [
-        { ...rel0, id: 'x', created_at: '2020-01-02T03:04:05+00:00' },
-        { ...rel0, created_at: 'not a date' }
-      ]
-    })
-    expect(payload.relationships[0]).toEqual({
+    const relationships = [
+      { ...rel0, id: 'x', created_at: '2020-01-02T03:04:05+00:00' },
+      { ...rel0, created_at: 'not a date' }
+    ].map(sanitizeRelationship)
+    expect(relationships[0]).toEqual({
       type: 'marriage',
       person_a: A,
       person_b: B,
       note: null,
       created_at: '2020-01-02T03:04:05+00:00'
     })
-    expect(payload.relationships[1]).not.toHaveProperty('created_at')
+    expect(relationships[1]).not.toHaveProperty('created_at')
   })
 
   test('fills missing optional fields with null and defaults', () => {
-    const payload = buildRestorePayload({
-      persons: [
-        { id: A, full_name: 'An', gender: 'male' }
-      ] as ImportPayload['persons'],
-      relationships: []
-    })
-    expect(payload.persons[0]).toMatchObject({
+    const row = sanitizePerson({
+      id: A,
+      full_name: 'An',
+      gender: 'male'
+    } as ImportPayload['persons'][number])
+    expect(row).toMatchObject({
       birth_year: null,
       is_deceased: false,
       is_in_law: false,
       note: null
     })
-    expect(payload.person_details_private).toEqual([])
-    expect(payload.custom_events).toEqual([])
-    expect(payload.counts.custom_events).toBe(0)
-  })
-})
-
-describe('isMissingRestoreFunction', () => {
-  test('detects a database without the restore function', () => {
-    expect(isMissingRestoreFunction({ code: 'PGRST202' })).toBe(true)
-    expect(isMissingRestoreFunction({ code: '42883' })).toBe(true)
-  })
-
-  test('does not treat other errors as a missing function', () => {
-    expect(isMissingRestoreFunction(null)).toBe(false)
-    expect(isMissingRestoreFunction({ code: '23505' })).toBe(false)
-    expect(isMissingRestoreFunction({ code: '42501' })).toBe(false)
   })
 })
 
@@ -551,7 +522,7 @@ describe('custom event recurrence in backups', () => {
       })
     ) as ImportPayload
     expect(validateImportPayload(exported, t)).toBeNull()
-    expect(buildRestorePayload(exported).custom_events).toEqual([
+    expect(exported.custom_events!.map(sanitizeCustomEvent)).toEqual([
       {
         id: E,
         name: 'Tảo mộ',
@@ -576,10 +547,11 @@ describe('custom event recurrence in backups', () => {
   })
 
   test('older backups without recurrence restore as none', () => {
-    const payload = buildRestorePayload(validPayload())
-    expect(payload.custom_events[0].recurrence).toBe('none')
     expect(
-      buildRestorePayload(withRecurrence('')).custom_events[0].recurrence
+      sanitizeCustomEvent(validPayload().custom_events![0]).recurrence
+    ).toBe('none')
+    expect(
+      sanitizeCustomEvent(withRecurrence('').custom_events![0]).recurrence
     ).toBe('none')
   })
 
@@ -595,18 +567,6 @@ describe('custom event recurrence in backups', () => {
         'invalidEventRecurrence'
       )
     }
-  })
-
-  test('the old chunked restore leaves the column out while nothing repeats', () => {
-    const once = buildRestorePayload(validPayload()).custom_events
-    expect(legacyCustomEventRows(once)[0]).not.toHaveProperty('recurrence')
-    const yearly = buildRestorePayload(
-      withRecurrence('yearly_solar')
-    ).custom_events
-    expect(legacyCustomEventRows(yearly)[0]).toHaveProperty(
-      'recurrence',
-      'yearly_solar'
-    )
   })
 })
 
@@ -625,7 +585,7 @@ describe('burial place in backups', () => {
     ) as ImportPayload
     expect(exported.persons[0]).toHaveProperty('created_at')
     expect(validateImportPayload(exported, t)).toBeNull()
-    const persons = buildRestorePayload(exported).persons
+    const persons = exported.persons.map(sanitizePerson)
     expect(persons[0].burial_place).toBe('Nghĩa trang làng Đông Ngạc')
     expect(persons[1].burial_place).toBeNull()
   })
@@ -638,20 +598,19 @@ describe('burial place in backups', () => {
   })
 
   test('older backups without the field restore it as null', () => {
-    const payload = buildRestorePayload(validPayload())
-    expect(payload.persons[0]).toHaveProperty('burial_place', null)
+    expect(sanitizePerson(validPayload().persons[0])).toHaveProperty(
+      'burial_place',
+      null
+    )
   })
 
   test('blank values become null', () => {
-    const payload = buildRestorePayload({
-      ...validPayload(),
-      persons: [
-        person(A, { burial_place: '   ' }),
-        person(B, { burial_place: '  Đồi thông  ' })
-      ] as ImportPayload['persons']
-    })
-    expect(payload.persons[0].burial_place).toBeNull()
-    expect(payload.persons[1].burial_place).toBe('Đồi thông')
+    const persons = [
+      person(A, { burial_place: '   ' }),
+      person(B, { burial_place: '  Đồi thông  ' })
+    ] as ImportPayload['persons']
+    expect(sanitizePerson(persons[0]).burial_place).toBeNull()
+    expect(sanitizePerson(persons[1]).burial_place).toBe('Đồi thông')
   })
 
   test('rejects a burial place that is not text or too long', () => {
@@ -664,19 +623,6 @@ describe('burial place in backups', () => {
         `fieldTooLong:${JSON.stringify({ field: 'burial_place' })}`
       )
     }
-  })
-
-  test('the old chunked restore leaves the column out while no member has one', () => {
-    const none = buildRestorePayload(validPayload()).persons
-    expect(legacyPersonRows(none)[0]).not.toHaveProperty('burial_place')
-    const some = buildRestorePayload({
-      ...validPayload(),
-      persons: [
-        person(A, { burial_place: 'Quê nội' }),
-        person(B)
-      ] as ImportPayload['persons']
-    }).persons
-    expect(legacyPersonRows(some)[0]).toHaveProperty('burial_place', 'Quê nội')
   })
 })
 

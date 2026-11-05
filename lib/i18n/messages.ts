@@ -24,7 +24,6 @@ export const messages = {
     moreEvents_one: '+ {count} sự kiện khác đang chờ...',
     noUpcomingEvents: 'Không có sự kiện nào trong 30 ngày tới.',
     viewYearEvents: 'Xem sự kiện trong năm',
-    commonFeatures: 'Chức năng chung',
     accessDenied: 'Truy cập bị từ chối',
     noAddMemberPermission: 'Bạn không có quyền thêm thành viên.',
     noEditMemberPermission: 'Bạn không có quyền chỉnh sửa thành viên.',
@@ -33,59 +32,6 @@ export const messages = {
     viewOnTree: 'Xem trên cây',
     memberDetails: 'Chi tiết thành viên',
     adminSection: 'Quản trị viên',
-    adminAddUser: 'Thêm người dùng',
-    adminEmail: 'Email',
-    adminRole: 'Vai trò',
-    adminStatus: 'Trạng thái',
-    adminCreatedAt: 'Ngày tạo',
-    adminActions: 'Thao tác',
-    adminDemoNotice:
-      'Đây là tài khoản demo cho mọi người sử dụng, vui lòng không thay đổi thông tin này.',
-    adminRoleUpdated: 'Đã cập nhật vai trò người dùng thành công.',
-    adminStatusUpdated: 'Đã cập nhật trạng thái người dùng thành công.',
-    adminStatusLocked: 'Đã khoá người dùng thành công.',
-    adminUnknownRoleError: 'Lỗi không xác định khi đổi quyền',
-    adminUnknownStatusError: 'Lỗi không xác định khi đổi trạng thái',
-    adminConfirmDelete:
-      'Bạn có chắc chắn muốn xóa user này khỏi hệ thống vĩnh viễn không?',
-    adminDeleted: 'Đã xóa người dùng thành công.',
-    adminUnknownDeleteError: 'Lỗi không xác định khi xoá user',
-    adminDemoCreateNotice:
-      'Đây là trang demo, chức năng tạo người dùng bị hạn chế.',
-    adminCreated:
-      'Tạo người dùng thành công! Họ có thể đăng nhập ngay bây giờ.',
-    adminUnknownCreateError: 'Lỗi không xác định khi tạo user',
-    userAdminAccessDenied:
-      'Từ chối truy cập. Chỉ admin đang hoạt động mới quản lý được người dùng.',
-    userAdminOwnRole: 'Bạn không thể tự đổi vai trò của chính mình.',
-    userAdminLastAdminRole:
-      'Không thể bỏ quyền admin của admin cuối cùng đang hoạt động.',
-    userAdminDeleteSelf: 'Bạn không thể tự xoá tài khoản của chính mình.',
-    userAdminLastAdminDelete: 'Không thể xoá admin cuối cùng đang hoạt động.',
-    userAdminInvalidEmail: 'Email không hợp lệ.',
-    userAdminPasswordTooShort: 'Mật khẩu phải có ít nhất 8 ký tự.',
-    userAdminEmailTaken: 'Email này đã có tài khoản.',
-    userAdminOwnStatus: 'Bạn không thể tự khoá hoặc mở khoá chính mình.',
-    userAdminLastAdminDeactivate:
-      'Không thể khoá admin cuối cùng đang hoạt động.',
-    adminNoUsers: 'Không tìm thấy người dùng nào.',
-    adminCreateTitle: 'Tạo người dùng mới',
-    adminPasswordMinLength: 'Ít nhất 8 ký tự',
-    adminMemberRole: 'Thành viên (Member)',
-    adminEditorRole: 'Biên tập (Editor)',
-    adminAdminRole: 'Quản trị viên (Admin)',
-    adminApproved: 'Đã duyệt',
-    adminPending: 'Chờ duyệt',
-    adminClickToLock: 'Nhấn để khoá',
-    adminClickToApprove: 'Nhấn để duyệt',
-    adminSelfStatusDisabled: 'Không thể thay đổi trạng thái của chính bạn',
-    adminDeleteUser: 'Xoá người dùng',
-    adminYou: 'Bạn',
-    adminCancel: 'Hủy',
-    adminCreating: 'Đang tạo...',
-    adminCreateUser: 'Tạo người dùng',
-    invalidUserRole: 'Vai trò không hợp lệ.',
-    emailPasswordRequired: 'Email và mật khẩu là bắt buộc.',
     dataAccessDenied: 'Từ chối truy cập. Chỉ admin mới có quyền này.',
     invalidData: 'Dữ liệu không hợp lệ.',
     invalidDataStructure:
@@ -128,59 +74,9 @@ export const messages = {
       'Sự kiện "{name}" ({id}) có ngày không hợp lệ (cần YYYY-MM-DD).',
     invalidEventRecurrence:
       'Kiểu lặp của sự kiện không hợp lệ (none, yearly_solar hoặc yearly_lunar).',
-    loadDataError: 'Lỗi tải dữ liệu: {error}',
-    deleteEventsError: 'Lỗi khi xoá custom_events cũ: {error}',
-    deleteRelationshipsError: 'Lỗi khi xoá relationships cũ: {error}',
-    deletePrivateDetailsError: 'Lỗi khi xoá person_details_private cũ: {error}',
-    deletePersonsError: 'Lỗi khi xoá persons cũ: {error}',
-    importPersonsError: 'Lỗi khi import persons (chunk {chunk}): {error}',
-    importRelationshipsError:
-      'Lỗi khi import relationships (chunk {chunk}): {error}',
-    importPrivateDetailsError:
-      'Lỗi khi import person_details_private (chunk {chunk}): {error}',
-    importEventsError: 'Lỗi khi import custom_events (chunk {chunk}): {error}',
-    restoreTransactionError:
-      'Phục hồi thất bại, dữ liệu hiện tại vẫn được giữ nguyên: {error}',
-    restoreUpgradeDatabase:
-      'Database chưa được nâng cấp nên phục hồi chưa chạy trong một giao dịch (lỗi giữa chừng có thể làm mất dữ liệu). Hãy chạy migration ở trang Nâng cấp hệ thống (/dashboard/upgrade).',
+
     familyTreeDescription: 'Xem và tương tác với sơ đồ dòng họ',
-    approvalEmailSubject: 'Có tài khoản mới đang chờ duyệt: {email}',
-    approvalEmailTitle: 'Tài khoản mới chờ duyệt',
-    approvalEmailIntro:
-      'Có người dùng vừa xác nhận email và đang chờ được duyệt để truy cập dữ liệu gia phả:',
-    approvalEmailButton: 'Xem và duyệt tài khoản',
-    approvalEmailExpiry:
-      'Liên kết có hiệu lực trong {days} ngày. Bạn cũng có thể đăng nhập ứng dụng và duyệt trong mục Quản lý người dùng.',
-    approvalEmailText:
-      'Tài khoản {email} đang chờ duyệt. Duyệt tại: {url}\n\nBạn cũng có thể đăng nhập ứng dụng và duyệt trong mục Quản lý người dùng.',
-    approvalTitle: 'Duyệt tài khoản',
-    approvalInvalidTitle: 'Liên kết không hợp lệ',
-    approvalInvalidText:
-      'Liên kết duyệt tài khoản không tồn tại hoặc đã hết hạn.',
-    approvalProcessedTitle: 'Đã xử lý',
-    approvalProcessedText: 'Yêu cầu duyệt tài khoản này đã được sử dụng.',
-    approvalRevokedTitle: 'Yêu cầu đã bị thu hồi',
-    approvalRevokedText:
-      'Tài khoản này đã bị khoá trong mục Quản lý người dùng nên liên kết duyệt không còn dùng được. Muốn mở lại, hãy đăng nhập ứng dụng và mở khoá tài khoản ở đó.',
-    approvalPendingText:
-      'Tài khoản sau đang chờ được cấp quyền truy cập dữ liệu gia phả:',
-    approvalConfirm: 'Xác nhận duyệt',
-    approvalIgnore: 'Nếu không nhận ra tài khoản này, bạn có thể đóng trang.',
-    approvalConfigErrorTitle: 'Không thể xử lý',
-    approvalConfigErrorText:
-      'Hệ thống chưa được cấu hình để duyệt tài khoản qua email. Vui lòng đăng nhập ứng dụng để duyệt.',
-    approvalInvalidRequestTitle: 'Yêu cầu không hợp lệ',
-    approvalNotFoundTitle: 'Không tìm thấy tài khoản',
-    approvalNotFoundText: 'Tài khoản có thể đã bị xóa.',
-    approvalSuccessTitle: 'Duyệt thành công',
-    approvalSuccessText:
-      'Tài khoản {email} đã được cấp quyền truy cập. Người dùng có thể đăng nhập ứng dụng ngay bây giờ.',
-    approvalFailureTitle: 'Duyệt thất bại',
-    approvalFailureText:
-      'Đã xảy ra lỗi khi cập nhật trạng thái. Vui lòng thử lại hoặc duyệt trong ứng dụng.',
-    approvalUpgradeTitle: 'Cần nâng cấp database',
-    approvalUpgradeText:
-      'Database chưa có hàm duyệt mới nên liên kết này chưa duyệt được tài khoản. Hãy chạy migration ở trang Nâng cấp hệ thống (/dashboard/upgrade) rồi bấm lại liên kết, hoặc đăng nhập ứng dụng và duyệt ở Quản lý người dùng.',
+
     kinshipDescription: 'Hệ thống gọi tên họ hàng chuẩn xác',
     kinshipPageTitle: 'Tra cứu danh xưng',
     kinshipPageDescription:
@@ -291,8 +187,6 @@ export const messages = {
     kinshipPathSpouseOf: '{name} là vợ/chồng của {spouse}.',
     kinshipPathChildOf: '{name} là con của {parent}.',
     kinshipUnknownTerm: 'Chưa xác định',
-    personNotUpdatedShort:
-      'người này không còn tồn tại hoặc bạn không còn quyền sửa',
     csvZipInvalid:
       'File ZIP không hợp lệ: thiếu persons.csv hoặc relationships.csv.',
     csvParseError:
@@ -381,13 +275,9 @@ export const messages = {
     regionalTerm13Other: 'sui gia',
     statisticsDescription: 'Tổng quan dữ liệu và biểu đồ phân tích',
     galleryDescriptionShort: 'Lưu giữ và chia sẻ hình ảnh, kỷ niệm dòng họ',
-    aboutDescriptionShort: 'Thông tin về ứng dụng và đội ngũ phát triển',
-    manageUsersDescription: 'Phê duyệt tài khoản và phân quyền',
-    manageUsersLoadError:
-      'Không tải được danh sách người dùng. Nếu vừa cập nhật mã nguồn, hãy chạy migration ở trang Nâng cấp hệ thống (/dashboard/upgrade) rồi thử lại.',
+
     lineageDescription: 'Sắp xếp và xem cấu trúc hệ thống',
     backupDescriptionShort: 'Xuất/Nhập dữ liệu toàn hệ thống',
-    upgradeDescriptionShort: 'Kiểm tra và đồng bộ source code, database',
     statsPageTitle: 'Thống kê gia phả',
     statsPageDescription: 'Tổng quan số liệu về các thành viên trong dòng họ',
     totalMembers: 'Tổng thành viên',
@@ -418,23 +308,8 @@ export const messages = {
     invalidProfile: 'Hồ sơ không hợp lệ.',
     memberDeleteAccessDenied:
       'Từ chối truy cập. Chỉ quản trị viên mới có quyền xoá hồ sơ.',
-    relationshipCheckError: 'Lỗi kiểm tra mối quan hệ gia đình.',
-    memberHasRelationships:
-      'Không thể xoá. Vui lòng xoá hết các mối quan hệ gia đình của người này trước.',
-    memberDeleteError: 'Đã xảy ra lỗi khi xoá hồ sơ.',
-    invalidGenerationDelta: 'Giá trị thay đổi thế hệ không hợp lệ.',
-    memberEditAccessDenied:
-      'Từ chối truy cập. Chỉ quản trị viên mới có quyền chỉnh sửa.',
-    relationshipsFetchError: 'Lỗi lấy danh sách quan hệ',
-    generationsFetchError: 'Lỗi lấy thông tin thế hệ',
-    descendantGenerationUpdateError:
-      'Có lỗi xảy ra khi cập nhật một số thế hệ sau.',
-    generationTransactionError: 'không có thay đổi nào được lưu ({error})',
-    generationUpgradeDatabase:
-      'Database chưa được nâng cấp nên thế hệ được cập nhật từng người một, không trong một giao dịch (lỗi giữa chừng có thể để lại thế hệ cập nhật dở). Hãy chạy migration ở trang Nâng cấp hệ thống (/dashboard/upgrade).',
+
     lineageTransactionError: 'Chưa áp dụng thay đổi nào: {error}',
-    lineagePartialUpdateError:
-      'Không cập nhật được {failed}/{total} thành viên ({error}); các thành viên còn lại đã được lưu.',
     calculating: 'Đang tính...',
     calculate: 'Tính toán',
     updating: 'Đang cập nhật...',
@@ -468,92 +343,22 @@ export const messages = {
     resetZoomLevel: 'Đặt lại mức zoom',
     fullscreen: 'Toàn màn hình',
     exitFullscreen: 'Thoát toàn màn hình',
-    clickButton: 'Bấm nút',
-    open: 'Mở',
     loadingFamilyTree: 'Đang tải dữ liệu gia phả...',
     familyTree: 'Cây gia phả',
     kinship: 'Tra cứu danh xưng',
     statistics: 'Thống kê',
     admin: 'Quản trị viên',
-    manageUsers: 'Quản lý người dùng',
     lineageOrder: 'Thứ tự gia phả',
     backupRestore: 'Sao lưu & Phục hồi',
-    upgrade: 'Nâng cấp hệ thống',
-    about: 'Giới thiệu',
     logout: 'Đăng xuất',
     processing: 'Đang xử lý...',
-    back: 'Quay lại',
-    footerBy: 'bởi',
-    footerDisclaimer:
-      'Nội dung có thể thiếu sót. Vui lòng đóng góp để gia phả chính xác hơn.',
-    pendingTitle: 'Tài khoản chờ duyệt',
-    pendingDescription:
-      'Tài khoản của bạn đã được đăng ký thành công. Tuy nhiên, hệ thống yêu cầu Quản trị viên kích hoạt tài khoản của bạn trước khi bạn có thể xem các thông tin gia đình.',
-    pendingNote:
-      'Vui lòng liên hệ lại với người quản trị dòng họ để được cấp quyền sớm nhất.',
     landingDescription:
       'Gìn giữ và lưu truyền những giá trị, cội nguồn và truyền thống tốt đẹp của dòng họ cho các thế hệ mai sau.',
     landingCta: 'Xem thông tin gia phả',
     login: 'Đăng nhập',
-    signUp: 'Đăng ký',
     loginDescription: 'Đăng nhập để thêm và chỉnh sửa thông tin gia đình.',
-    signUpDescription: 'Tạo tài khoản thành viên mới.',
-    demoNotice: 'Website Demo. Dữ liệu đều không có thật.',
     password: 'Mật khẩu',
-    passwordPlaceholder: 'Nhập mật khẩu',
-    confirmPassword: 'Xác nhận mật khẩu',
-    confirmPasswordPlaceholder: 'Nhập lại mật khẩu',
     loading: 'Đang xử lý...',
-    createAccount: 'Tạo tài khoản',
-    or: 'Hoặc',
-    ssoDisabled: 'Đăng nhập bằng Google/Facebook hiện chưa được bật.',
-    ssoError:
-      'SSO chưa được cấu hình đầy đủ. Vui lòng liên hệ quản trị viên hoặc xem hướng dẫn.',
-    ssoGuide: 'Xem hướng dẫn cấu hình SSO',
-    ssoGuideUrl:
-      'https://github.com/homielab/giapha-os#đăng-nhập-bằng-google-và-facebook',
-    sourceCodeLabel: 'Mã nguồn',
-    noAccount: 'Chưa có tài khoản? Đăng ký ngay',
-    hasAccount: 'Đã có tài khoản? Đăng nhập',
-    demoLoginNotice:
-      'Đây là trang demo, bạn không cần phải tạo tài khoản. Hãy sử dụng tài khoản demo để truy cập với toàn bộ quyền.',
-    demoOAuthNotice:
-      'Đây là trang demo, vui lòng sử dụng tài khoản demo để truy cập.',
-    signupSuccess:
-      'Đăng ký thành công! Vui lòng chờ admin kích hoạt tài khoản để xem nội dung.',
-    passwordMismatch: 'Mật khẩu xác nhận không khớp.',
-    authInvalidCredentials: 'Email hoặc mật khẩu không đúng.',
-    authEmailNotConfirmed:
-      'Email chưa được xác nhận. Vui lòng mở thư xác nhận trong hộp thư của bạn.',
-    authUserExists: 'Email này đã được đăng ký. Vui lòng đăng nhập.',
-    authWeakPassword:
-      'Mật khẩu quá yếu. Vui lòng chọn mật khẩu dài và khó đoán hơn.',
-    authRateLimited: 'Bạn thử quá nhiều lần. Vui lòng đợi một lát rồi thử lại.',
-    authEmailInvalid: 'Địa chỉ email không hợp lệ.',
-    unexpectedError: 'Đã xảy ra lỗi không mong muốn',
-    oauthNotConfigured:
-      'Đăng nhập với {provider} chưa được cấu hình trên hệ thống.',
-    aboutTitle: 'Giới thiệu dự án',
-    aboutDescription:
-      '{siteName} là một giải pháp mã nguồn mở được thiết kế giúp các dòng họ, gia đình tự xây dựng và quản lý cây phả hệ của riêng mình. Dự án giúp bảo tồn và truyền đạt lại thông tin cội nguồn một cách trực quan, hiện đại, và đặc biệt là an toàn.',
-    privacyTitle: 'Tuyên bố từ chối trách nhiệm & Quyền riêng tư',
-    sourceOnly:
-      'Dự án này chỉ cung cấp mã nguồn (source code). Không có bất kỳ dữ liệu cá nhân nào được thu thập hay lưu trữ bởi tác giả.',
-    selfHostedTitle: 'Tự lưu trữ hoàn toàn (Self-hosted):',
-    selfHostedText:
-      'Khi bạn triển khai ứng dụng, toàn bộ dữ liệu gia phả được lưu trữ trong tài khoản Supabase của chính bạn. Tác giả dự án không có quyền truy cập vào database đó.',
-    noDataTitle: 'Không thu thập dữ liệu:',
-    noDataText:
-      'Không có analytics, tracking, telemetry hay bất kỳ hình thức thu thập thông tin người dùng nào được tích hợp trong mã nguồn.',
-    dataControlTitle: 'Bạn kiểm soát dữ liệu của bạn:',
-    dataControlText:
-      'Mọi dữ liệu gia đình và thông tin thành viên nằm hoàn toàn trong cơ sở dữ liệu Supabase mà bạn tạo và quản lý. Bạn có thể xóa, xuất hoặc di chuyển dữ liệu bất cứ lúc nào.',
-    demoTitle: 'Demo công khai:',
-    demoText:
-      'Trang demo sử dụng dữ liệu mẫu hư cấu, không chứa thông tin của người thật. Không nên nhập thông tin cá nhân thật vào trang demo.',
-    contactTitle: 'Liên hệ & Góp ý',
-    contactText:
-      'Nếu bạn có thắc mắc, đề xuất tính năng hoặc muốn báo lỗi khi sử dụng phần mềm, vui lòng gửi email về địa chỉ:',
     show: 'Hiển thị',
     display: 'HIỂN THỊ',
     minimal: 'Tối giản',
@@ -576,8 +381,6 @@ export const messages = {
     exportError: 'Đã xảy ra lỗi khi xuất file. Vui lòng thử lại.',
     exportTooLarge:
       'Cây quá lớn để xuất trên thiết bị này. Hãy chọn gốc nhỏ hơn (xuất từng nhánh) hoặc xuất trên máy tính.',
-    hidePhoto: 'Ẩn ảnh',
-    showPhoto: 'Hiện ảnh',
     searchMembers: 'Tìm kiếm thành viên...',
     all: 'Tất cả',
     male: 'Nam',
@@ -615,7 +418,6 @@ export const messages = {
     deathInFuture: 'Ngày mất không được sau hôm nay. Kiểm tra lại năm.',
     yearNotFourDigits: 'Năm phải có 4 chữ số (ví dụ 1985, không phải 85).',
     invalidWholeNumber: 'Thứ tự sinh và đời phải là số nguyên.',
-    saveIdError: 'Không lấy được ID thành viên sau khi lưu.',
     saveMemberError: 'Không thể lưu thành viên.',
     generalInfo: 'Thông tin chung',
     fullName: 'Họ và tên',
@@ -670,34 +472,6 @@ export const messages = {
     keepEditing: 'Tiếp tục sửa',
     saving: 'Đang lưu...',
     saveChanges: 'Lưu thay đổi',
-    dbMissingTitle: 'Chưa kết nối cơ sở dữ liệu',
-    dbMissingDescription:
-      'Ứng dụng hiện chưa được cấu hình biến môi trường kết nối đến Supabase.',
-    troubleshooting: 'Hướng dẫn khắc phục:',
-    signInTo: 'Đăng nhập vào',
-    getKeys:
-      'Lấy thông tin Project URL và Publishable key (project cũ có thể dùng key anon trong tab Legacy API Keys).',
-    createEnv: 'Tạo file .env.local ở thư mục gốc của dự án.',
-    addConfig: 'Thêm cấu hình sau vào file:',
-    restartServer: 'Khởi động lại server:',
-    orBunDev: 'hoặc bun dev',
-    reloadAfterConfig: 'Tải lại trang sau khi cấu hình',
-    setupTitle: 'Khởi tạo cơ sở dữ liệu',
-    setupDescription:
-      'Hệ thống phát hiện database của bạn chưa được thiết lập cấu trúc bảng (schema).',
-    setupInstructions: 'Hướng dẫn thực hiện:',
-    copyAllSql: 'Copy toàn bộ SQL',
-    copyBundleDescription:
-      'ở bên dưới; bundle đã gồm schema và tất cả migration.',
-    openSqlEditor: 'Mở Supabase SQL Editor trong dự án của bạn.',
-    pasteSql: 'Dán mã vừa copy vào khung soạn thảo của Supabase.',
-    runSql: 'Dán toàn bộ mã vừa copy và bấm nút RUN một lần.',
-    returnAndReload: 'Quay lại đây và tải lại trang (hoặc bấm đăng nhập lại).',
-    sqlBundle: 'SQL bundle (schema + migrations)',
-    backToLogin: 'Quay lại đăng nhập',
-    copySuccess: 'Đã copy thành công!',
-    copyError:
-      'Không thể copy. Trình duyệt của bạn có thể không hỗ trợ tính năng này.',
     eventsTitle: 'Sự kiện gia phả',
     eventsDescription: 'Sinh nhật, ngày giỗ (âm lịch) và các sự kiện tuỳ chỉnh',
     addEvent: 'Thêm sự kiện',
@@ -773,7 +547,7 @@ export const messages = {
     backupDataDescription:
       'Tải xuống định dạng file JSON, GEDCOM hoặc CSV (Zip). Chọn một điểm gốc bên dưới để chỉ sao lưu nhánh gia đình đó, hoặc chọn "Toàn bộ" để xuất toàn bộ cây.',
     backupPhotosNote:
-      'Bản sao lưu JSON/CSV/GEDCOM không chứa ảnh đại diện và thư viện ảnh (cả tiêu đề, mô tả ảnh); tải riêng các bucket avatars và gallery từ Supabase Storage.',
+      'Bản sao lưu JSON/CSV/GEDCOM không chứa ảnh đại diện và thư viện ảnh; sao chép các file ảnh riêng.',
     exportRoot: 'Điểm gốc (Root) để xuất dữ liệu',
     exportPersonsLoadError:
       'Không tải được danh sách thành viên để chọn điểm gốc: {error}. Tải lại trang để thử lại; có thể vẫn xuất toàn bộ dữ liệu.',
@@ -1000,14 +774,10 @@ export const messages = {
     mergeDone:
       'Đã gộp xong: {moved} quan hệ chuyển, {dropped} quan hệ bỏ, {filled} trường điền thêm.',
     mergePreviewFailed: 'Không thể tải xem trước. Vui lòng thử lại.',
-    mergeUpgradeDatabase:
-      'Cơ sở dữ liệu chưa có hàm gộp hồ sơ. Hãy chạy nâng cấp cơ sở dữ liệu (Dashboard → Nâng cấp) rồi thử lại.',
-    mergeFailed: 'Không thể gộp hồ sơ. {error}',
     mergeFailedGeneric:
       'Không thể gộp hồ sơ. Hãy kiểm tra kết nối rồi thử lại.',
     mergeSameMember: 'Hai hồ sơ cần gộp phải khác nhau.',
     mergeInvalidMember: 'Mã hồ sơ cần gộp không hợp lệ.',
-    mergeMemberMissing: 'Một trong hai hồ sơ không còn tồn tại. Hãy quét lại.',
     galleryTitle: 'Phòng trưng bày',
     galleryDescription: 'Lưu giữ những kỷ niệm và khoảnh khắc đáng nhớ',
     gridView: 'Lưới',
@@ -1029,12 +799,8 @@ export const messages = {
     personChanged:
       'Người này vừa được người khác sửa nên thay đổi của bạn chưa được lưu (không ghi đè). Hãy tải lại để xem bản mới nhất rồi nhập lại.',
     reloadPage: 'Tải lại',
-    relationshipNotDeleted:
-      'Không xoá được quan hệ: bạn không còn quyền hoặc quan hệ đã bị xoá. Hãy tải lại trang.',
     galleryItemNotUpdated:
       'Không lưu được: bạn không còn quyền sửa ảnh này. Hãy tải lại trang.',
-    deleteImageNotAllowed:
-      'Bạn không có quyền xoá ảnh này nên ảnh vẫn còn nguyên.',
     close: 'Đóng',
     filterLabel: 'Lọc',
     sortLabel: 'Sắp xếp',
@@ -1064,10 +830,6 @@ export const messages = {
     saveEvent: 'Lưu sự kiện',
     savingEvent: 'Đang lưu...',
     confirmDeleteEvent: 'Bạn có chắc chắn muốn xoá sự kiện này?',
-    saveEventError: 'Đã xảy ra lỗi khi lưu sự kiện.',
-    deleteEventError: 'Đã xảy ra lỗi khi xoá sự kiện.',
-    eventNotAllowed:
-      'Bạn chỉ có thể sửa hoặc xoá sự kiện do chính mình tạo (quản trị viên sửa được mọi sự kiện).',
     fileTooLarge10: 'Kích thước file phải nhỏ hơn 10MB.',
     galleryImageTooLarge: 'Ảnh phải nhỏ hơn 20MB (ảnh GIF nhỏ hơn 10MB).',
     unsupportedImageType: 'Chỉ hỗ trợ ảnh JPG, PNG, GIF hoặc WEBP.',
@@ -1076,9 +838,7 @@ export const messages = {
     galleryPrevImage: 'Ảnh trước',
     galleryNextImage: 'Ảnh sau',
     galleryImagePosition: 'Ảnh {position}/{total}',
-    galleryLoadErrorTitle: 'Không tải được ảnh của phòng trưng bày',
-    galleryLoadErrorDescription:
-      'Không tạo được đường dẫn xem ảnh. Hãy kiểm tra bucket Supabase Storage "gallery" đã được tạo và chính sách của nó khớp với docs/schema.sql (xem README, mục cài đặt), rồi thử lại.',
+
     galleryPageStatus: 'Trang {page}/{pageCount} · {total} ảnh',
     previousPage: 'Trang trước',
     nextPage: 'Trang sau',
@@ -1095,8 +855,6 @@ export const messages = {
     editImage: 'Chỉnh sửa hình ảnh',
     addToGallery: 'Thêm vào phòng trưng bày',
     saveImage: 'Lưu hình ảnh',
-    uploading: 'Đang tải lên...',
-    removePreview: 'Xóa ảnh xem trước',
     editMember: 'Chỉnh sửa thành viên',
     newMember: 'Thêm thành viên mới',
     view: 'Xem',
@@ -1118,63 +876,9 @@ export const messages = {
     deletingProfile: 'Đang xoá...',
     deleteProfile: 'Xoá hồ sơ',
     deleteProfileError: 'Đã xảy ra lỗi khi xoá hồ sơ.',
-    upgradeCheckTitle: 'Kiểm tra và nâng cấp',
-    upgradeRefreshError: 'Không thể kiểm tra trạng thái nâng cấp lúc này.',
-    databaseUpdated: 'Database đã được cập nhật.',
-    databaseUpdateError: 'Không thể cập nhật database.',
-    databaseUpdateFailed:
-      'Không thể cập nhật database. Vui lòng kiểm tra log server.',
-    upgradeCheckDescription:
-      'Kiểm tra source code và database trước khi áp dụng các thay đổi cần thiết.',
-    checkAgain: 'Kiểm tra lại',
-    sourceUpdated: 'Source code đã được cập nhật',
-    sourceOutdated: 'Cần cập nhật source code trước khi tiếp tục',
-    sourceUnknown: 'Chưa thể kiểm tra version source code',
-    runningVersion: 'Đang chạy:',
-    latestVersion: 'GitHub:',
-    unknownVersion: 'không xác định',
-    sourceUpdateGuide: 'Xem hướng dẫn cập nhật source code',
-    database: 'Database',
-    databaseConnected: 'Đã kết nối thành công',
-    databaseUnavailable: 'Chưa thể kết nối',
-    databaseCanUpdate: 'Có thể kiểm tra và áp dụng thay đổi database.',
-    databaseRetryConnection: 'Kiểm tra lại kết nối database trên server.',
-    databaseNeedsConfig: 'Cần cấu hình SUPABASE_DB_URL trên server.',
-    migrationUnavailable: 'Chưa thể kiểm tra migration',
-    sourceVersionUnknownError:
-      'Không xác định được version trong package.json hiện tại.',
-    sourceVersionFetchError:
-      'Không thể kiểm tra version source code trên GitHub.',
-    migrationAccessDenied: 'Từ chối truy cập.',
-    databaseConfigMissing: 'Chưa cấu hình SUPABASE_DB_URL trên server.',
-    migrationStatusError: 'Không thể kết nối hoặc đọc trạng thái migration.',
-    migrationConfigureRetry:
-      'Hãy cấu hình kết nối database rồi bấm “Kiểm tra lại”.',
-    sourceOutdatedError:
-      'Source code chưa ở version mới nhất. Hãy cập nhật source code rồi thử lại.',
-    sourceVersionCheckError:
-      'Không thể xác minh version source code. Migration đã bị tạm khóa.',
-    migrationsApplied: 'Đã chạy {count} migration.',
-    databaseAlreadyCurrent: 'Database đã ở phiên bản mới nhất.',
-    migrationRunError:
-      'Không thể chạy migration. Kiểm tra SUPABASE_DB_URL và log server.',
-    migrationFailed: 'Không thể chạy migration {file}.',
-    databaseSetupGuide: 'Xem hướng dẫn cấu hình database',
-    pendingChanges: 'Có thay đổi cần áp dụng',
-    pendingMigrations:
-      '{count} migration đang chờ được áp dụng. Các migration đã chạy được ẩn khỏi danh sách.',
-    notRun: 'Chưa chạy',
-    updateSourceFirst:
-      'Hãy cập nhật source code lên version mới nhất trước khi áp dụng các thay đổi database.',
-    upgrading: 'Đang nâng cấp...',
-    applyChanges: 'Áp dụng thay đổi',
-    systemUpdated: 'Hệ thống đã được cập nhật',
-    systemSynced:
-      'Source code và database đang đồng bộ. Hiện không có thay đổi nào cần áp dụng.',
     inLawFemale: 'Dâu',
     inLawMale: 'Rể',
     inLawOther: 'Khách',
-    eldestChild: 'Con trưởng',
     nthChild: 'Con thứ {count}',
     birth: 'Sinh',
     death: 'Mất',
@@ -1339,9 +1043,7 @@ export const messages = {
     appendConfirm: 'Thêm vào cây',
     appending: 'Đang thêm...',
     appendSuccess: 'Đã thêm {persons} người, {relationships} quan hệ.',
-    appendImportError: 'Không thêm được, dữ liệu hiện tại giữ nguyên: {error}',
-    appendImportUpgradeDatabase:
-      'Database chưa được nâng cấp nên chưa thêm được vào cây hiện tại. Chạy migration ở trang Nâng cấp hệ thống (/dashboard/upgrade) rồi thử lại.',
+
     scanDuplicatesNow: 'Rà trùng ngay',
     memberPossibleDuplicate:
       'Có {count} người trùng tên và năm sinh: {names}. Vẫn tạo thêm người mới?',
@@ -1358,26 +1060,11 @@ export const messages = {
     relationshipFatherDiedLongBeforeBirth:
       'Người cha mất hơn 10 tháng trước ngày sinh của người con. Vẫn thêm quan hệ này?',
     childNameRequired: 'Vui lòng nhập ít nhất tên của 1 người con.',
-    bulkAddPartial:
-      'Đã xảy ra lỗi. Chỉ lưu thành công {success}/{total} người.',
     bulkAddError: 'Không thể thêm danh sách con: {error}',
-    bulkAddChildOrphaned:
-      'đã tạo nhưng chưa gắn được cha mẹ, hãy thêm quan hệ cho người này',
-    bulkAddFailedRowsKept: 'Các dòng lỗi được giữ lại để thử lại.',
-    relationshipSavedTargetNotUpdated:
-      'Đã lưu quan hệ nhưng chưa cập nhật đời / dâu rể cho người kia: {error}',
     relationshipsLoadError: 'Không tải được thông tin gia đình: {error}',
-    memberSavedPartially:
-      'Đã lưu thành viên, nhưng ảnh hoặc thông tin riêng chưa lưu được: {error}. Bấm lưu lần nữa để thử lại (sẽ cập nhật người này, không tạo thêm), hoặc Tiếp tục để bỏ qua.',
-    memberSavedGenerationNotUpdated:
-      'Đã lưu thành viên nhưng chưa cập nhật thế hệ cho con cháu: {error}. Bấm lưu lần nữa để thử lại, hoặc Tiếp tục để bỏ qua.',
     continueAction: 'Tiếp tục',
     spouseNameRequired: 'Vui lòng nhập tên Vợ/Chồng.',
     spouseAddError: 'Không thể thêm vợ/chồng: {error}',
-    spouseAddOrphaned:
-      'Đã tạo hồ sơ {name} nhưng chưa gắn được quan hệ vợ/chồng ({error}). Đừng thêm lại: hãy thêm quan hệ cho người này trong danh sách thành viên.',
-    personNotCreated:
-      'Không tạo được hồ sơ: bạn không còn quyền thêm thành viên hoặc phiên đã hết hạn. Hãy tải lại trang.',
     confirmDeleteRelationship: 'Bạn có chắc chắn muốn xóa mối quan hệ này?',
     deleteRelationshipError: 'Không thể xóa: {error}',
     spouseOf: 'Vợ/chồng của {name}',
@@ -1389,11 +1076,8 @@ export const messages = {
     loggingIn: 'Đang đăng nhập…',
     loginInvalidCredentials: 'Tên đăng nhập hoặc mật khẩu không đúng.',
     loginFailed: 'Không thể đăng nhập. Vui lòng thử lại.',
-    backToDashboard: 'Quay lại bảng điều khiển',
     relationshipMemberList: 'Hoặc chọn trực tiếp từ danh sách thành viên',
-    relationshipSelectMember: '-- Chọn thành viên --',
-    relationshipMarriageExists:
-      'Hai thành viên này đã được liên kết vợ/chồng trước đó.'
+    relationshipSelectMember: '-- Chọn thành viên --'
   },
   en: {
     ...globalErrorMessages.en,
@@ -1412,7 +1096,6 @@ export const messages = {
     moreEvents_one: '+ {count} more event waiting...',
     noUpcomingEvents: 'No events in the next 30 days.',
     viewYearEvents: 'View events for the year',
-    commonFeatures: 'Common features',
     accessDenied: 'Access denied',
     noAddMemberPermission: 'You do not have permission to add members.',
     noEditMemberPermission: 'You do not have permission to edit members.',
@@ -1421,56 +1104,6 @@ export const messages = {
     viewOnTree: 'View on tree',
     memberDetails: 'Member details',
     adminSection: 'Administrator',
-    adminAddUser: 'Add user',
-    adminEmail: 'Email',
-    adminRole: 'Role',
-    adminStatus: 'Status',
-    adminCreatedAt: 'Created',
-    adminActions: 'Actions',
-    adminDemoNotice:
-      'This is a demo account for everyone to use. Please do not change its information.',
-    adminRoleUpdated: 'User role updated successfully.',
-    adminStatusUpdated: 'User approved successfully.',
-    adminStatusLocked: 'User locked successfully.',
-    adminUnknownRoleError: 'Unknown error while changing role',
-    adminUnknownStatusError: 'Unknown error while changing status',
-    adminConfirmDelete:
-      'Are you sure you want to permanently delete this user from the system?',
-    adminDeleted: 'User deleted successfully.',
-    adminUnknownDeleteError: 'Unknown error while deleting user',
-    adminDemoCreateNotice: 'This is a demo site; creating users is restricted.',
-    adminCreated: 'User created successfully! They can log in now.',
-    adminUnknownCreateError: 'Unknown error while creating user',
-    userAdminAccessDenied:
-      'Access denied. Only active admins can manage users.',
-    userAdminOwnRole: 'You cannot change your own role.',
-    userAdminLastAdminRole:
-      'You cannot remove the admin role from the last active admin.',
-    userAdminDeleteSelf: 'You cannot delete your own account.',
-    userAdminLastAdminDelete: 'You cannot delete the last active admin.',
-    userAdminInvalidEmail: 'Invalid email address.',
-    userAdminPasswordTooShort: 'The password must be at least 8 characters.',
-    userAdminEmailTaken: 'An account with this email already exists.',
-    userAdminOwnStatus: 'You cannot lock or unlock your own account.',
-    userAdminLastAdminDeactivate: 'You cannot lock the last active admin.',
-    adminNoUsers: 'No users found.',
-    adminCreateTitle: 'Create new user',
-    adminPasswordMinLength: 'At least 8 characters',
-    adminMemberRole: 'Member',
-    adminEditorRole: 'Editor',
-    adminAdminRole: 'Administrator',
-    adminApproved: 'Approved',
-    adminPending: 'Pending',
-    adminClickToLock: 'Click to lock',
-    adminClickToApprove: 'Click to approve',
-    adminSelfStatusDisabled: 'You cannot change your own status',
-    adminDeleteUser: 'Delete user',
-    adminYou: 'You',
-    adminCancel: 'Cancel',
-    adminCreating: 'Creating...',
-    adminCreateUser: 'Create user',
-    invalidUserRole: 'Invalid user role.',
-    emailPasswordRequired: 'Email and password are required.',
     dataAccessDenied: 'Access denied. Only admins can perform this action.',
     invalidData: 'Invalid data.',
     invalidDataStructure: 'Invalid data. Please check the JSON file again.',
@@ -1513,63 +1146,9 @@ export const messages = {
       'Event "{name}" ({id}) has an invalid date (expected YYYY-MM-DD).',
     invalidEventRecurrence:
       'Invalid event recurrence (none, yearly_solar or yearly_lunar).',
-    loadDataError: 'Could not load data: {error}',
-    deleteEventsError: 'Could not delete old custom events: {error}',
-    deleteRelationshipsError: 'Could not delete old relationships: {error}',
-    deletePrivateDetailsError:
-      'Could not delete old private member details: {error}',
-    deletePersonsError: 'Could not delete old members: {error}',
-    importPersonsError: 'Could not import members (chunk {chunk}): {error}',
-    importRelationshipsError:
-      'Could not import relationships (chunk {chunk}): {error}',
-    importPrivateDetailsError:
-      'Could not import private member details (chunk {chunk}): {error}',
-    importEventsError:
-      'Could not import custom events (chunk {chunk}): {error}',
-    restoreTransactionError:
-      'Restore failed, the current data is unchanged: {error}',
-    restoreUpgradeDatabase:
-      'The database is not upgraded, so the restore did not run in a single transaction (a failure halfway can lose data). Run the migrations on the System upgrade page (/dashboard/upgrade).',
+
     familyTreeDescription: 'View and interact with the family tree',
-    approvalEmailSubject: 'A new account is waiting for approval: {email}',
-    approvalEmailTitle: 'New account waiting for approval',
-    approvalEmailIntro:
-      'Someone just confirmed their email and is waiting to be approved before they can see the family data:',
-    approvalEmailButton: 'Review and approve the account',
-    approvalEmailExpiry:
-      'The link is valid for {days} days. You can also sign in to the app and approve the account under User management.',
-    approvalEmailText:
-      'The account {email} is waiting for approval. Approve it here: {url}\n\nYou can also sign in to the app and approve the account under User management.',
-    approvalTitle: 'Approve account',
-    approvalInvalidTitle: 'Invalid link',
-    approvalInvalidText:
-      'This account approval link does not exist or has expired.',
-    approvalProcessedTitle: 'Already processed',
-    approvalProcessedText:
-      'This account approval request has already been used.',
-    approvalRevokedTitle: 'Request revoked',
-    approvalRevokedText:
-      'This account was locked in Manage users, so the approval link no longer works. To restore access, sign in to the app and unlock the account there.',
-    approvalPendingText:
-      'The following account is waiting for access to family tree data:',
-    approvalConfirm: 'Confirm approval',
-    approvalIgnore:
-      'If you do not recognize this account, you can close this page.',
-    approvalConfigErrorTitle: 'Unable to process',
-    approvalConfigErrorText:
-      'The system is not configured to approve accounts by email. Please sign in to the app to approve it.',
-    approvalInvalidRequestTitle: 'Invalid request',
-    approvalNotFoundTitle: 'Account not found',
-    approvalNotFoundText: 'The account may have been deleted.',
-    approvalSuccessTitle: 'Approval successful',
-    approvalSuccessText:
-      'Account {email} has been granted access. The user can now sign in to the app.',
-    approvalFailureTitle: 'Approval failed',
-    approvalFailureText:
-      'An error occurred while updating the status. Please try again or approve it in the app.',
-    approvalUpgradeTitle: 'Database upgrade needed',
-    approvalUpgradeText:
-      'The database does not have the new approval function yet, so this link cannot approve the account. Run the migrations on the System upgrade page (/dashboard/upgrade) and open the link again, or sign in and approve the account in Manage users.',
+
     kinshipDescription: 'Accurate family relationship terminology',
     kinshipPageTitle: 'Kinship finder',
     kinshipPageDescription:
@@ -1681,8 +1260,6 @@ export const messages = {
     kinshipPathSpouseOf: '{name} is the spouse of {spouse}.',
     kinshipPathChildOf: '{name} is the child of {parent}.',
     kinshipUnknownTerm: 'Undetermined',
-    personNotUpdatedShort:
-      'this person no longer exists or you may no longer edit them',
     csvZipInvalid:
       'Invalid ZIP file: persons.csv or relationships.csv is missing.',
     csvParseError:
@@ -1772,13 +1349,9 @@ export const messages = {
     regionalTerm13Other: 'sui gia',
     statisticsDescription: 'Overview data and analytical charts',
     galleryDescriptionShort: 'Preserve and share family photos and memories',
-    aboutDescriptionShort: 'Information about the app and development team',
-    manageUsersDescription: 'Approve accounts and manage permissions',
-    manageUsersLoadError:
-      "Couldn't load the user list. If you just updated the code, run the migrations on the System upgrade page (/dashboard/upgrade), then try again.",
+
     lineageDescription: 'Arrange and view the system structure',
     backupDescriptionShort: 'Export/import all system data',
-    upgradeDescriptionShort: 'Check and synchronize source code and database',
     statsPageTitle: 'Family statistics',
     statsPageDescription: 'An overview of family member data',
     totalMembers: 'Total members',
@@ -1810,22 +1383,8 @@ export const messages = {
     invalidProfile: 'Invalid profile.',
     memberDeleteAccessDenied:
       'Access denied. Only the admin can delete profiles.',
-    relationshipCheckError: 'Could not check family relationships.',
-    memberHasRelationships:
-      'Cannot delete this profile. Remove all family relationships first.',
-    memberDeleteError: 'An error occurred while deleting the profile.',
-    invalidGenerationDelta: 'The generation change value is invalid.',
-    memberEditAccessDenied: 'Access denied. Only the admin can edit profiles.',
-    relationshipsFetchError: 'Could not load relationships.',
-    generationsFetchError: 'Could not load generations.',
-    descendantGenerationUpdateError:
-      'Some descendant generations could not be updated.',
-    generationTransactionError: 'nothing was saved ({error})',
-    generationUpgradeDatabase:
-      'The database is not upgraded, so generations are updated one member at a time, not in a single transaction (a failure halfway can leave generations partly updated). Run the migrations on the System upgrade page (/dashboard/upgrade).',
+
     lineageTransactionError: 'No changes were applied: {error}',
-    lineagePartialUpdateError:
-      'Could not update {failed} of {total} members ({error}); the other members were saved.',
     calculating: 'Calculating...',
     calculate: 'Calculate',
     updating: 'Updating...',
@@ -1859,91 +1418,22 @@ export const messages = {
     resetZoomLevel: 'Reset zoom level',
     fullscreen: 'Fullscreen',
     exitFullscreen: 'Exit fullscreen',
-    clickButton: 'Click',
-    open: 'Open',
     loadingFamilyTree: 'Loading family tree data...',
     familyTree: 'Family tree',
     kinship: 'Kinship finder',
     statistics: 'Statistics',
     admin: 'Administrator',
-    manageUsers: 'Manage users',
     lineageOrder: 'Lineage order',
     backupRestore: 'Backup & restore',
-    upgrade: 'System upgrade',
-    about: 'About',
     logout: 'Log out',
     processing: 'Processing...',
-    back: 'Back',
-    footerBy: 'by',
-    footerDisclaimer:
-      'Content may contain omissions. Please contribute to make the family tree more accurate.',
-    pendingTitle: 'Account pending approval',
-    pendingDescription:
-      'Your account was registered successfully. However, an administrator must activate it before you can view family information.',
-    pendingNote:
-      'Please contact your family administrator to receive access as soon as possible.',
     landingDescription:
       'Preserve and pass down your family values, roots, and traditions to future generations.',
     landingCta: 'View family tree',
     login: 'Log in',
-    signUp: 'Sign up',
     loginDescription: 'Log in to add and edit family information.',
-    signUpDescription: 'Create a new member account.',
-    demoNotice: 'Demo website. All data is fictional.',
     password: 'Password',
-    passwordPlaceholder: 'Enter your password',
-    confirmPassword: 'Confirm password',
-    confirmPasswordPlaceholder: 'Enter your password again',
     loading: 'Processing...',
-    createAccount: 'Create account',
-    or: 'Or',
-    ssoDisabled: 'Google/Facebook sign-in is not currently enabled.',
-    ssoError:
-      'SSO is not fully configured. Please contact an administrator or view the setup guide.',
-    ssoGuide: 'View the SSO setup guide',
-    ssoGuideUrl:
-      'https://github.com/homielab/giapha-os/blob/main/README.en.md#sign-in-with-google-and-facebook',
-    sourceCodeLabel: 'Source code',
-    noAccount: "Don't have an account? Sign up now",
-    hasAccount: 'Already have an account? Log in',
-    demoLoginNotice:
-      'This is a demo website. You do not need to create an account; use the demo account for full access.',
-    demoOAuthNotice:
-      'This is a demo website. Please use the demo account to continue.',
-    signupSuccess:
-      'Registration successful! Please wait for an administrator to activate your account.',
-    passwordMismatch: 'The confirmation password does not match.',
-    authInvalidCredentials: 'The email or password is incorrect.',
-    authEmailNotConfirmed:
-      'Your email is not confirmed yet. Please open the confirmation email in your inbox.',
-    authUserExists: 'This email is already registered. Please sign in.',
-    authWeakPassword:
-      'The password is too weak. Please choose a longer, harder to guess one.',
-    authRateLimited: 'Too many attempts. Please wait a moment and try again.',
-    authEmailInvalid: 'The email address is invalid.',
-    unexpectedError: 'An unexpected error occurred',
-    oauthNotConfigured: '{provider} sign-in is not configured on this system.',
-    aboutTitle: 'About the project',
-    aboutDescription:
-      '{siteName} is an open-source solution that helps families build and manage their own family tree. It preserves and presents family history in a visual, modern, and secure way.',
-    privacyTitle: 'Disclaimer & privacy',
-    sourceOnly:
-      'This project provides source code only. The author does not collect or store any personal data.',
-    selfHostedTitle: 'Fully self-hosted:',
-    selfHostedText:
-      'When you deploy the application, all family tree data is stored in your own Supabase account. The project author has no access to that database.',
-    noDataTitle: 'No data collection:',
-    noDataText:
-      'The source code includes no analytics, tracking, telemetry, or other form of user data collection.',
-    dataControlTitle: 'You control your data:',
-    dataControlText:
-      'All family data and member information stays in the Supabase database you create and manage. You can delete, export, or move it at any time.',
-    demoTitle: 'Public demo:',
-    demoText:
-      'The demo uses fictional sample data and contains no real-person information. Do not enter real personal information on the demo site.',
-    contactTitle: 'Contact & feedback',
-    contactText:
-      'For questions, feature suggestions, or bug reports, please email:',
     show: 'Show',
     display: 'DISPLAY',
     minimal: 'Minimal',
@@ -1966,8 +1456,6 @@ export const messages = {
     exportError: 'An error occurred while exporting. Please try again.',
     exportTooLarge:
       'The tree is too large to export on this device. Pick a smaller root (export one branch at a time) or export on a computer.',
-    hidePhoto: 'Hide photo',
-    showPhoto: 'Show photo',
     searchMembers: 'Search members...',
     all: 'All',
     male: 'Male',
@@ -2006,7 +1494,6 @@ export const messages = {
     yearNotFourDigits:
       'Years must have four digits (for example 1985, not 85).',
     invalidWholeNumber: 'Birth order and generation must be whole numbers.',
-    saveIdError: 'Could not get the member ID after saving.',
     saveMemberError: 'Could not save the member.',
     generalInfo: 'General information',
     fullName: 'Full name',
@@ -2061,33 +1548,6 @@ export const messages = {
     keepEditing: 'Keep editing',
     saving: 'Saving...',
     saveChanges: 'Save changes',
-    dbMissingTitle: 'Database is not connected',
-    dbMissingDescription:
-      'The application has not been configured with the environment variables required to connect to Supabase.',
-    troubleshooting: 'How to fix it:',
-    signInTo: 'Sign in to',
-    getKeys:
-      'Get the Project URL and Publishable key (older projects may use the anon key in the Legacy API Keys tab).',
-    createEnv: 'Create a .env.local file in the project root.',
-    addConfig: 'Add the following configuration to the file:',
-    restartServer: 'Restart the server:',
-    orBunDev: 'or bun dev',
-    reloadAfterConfig: 'Reload after configuration',
-    setupTitle: 'Set up the database',
-    setupDescription:
-      'The system detected that your database tables have not been set up yet (schema).',
-    setupInstructions: 'Instructions:',
-    copyAllSql: 'Copy all SQL',
-    copyBundleDescription:
-      'below; the bundle includes the schema and all migrations.',
-    openSqlEditor: 'Open the Supabase SQL Editor in your project.',
-    pasteSql: 'Paste the copied code into the Supabase editor.',
-    runSql: 'Paste the full code and click RUN once.',
-    returnAndReload: 'Return here and reload the page (or log in again).',
-    sqlBundle: 'SQL bundle (schema + migrations)',
-    backToLogin: 'Back to log in',
-    copySuccess: 'Copied successfully!',
-    copyError: 'Could not copy. Your browser may not support this feature.',
     eventsTitle: 'Family events',
     eventsDescription:
       'Birthdays, lunar death anniversaries, and custom events',
@@ -2162,7 +1622,7 @@ export const messages = {
     backupDataDescription:
       'Download JSON, GEDCOM, or CSV (Zip) files. Choose a root below to back up only that family branch, or choose "All data" to export the entire tree.',
     backupPhotosNote:
-      'JSON/CSV/GEDCOM backups do not include profile photos or the photo gallery (nor photo titles and descriptions); download the avatars and gallery buckets from Supabase Storage separately.',
+      'JSON/CSV/GEDCOM backups do not include profile photos or the photo gallery; copy image files separately.',
     exportRoot: 'Root for data export',
     exportPersonsLoadError:
       'Could not load the member list for choosing a root: {error}. Reload the page to retry; you can still export all data.',
@@ -2392,15 +1852,10 @@ export const messages = {
     mergeDone:
       'Merged: {moved} relationships moved, {dropped} removed, {filled} fields filled.',
     mergePreviewFailed: 'Could not load the preview. Please try again.',
-    mergeUpgradeDatabase:
-      'The database does not have the merge function yet. Run the database upgrade (Dashboard → Upgrade) and try again.',
-    mergeFailed: 'Could not merge the profiles. {error}',
     mergeFailedGeneric:
       'Could not merge the profiles. Check your connection and try again.',
     mergeSameMember: 'The two profiles to merge must be different.',
     mergeInvalidMember: 'The profile IDs to merge are not valid.',
-    mergeMemberMissing:
-      'One of the two profiles no longer exists. Please scan again.',
     galleryTitle: 'Gallery',
     galleryDescription: 'Preserve memorable moments and family memories',
     gridView: 'Grid',
@@ -2422,12 +1877,8 @@ export const messages = {
     personChanged:
       'Someone else just edited this person, so your changes were not saved (nothing was overwritten). Reload to see the latest version, then re-enter your changes.',
     reloadPage: 'Reload',
-    relationshipNotDeleted:
-      'The relationship was not deleted: you no longer have permission, or it was already removed. Reload the page.',
     galleryItemNotUpdated:
       'Not saved: you can no longer edit this photo. Reload the page.',
-    deleteImageNotAllowed:
-      'You are not allowed to delete this image, so it was kept.',
     close: 'Close',
     filterLabel: 'Filter',
     sortLabel: 'Sort',
@@ -2457,10 +1908,6 @@ export const messages = {
     saveEvent: 'Save event',
     savingEvent: 'Saving...',
     confirmDeleteEvent: 'Are you sure you want to delete this event?',
-    saveEventError: 'An error occurred while saving the event.',
-    deleteEventError: 'An error occurred while deleting the event.',
-    eventNotAllowed:
-      'You can only edit or delete events you created (admins can change any event).',
     fileTooLarge10: 'The file must be smaller than 10MB.',
     galleryImageTooLarge:
       'The photo must be smaller than 20MB (GIFs smaller than 10MB).',
@@ -2470,9 +1917,7 @@ export const messages = {
     galleryPrevImage: 'Previous image',
     galleryNextImage: 'Next image',
     galleryImagePosition: 'Image {position} of {total}',
-    galleryLoadErrorTitle: 'The gallery images could not be loaded',
-    galleryLoadErrorDescription:
-      'Image links could not be created. Check that the Supabase Storage bucket "gallery" exists and its policies match docs/schema.sql (see the README setup section), then try again.',
+
     galleryPageStatus: 'Page {page} of {pageCount} · {total} images',
     previousPage: 'Previous page',
     nextPage: 'Next page',
@@ -2489,8 +1934,6 @@ export const messages = {
     editImage: 'Edit image',
     addToGallery: 'Add to gallery',
     saveImage: 'Save image',
-    uploading: 'Uploading...',
-    removePreview: 'Remove preview',
     editMember: 'Edit member',
     newMember: 'Add new member',
     view: 'View',
@@ -2513,63 +1956,9 @@ export const messages = {
     deletingProfile: 'Deleting...',
     deleteProfile: 'Delete profile',
     deleteProfileError: 'An error occurred while deleting the profile.',
-    upgradeCheckTitle: 'Check and upgrade',
-    upgradeRefreshError: 'Could not check the upgrade status right now.',
-    databaseUpdated: 'Database was updated.',
-    databaseUpdateError: 'Could not update the database.',
-    databaseUpdateFailed:
-      'Could not update the database. Check the server log.',
-    upgradeCheckDescription:
-      'Check the source code and database before applying required changes.',
-    checkAgain: 'Check again',
-    sourceUpdated: 'Source code is up to date',
-    sourceOutdated: 'Update the source code before continuing',
-    sourceUnknown: 'Could not check the source code version',
-    runningVersion: 'Running:',
-    latestVersion: 'GitHub:',
-    unknownVersion: 'unknown',
-    sourceUpdateGuide: 'View source code update guide',
-    database: 'Database',
-    databaseConnected: 'Connected successfully',
-    databaseUnavailable: 'Could not connect',
-    databaseCanUpdate: 'Database changes can be checked and applied.',
-    databaseRetryConnection: 'Check the database connection on the server.',
-    databaseNeedsConfig: 'Configure SUPABASE_DB_URL on the server.',
-    migrationUnavailable: 'Could not check migrations',
-    sourceVersionUnknownError:
-      'Could not determine the version in the current package.json.',
-    sourceVersionFetchError:
-      'Could not check the source code version on GitHub.',
-    migrationAccessDenied: 'Access denied.',
-    databaseConfigMissing: 'SUPABASE_DB_URL is not configured on the server.',
-    migrationStatusError: 'Could not connect to or read migration status.',
-    migrationConfigureRetry:
-      'Configure the database connection, then click “Check again”.',
-    sourceOutdatedError:
-      'The source code is not up to date. Update it and try again.',
-    sourceVersionCheckError:
-      'Could not verify the source code version. Migrations are locked.',
-    migrationsApplied: 'Applied {count} migration(s).',
-    databaseAlreadyCurrent: 'The database is already up to date.',
-    migrationRunError:
-      'Could not run migrations. Check SUPABASE_DB_URL and the server log.',
-    migrationFailed: 'Could not run migration {file}.',
-    databaseSetupGuide: 'View database setup guide',
-    pendingChanges: 'Changes need to be applied',
-    pendingMigrations:
-      '{count} migration(s) are waiting to be applied. Completed migrations are hidden.',
-    notRun: 'Not run',
-    updateSourceFirst:
-      'Update the source code to the latest version before applying database changes.',
-    upgrading: 'Upgrading...',
-    applyChanges: 'Apply changes',
-    systemUpdated: 'System is up to date',
-    systemSynced:
-      'Source code and database are synchronized. No changes need to be applied.',
     inLawFemale: 'Daughter-in-law',
     inLawMale: 'Son-in-law',
     inLawOther: 'In-law',
-    eldestChild: 'Eldest child',
     nthChild: 'Child {count}',
     birth: 'Birth',
     death: 'Death',
@@ -2736,10 +2125,7 @@ export const messages = {
     appendConfirm: 'Add to tree',
     appending: 'Adding...',
     appendSuccess: 'Added {persons} people and {relationships} relationships.',
-    appendImportError:
-      'Nothing was added, the current data is unchanged: {error}',
-    appendImportUpgradeDatabase:
-      'The database is not upgraded, so the file cannot be added to the current tree yet. Run the migrations on the System upgrade page (/dashboard/upgrade), then try again.',
+
     scanDuplicatesNow: 'Scan for duplicates now',
     memberPossibleDuplicate:
       '{count} existing people have the same name and birth year: {names}. Create another one anyway?',
@@ -2756,26 +2142,11 @@ export const messages = {
     relationshipFatherDiedLongBeforeBirth:
       'The father died more than 10 months before the child was born. Add this relationship anyway?',
     childNameRequired: 'Please enter at least one child’s name.',
-    bulkAddPartial:
-      'An error occurred. Only {success}/{total} people were saved.',
     bulkAddError: 'Could not add the children list: {error}',
-    bulkAddChildOrphaned:
-      'created but not linked to the parents, add the relationship for this person',
-    bulkAddFailedRowsKept: 'The failed rows are kept so you can try again.',
-    relationshipSavedTargetNotUpdated:
-      'The relationship was saved, but the other person’s generation / in-law flag was not updated: {error}',
     relationshipsLoadError: 'Could not load family information: {error}',
-    memberSavedPartially:
-      'The member was saved, but the photo or private details could not be saved: {error}. Save again to retry (this updates the same person, it does not create another), or Continue to skip.',
-    memberSavedGenerationNotUpdated:
-      'The member was saved, but the descendants’ generations were not updated: {error}. Save again to retry, or Continue to skip.',
     continueAction: 'Continue',
     spouseNameRequired: 'Please enter the spouse’s name.',
     spouseAddError: 'Could not add spouse: {error}',
-    spouseAddOrphaned:
-      'The profile {name} was created but the marriage was not saved ({error}). Do not add it again: add the relationship for this person from the members list.',
-    personNotCreated:
-      'The profile was not created: you can no longer add members, or your session expired. Reload the page.',
     confirmDeleteRelationship:
       'Are you sure you want to delete this relationship?',
     deleteRelationshipError: 'Could not delete: {error}',
@@ -2788,10 +2159,8 @@ export const messages = {
     loggingIn: 'Logging in…',
     loginInvalidCredentials: 'Incorrect username or password.',
     loginFailed: 'Unable to log in. Please try again.',
-    backToDashboard: 'Back to dashboard',
     relationshipMemberList: 'Or choose directly from the member list',
-    relationshipSelectMember: '-- Select a member --',
-    relationshipMarriageExists: 'These members are already linked as spouses.'
+    relationshipSelectMember: '-- Select a member --'
   }
 } as const
 

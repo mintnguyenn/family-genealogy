@@ -7,10 +7,6 @@ import {
   isParentChildType
 } from '@/utils/relationshipValidation'
 
-/** Columns the whole-tree data check reads. */
-export const DATA_CHECK_PERSON_COLUMNS =
-  'id, full_name, gender, is_deceased, birth_year, birth_month, birth_day, death_year, death_month, death_day, death_lunar_year, death_lunar_month, death_lunar_day, is_in_law, birth_order, generation'
-
 export interface DataCheckPerson {
   id: string
   full_name: string

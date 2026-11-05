@@ -23,11 +23,11 @@ import { useUser } from '@/components/UserProvider'
 import ViewOnTreeLink from '@/components/ViewOnTreeLink'
 import { useMemberListView } from '@/context/useMemberListView'
 import { useModalA11y } from '@/hooks/useModalA11y'
+import { getPersonById, getPrivateDetails } from '@/lib/data'
 import { useI18n } from '@/lib/i18n/useI18n'
 import { Person } from '@/types'
 import { createLatestGuard } from '@/utils/latestOnly'
 import { shouldCloseMemberModalOnEscape } from '@/utils/memberModalEscape'
-import { fetchPrivateDetails } from '@/utils/privateDetails'
 
 export function ModalHeaderActions({
   isEditing,
@@ -172,7 +172,7 @@ export default function MemberDetailModal() {
     showCreateMember,
     setShowCreateMember
   } = useMemberListView()
-  const { isAdmin, canEdit, supabase } = useUser()
+  const { isAdmin, canEdit } = useUser()
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
 
@@ -221,9 +221,9 @@ export default function MemberDetailModal() {
       try {
         // Public and (admin-only) private data are fetched in parallel
         const [personRes, privateRes] = await Promise.all([
-          supabase.from('persons').select('*').eq('id', id).single(),
+          getPersonById(id),
           isAdmin
-            ? fetchPrivateDetails(supabase, id).then(
+            ? getPrivateDetails(id).then(
                 (data) => ({ data, failed: false }),
                 (err: unknown) => {
                   console.error('Error fetching private details:', err)
@@ -234,10 +234,10 @@ export default function MemberDetailModal() {
         ])
 
         if (!fetchGuard.isCurrent(token)) return
-        if (personRes.error || !personRes.data) {
+        if (!personRes) {
           throw new Error(t('memberLoadError'))
         }
-        setPerson(personRes.data)
+        setPerson(personRes)
         setPrivateData(isAdmin ? (privateRes?.data ?? {}) : null)
         setPrivateLoaded(!privateRes?.failed)
       } catch (err) {
@@ -250,7 +250,7 @@ export default function MemberDetailModal() {
         if (fetchGuard.isCurrent(token)) setLoading(false)
       }
     },
-    [fetchGuard, isAdmin, supabase, t]
+    [fetchGuard, isAdmin, t]
   )
 
   // Sync state with URL parameter or create mode

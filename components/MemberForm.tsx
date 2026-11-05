@@ -19,7 +19,6 @@ import { Gender, Person } from '@/types'
 import {
   finishMemberSave,
   isFormDirty,
-  MemberSaveWarning,
   submitMemberForm
 } from '@/utils/memberForm'
 import {
@@ -27,7 +26,6 @@ import {
   hasGenerationChanged,
   toNumberOrEmpty
 } from '@/utils/memberFormInit'
-import { createClient } from '@/utils/supabase/client'
 
 interface MemberFormProps {
   initialData?: Person
@@ -45,39 +43,25 @@ interface MemberFormProps {
 }
 
 export default function MemberForm({
-  initialData: initialDataProp,
-  isEditing: isEditingProp = false,
+  initialData,
+  isEditing = false,
   isAdmin = false,
   privateLoaded = true,
   onSuccess,
   onCancel
 }: MemberFormProps) {
   const router = useRouter()
-  const supabase = createClient()
   const { t } = useI18n()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [changed, setChanged] = useState(false)
-  const [warning, setWarning] = useState<MemberSaveWarning | null>(null)
-  // Set when a new member was inserted but a later step failed: the form then
-  // edits that person, so saving again cannot create a duplicate.
-  const [createdPerson, setCreatedPerson] = useState<Person | null>(null)
-  // `updated_at` of the row after a save whose later step failed (see
-  // `onUpdated`); without it, saving again would be taken as a conflict.
-  const [savedUpdatedAt, setSavedUpdatedAt] = useState<string | null>(null)
-  const initialData =
-    createdPerson ??
-    (initialDataProp && savedUpdatedAt
-      ? { ...initialDataProp, updated_at: savedUpdatedAt }
-      : initialDataProp)
-  const isEditing = isEditingProp || createdPerson !== null
   const [confirmation, setConfirmation] = useState<string | null>(null)
 
   // Form states (defaults resolved by a plain helper to keep this component
   // free of per-field fallback branches)
   const init = useMemo(
-    () => getMemberFormInitialValues(initialDataProp),
-    [initialDataProp]
+    () => getMemberFormInitialValues(initialData),
+    [initialData]
   )
   const [fullName, setFullName] = useState(init.fullName)
   const [otherNames, setOtherNames] = useState(init.otherNames)
@@ -119,17 +103,17 @@ export default function MemberForm({
     avatarPreview,
     handleAvatarSelected,
     handleAvatarRemove
-  } = useMemberAvatar(initialDataProp)
+  } = useMemberAvatar(initialData)
 
   const [note, setNote] = useState(initialData?.note || '')
   const errorRef = useRef<HTMLDivElement>(null)
 
   // Bring validation/save errors into view on long forms
   useEffect(() => {
-    if (error || warning || confirmation) {
+    if (error || confirmation) {
       errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
-  }, [error, warning, confirmation])
+  }, [error, confirmation])
 
   // Private fields
   const [phoneNumber, setPhoneNumber] = useState(init.phoneNumber)
@@ -190,7 +174,6 @@ export default function MemberForm({
   const submit = (confirmed: boolean) => {
     void submitMemberForm({
       confirmed,
-      supabase,
       router,
       t,
       isEditing,
@@ -228,19 +211,14 @@ export default function MemberForm({
       avatarUrl: avatarUrlRef.current,
       avatarFile,
       removeExistingAvatar,
-      isAdmin,
       privateLoaded,
       privateFields: { phoneNumber, occupation, currentResidence },
-      hasGenerationChanged: generationChanged,
       updateDescendantGenerations,
       setLoading,
       setError,
-      setWarning,
       setConfirmation,
       setChanged,
-      onSuccess: handleSuccess,
-      onCreated: setCreatedPerson,
-      onUpdated: setSavedUpdatedAt
+      onSuccess: handleSuccess
     })
   }
 
@@ -341,12 +319,6 @@ export default function MemberForm({
       <MemberFormFooter
         error={error}
         onReload={changed ? () => window.location.reload() : undefined}
-        warning={warning?.message ?? null}
-        onContinue={() => {
-          if (!warning) return
-          setWarning(null)
-          handleSuccess(warning.personId)
-        }}
         confirmation={confirmation}
         onConfirm={() => submit(true)}
         errorRef={errorRef}

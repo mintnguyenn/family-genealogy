@@ -3,9 +3,9 @@
 import Image from 'next/image'
 import { memo } from 'react'
 
-import { useAvatarUrl } from '@/context/AvatarUrlContext'
 import { useMemberListView } from '@/context/useMemberListView'
 import { Person } from '@/types'
+import { getAvatarUrl } from '@/utils/avatar'
 import { getAvatarBg } from '@/utils/styleHelpers'
 
 import DefaultAvatar from './DefaultAvatar'
@@ -22,7 +22,7 @@ interface FamilyNodeCardProps {
 }
 
 function PersonAvatar({ person }: { person: Person }) {
-  const avatarUrl = useAvatarUrl()
+  const avatarUrl = getAvatarUrl
   return (
     <div className='relative z-10 mb-1.5 sm:mb-2'>
       <div

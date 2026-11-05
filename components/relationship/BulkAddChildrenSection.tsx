@@ -16,7 +16,6 @@ import {
   relationshipErrorKey,
   RelationshipValidationError
 } from '@/utils/relationshipValidation'
-import { createClient } from '@/utils/supabase/client'
 
 interface BulkAddChildrenSectionProps {
   person: Person
@@ -34,7 +33,6 @@ export default function BulkAddChildrenSection({
   onSaved
 }: BulkAddChildrenSectionProps) {
   const { t } = useI18n()
-  const supabase = createClient()
   const personId = person.id
 
   const [selectedSpouseId, setSelectedSpouseId] = useState<string>('')
@@ -61,11 +59,10 @@ export default function BulkAddChildrenSection({
     setError(null)
 
     try {
-      const { created, failures } = await bulkCreateChildren(supabase, {
+      await bulkCreateChildren({
         children: validChildren,
         parentId: personId,
         otherParentId: selectedSpouseId,
-        parentGeneration: person.generation,
         parents: [
           person,
           ...spouseOptions
@@ -74,32 +71,8 @@ export default function BulkAddChildrenSection({
         ]
       })
 
-      if (failures.length === 0) {
-        onClose()
-        onSaved()
-        return
-      }
-
-      // Keep only the rows that can be retried: saved rows and rows whose
-      // person exists without parents would be added twice.
-      const retryRows = failures.filter((f) => !f.orphaned).map((f) => f.child)
-      setBulkChildren(retryRows.length > 0 ? retryRows : [emptyBulkChildRow()])
-      setError(
-        [
-          t('bulkAddPartial', {
-            success: created,
-            total: validChildren.length
-          }),
-          ...failures.map(
-            (f) =>
-              `${f.child.name.trim()}: ${
-                f.orphaned ? t('bulkAddChildOrphaned') : f.error
-              }`
-          ),
-          ...(retryRows.length > 0 ? [t('bulkAddFailedRowsKept')] : [])
-        ].join('\n')
-      )
-      if (created > 0 || failures.some((f) => f.orphaned)) onSaved()
+      onClose()
+      onSaved()
     } catch (err: unknown) {
       if (err instanceof TextTooLongError) {
         showError(t('textTooLong', { field: t(err.label), max: err.max }))
