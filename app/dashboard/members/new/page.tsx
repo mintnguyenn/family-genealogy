@@ -3,8 +3,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 import MemberForm from '@/components/MemberForm'
+import { getIsAdmin } from '@/lib/auth'
 import { getServerTranslations } from '@/lib/i18n/server'
-import { getIsAdmin } from '@/utils/supabase/queries'
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getServerTranslations()

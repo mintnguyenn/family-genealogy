@@ -1,24 +1,12 @@
-import { afterAll, beforeEach, describe, expect, test } from 'bun:test'
+import { describe, expect, test } from 'bun:test'
 import { NextRequest } from 'next/server'
 
 import { proxy } from './proxy'
 
-// Without Supabase settings updateSession passes /missing-db-config through,
-// so the proxy runs without a Supabase mock.
-const originalUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-
 const request = (headers: Record<string, string>) =>
-  new NextRequest(new URL('/missing-db-config', 'http://localhost:3000'), {
+  new NextRequest(new URL('/dashboard', 'http://localhost:3000'), {
     headers
   })
-
-beforeEach(() => {
-  delete process.env.NEXT_PUBLIC_SUPABASE_URL
-})
-
-afterAll(() => {
-  process.env.NEXT_PUBLIC_SUPABASE_URL = originalUrl
-})
 
 describe('proxy locale', () => {
   test('first visit from an English browser renders and stores English', async () => {

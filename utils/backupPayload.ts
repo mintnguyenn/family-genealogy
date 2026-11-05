@@ -6,7 +6,6 @@ import {
   findRelationshipIssues,
   type RelationshipLink
 } from '@/utils/relationshipValidation'
-import { isMissingDatabaseFunction } from '@/utils/supabase/missingFunction'
 import { isUuid } from '@/utils/uuid'
 
 /**
@@ -117,28 +116,6 @@ export interface RestoreCounts {
 }
 
 /**
- * Body of the `restore_backup(payload jsonb)` database function. `version`
- * is the version of this contract (not of the backup file), `counts` lets the
- * database reject a payload that lost rows on the way.
- */
-export interface RestorePayload {
-  version: typeof RESTORE_PAYLOAD_VERSION
-  counts: RestoreCounts
-  persons: SanitizedPerson[]
-  relationships: SanitizedRelationship[]
-  person_details_private: PersonDetailsPrivateExport[]
-  custom_events: SanitizedCustomEvent[]
-  /**
-   * Only present when the backup has photo tags. Not part of `counts`: a tag
-   * whose photo or member is missing is skipped. Without the key the
-   * database keeps the tags it has for the members that are restored.
-   */
-  gallery_item_persons?: GalleryTagExport[]
-}
-
-export const RESTORE_PAYLOAD_VERSION = 1
-
-/**
  * Version written into JSON backups. v2 added birth order and generation, v3
  * lunar death dates, private details, relationship notes and custom events, v4
  * the recurrence of custom events, v5 the burial place, v6 the members tagged
@@ -147,7 +124,6 @@ export const RESTORE_PAYLOAD_VERSION = 1
  */
 export const BACKUP_VERSION = 6
 
-// Keep in sync with private.restore_backup in docs/migrations.
 export const MAX_PERSONS = 10000
 export const MAX_RELATIONSHIPS = 30000
 export const MAX_PRIVATE_DETAILS = 10000
@@ -212,7 +188,7 @@ function findInvalidNumberField(row: Record<string, unknown>) {
 }
 
 /** The events table stores a calendar date as a `YYYY-MM-DD` string. */
-function isValidEventDate(value: unknown): value is string {
+export function isValidEventDate(value: unknown): value is string {
   if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value))
     return false
   const [year, month, day] = value.split('-').map(Number)
@@ -227,7 +203,8 @@ export type Translator = (
 /** Returns a translated error message, or null when the payload is valid. */
 export function validateImportPayload(
   input: unknown,
-  t: Translator
+  t: Translator,
+  allowEmpty = false
 ): string | null {
   if (!input || typeof input !== 'object') return t('invalidData')
   const payload = input as Record<string, unknown>
@@ -245,7 +222,7 @@ export function validateImportPayload(
       version,
       supported: BACKUP_VERSION
     })
-  if (persons.length === 0) return t('emptyBackup')
+  if (!allowEmpty && persons.length === 0) return t('emptyBackup')
   if (persons.length > MAX_PERSONS)
     return t('tooManyPersons', { count: MAX_PERSONS })
   if (relationships.length > MAX_RELATIONSHIPS)
@@ -467,19 +444,6 @@ export function toPersonExport(p: PersonExport): PersonExport {
   }
 }
 
-/**
- * Person rows for the old chunked restore. A database that old may not have
- * the burial_place column: leave it out while no member has one.
- */
-export function legacyPersonRows(persons: SanitizedPerson[]): object[] {
-  if (persons.some((p) => p.burial_place !== null)) return persons
-  return persons.map((person) => {
-    const row: Partial<SanitizedPerson> = { ...person }
-    delete row.burial_place
-    return row
-  })
-}
-
 export function sanitizeRelationship(
   r: RelationshipExport
 ): SanitizedRelationship {
@@ -488,8 +452,7 @@ export function sanitizeRelationship(
     person_a: r.person_a,
     person_b: r.person_b,
     note: r.note ?? null,
-    // Kept so a restore keeps the spouse order; a missing or invalid value
-    // is left out and the database uses the restore time.
+    // Preserve spouse order; the storage layer supplies a missing timestamp.
     ...(typeof r.created_at === 'string' && !isNaN(Date.parse(r.created_at))
       ? { created_at: r.created_at }
       : {})
@@ -533,58 +496,6 @@ export function toCustomEventExport(e: CustomEventExport): CustomEventExport {
   }
 }
 
-/**
- * Custom event rows for the old chunked restore. A database that old may not
- * have the recurrence column: leave it out while no event repeats (inserts
- * then use the column default).
- */
-export function legacyCustomEventRows(
-  events: SanitizedCustomEvent[]
-): object[] {
-  if (events.some((e) => e.recurrence !== 'none')) return events
-  return events.map((event) => {
-    const row: Partial<SanitizedCustomEvent> = { ...event }
-    delete row.recurrence
-    return row
-  })
-}
-
 export function sanitizeGalleryTag(tag: GalleryTagExport): GalleryTagExport {
   return { gallery_item_id: tag.gallery_item_id, person_id: tag.person_id }
-}
-
-/** Builds the `restore_backup` payload from an already validated import. */
-export function buildRestorePayload(input: ImportPayload): RestorePayload {
-  const persons = input.persons.map(sanitizePerson)
-  const relationships = input.relationships.map(sanitizeRelationship)
-  const privateDetails = (input.person_details_private ?? []).map(
-    sanitizePrivateDetails
-  )
-  const customEvents = (input.custom_events ?? []).map(sanitizeCustomEvent)
-  const galleryTags = input.gallery_item_persons?.map(sanitizeGalleryTag)
-
-  return {
-    version: RESTORE_PAYLOAD_VERSION,
-    counts: {
-      persons: persons.length,
-      relationships: relationships.length,
-      person_details_private: privateDetails.length,
-      custom_events: customEvents.length
-    },
-    persons,
-    relationships,
-    person_details_private: privateDetails,
-    custom_events: customEvents,
-    ...(galleryTags ? { gallery_item_persons: galleryTags } : {})
-  }
-}
-
-/**
- * True when the database does not have `restore_backup` yet (migration not
- * run): PostgREST answers PGRST202, Postgres itself 42883.
- */
-export function isMissingRestoreFunction(
-  error: { code?: string | null; message?: string | null } | null
-) {
-  return isMissingDatabaseFunction(error)
 }

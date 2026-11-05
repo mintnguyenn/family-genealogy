@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 
 import DashboardHeader from '@/components/DashboardHeader'
 import { UserProvider } from '@/components/UserProvider'
-import { getIsAdmin } from '@/utils/supabase/queries'
+import { getIsAdmin } from '@/lib/auth'
 
 export default async function DashboardLayout({
   children

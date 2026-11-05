@@ -1,14 +1,10 @@
 'use client'
 
-import { SupabaseClient } from '@supabase/supabase-js'
 import { createContext, ReactNode, useContext, useMemo } from 'react'
-
-import { createClient } from '@/utils/supabase/client'
 
 interface UserState {
   isAdmin: boolean
   canEdit: boolean
-  supabase: SupabaseClient
 }
 
 const UserContext = createContext<UserState | undefined>(undefined)
@@ -20,11 +16,7 @@ export function UserProvider({
   children: ReactNode
   isAdmin: boolean
 }) {
-  const supabase = useMemo(() => createClient(), [])
-  const value = useMemo(
-    () => ({ isAdmin, canEdit: isAdmin, supabase }),
-    [isAdmin, supabase]
-  )
+  const value = useMemo(() => ({ isAdmin, canEdit: isAdmin }), [isAdmin])
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>
 }
 

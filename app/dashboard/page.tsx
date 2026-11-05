@@ -1,6 +1,5 @@
 import {
   ArrowRight,
-  ArrowUpCircle,
   BarChart2,
   Cake,
   CalendarDays,
@@ -16,6 +15,8 @@ import {
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
+import { getIsAdmin } from '@/lib/auth'
+import { getCustomEvents, getPersons } from '@/lib/data'
 import { getServerTranslations } from '@/lib/i18n/server'
 import { getTodayLunar, vnToday } from '@/utils/dateHelpers'
 import { eventTitle } from '@/utils/eventCardLabels'
@@ -25,9 +26,6 @@ import {
   filterVisibleEvents,
   formatLunarDateLabel
 } from '@/utils/eventHelpers'
-import { EVENT_PERSON_COLUMNS, EVENT_PERSON_FILTER } from '@/utils/eventPersons'
-import { fetchAllRowsOrThrow } from '@/utils/supabase/fetchAll'
-import { getIsAdmin, getSupabase } from '@/utils/supabase/queries'
 
 /* ── Event type helpers ───────────────────────────────────────────── */
 const eventTypeConfig = {
@@ -55,30 +53,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function DashboardLaunchpad() {
-  const [{ t }, isAdmin, supabase] = await Promise.all([
+  const [{ t }, isAdmin] = await Promise.all([
     getServerTranslations(),
-    getIsAdmin(),
-    getSupabase()
+    getIsAdmin()
   ])
 
-  /* ── Fetch events data ────────────────────────────────────────── */
-  const [{ data: persons }, { data: customEvents }] = await Promise.all([
-    fetchAllRowsOrThrow((from, to) =>
-      supabase
-        .from('persons')
-        .select(EVENT_PERSON_COLUMNS)
-        .or(EVENT_PERSON_FILTER)
-        .order('id')
-        .range(from, to)
-    ),
-    fetchAllRowsOrThrow((from, to) =>
-      supabase
-        .from('custom_events')
-        // '*' includes recurrence once the database has the column.
-        .select('*')
-        .order('id')
-        .range(from, to)
-    )
+  const [persons, customEvents] = await Promise.all([
+    getPersons(),
+    getCustomEvents()
   ])
 
   const allEvents = computeEvents(persons ?? [], customEvents ?? [], vnToday())
@@ -128,12 +110,6 @@ export default async function DashboardLaunchpad() {
       description: t('backupDescriptionShort'),
       icon: Database,
       href: '/dashboard/data'
-    },
-    {
-      title: t('upgrade'),
-      description: t('upgradeDescriptionShort'),
-      icon: ArrowUpCircle,
-      href: '/dashboard/upgrade'
     }
   ]
 

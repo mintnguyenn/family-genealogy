@@ -1,9 +1,5 @@
 import { searchPersons } from '@/utils/search'
 
-/** Columns the global member search loads (name, birth and death year). */
-export const GLOBAL_SEARCH_COLUMNS =
-  'id, full_name, gender, birth_year, death_year, death_lunar_year, is_deceased, other_names'
-
 /** The year fields a life span is shown from. */
 export interface LifeYearsPerson {
   birth_year?: number | null

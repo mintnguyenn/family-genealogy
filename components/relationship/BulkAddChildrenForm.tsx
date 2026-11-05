@@ -72,7 +72,7 @@ export default function BulkAddChildrenForm({
             value={selectedSpouseId}
             onChange={(e) => onSpouseChange(e.target.value)}
             className='block w-full max-w-full rounded-lg border border-stone-300 bg-white p-2 text-sm text-stone-900 transition-colors focus:border-sky-500 focus:ring-sky-500 sm:p-2.5'>
-            <option value='unknown'>{t('unknownOtherParent')}</option>
+            <option value=''>{t('unknownOtherParent')}</option>
             {spouseOptions.map((rel) => (
               <option key={rel.id} value={rel.targetPerson.id}>
                 {rel.targetPerson.full_name} {rel.note ? `(${rel.note})` : ''}

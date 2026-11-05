@@ -1,9 +1,6 @@
 import config from '@/app/config'
 import type { Locale } from '@/lib/i18n/messages'
 
-const REPOSITORY_URL = 'https://github.com/homielab/giapha-os'
-const LICENSE_URL = 'https://opensource.org/licenses/MIT'
-
 export type JsonLd = Record<string, unknown>
 
 /**
@@ -24,29 +21,6 @@ export function websiteJsonLd({
     url: config.siteUrl,
     description,
     inLanguage: locale
-  }
-}
-
-/** schema.org SoftwareApplication of the open source app, for `/about`. */
-export function softwareApplicationJsonLd({
-  description,
-  locale
-}: {
-  description: string
-  locale: Locale
-}): JsonLd {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
-    name: config.siteName,
-    applicationCategory: 'LifestyleApplication',
-    operatingSystem: 'Web',
-    url: `${config.siteUrl}/about`,
-    description,
-    inLanguage: locale,
-    license: LICENSE_URL,
-    codeRepository: REPOSITORY_URL,
-    isAccessibleForFree: true
   }
 }
 

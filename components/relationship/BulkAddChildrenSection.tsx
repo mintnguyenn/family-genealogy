@@ -11,12 +11,14 @@ import {
 import { useI18n } from '@/lib/i18n/useI18n'
 import { Person } from '@/types'
 import { TextTooLongError } from '@/utils/limits'
-import { bulkCreateChildren } from '@/utils/relationshipMutations'
+import {
+  bulkCreateChildren,
+  saveWithWarningConfirmation
+} from '@/utils/relationshipMutations'
 import {
   relationshipErrorKey,
   RelationshipValidationError
 } from '@/utils/relationshipValidation'
-import { createClient } from '@/utils/supabase/client'
 
 interface BulkAddChildrenSectionProps {
   person: Person
@@ -34,7 +36,6 @@ export default function BulkAddChildrenSection({
   onSaved
 }: BulkAddChildrenSectionProps) {
   const { t } = useI18n()
-  const supabase = createClient()
   const personId = person.id
 
   const [selectedSpouseId, setSelectedSpouseId] = useState<string>('')
@@ -61,45 +62,32 @@ export default function BulkAddChildrenSection({
     setError(null)
 
     try {
-      const { created, failures } = await bulkCreateChildren(supabase, {
-        children: validChildren,
-        parentId: personId,
-        otherParentId: selectedSpouseId,
-        parentGeneration: person.generation,
-        parents: [
-          person,
-          ...spouseOptions
-            .filter((s) => s.targetPerson.id === selectedSpouseId)
-            .map((s) => s.targetPerson)
-        ]
-      })
-
-      if (failures.length === 0) {
-        onClose()
-        onSaved()
-        return
-      }
-
-      // Keep only the rows that can be retried: saved rows and rows whose
-      // person exists without parents would be added twice.
-      const retryRows = failures.filter((f) => !f.orphaned).map((f) => f.child)
-      setBulkChildren(retryRows.length > 0 ? retryRows : [emptyBulkChildRow()])
-      setError(
-        [
-          t('bulkAddPartial', {
-            success: created,
-            total: validChildren.length
+      const saved = await saveWithWarningConfirmation(
+        (acceptWarnings) =>
+          bulkCreateChildren({
+            acceptWarnings,
+            children: validChildren,
+            parentId: personId,
+            otherParentId: selectedSpouseId,
+            parents: [
+              person,
+              ...spouseOptions
+                .filter((s) => s.targetPerson.id === selectedSpouseId)
+                .map((s) => s.targetPerson)
+            ]
           }),
-          ...failures.map(
-            (f) =>
-              `${f.child.name.trim()}: ${
-                f.orphaned ? t('bulkAddChildOrphaned') : f.error
-              }`
-          ),
-          ...(retryRows.length > 0 ? [t('bulkAddFailedRowsKept')] : [])
-        ].join('\n')
+        (key) =>
+          window.confirm(
+            t('bulkConfirmChildren', {
+              names: validChildren.map((child) => child.name.trim()).join(', '),
+              warning: t(key)
+            })
+          )
       )
-      if (created > 0 || failures.some((f) => f.orphaned)) onSaved()
+      if (!saved) return
+
+      onClose()
+      onSaved()
     } catch (err: unknown) {
       if (err instanceof TextTooLongError) {
         showError(t('textTooLong', { field: t(err.label), max: err.max }))

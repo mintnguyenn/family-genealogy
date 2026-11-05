@@ -2,19 +2,15 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 import PrintButton from '@/components/PrintButton'
+import { getPersons, getRelationships } from '@/lib/data'
 import { getServerTranslations } from '@/lib/i18n/server'
-import { Relationship } from '@/types'
 import { vnToday } from '@/utils/dateHelpers'
 import {
-  BOOK_PERSON_COLUMNS,
   buildLineageBook,
   formatSolarDate,
   type BookEntry,
   type LineageBookPerson
 } from '@/utils/lineageBook'
-import { RELATIONSHIP_COLUMNS } from '@/utils/personColumns'
-import { fetchAllRowsOrThrow } from '@/utils/supabase/fetchAll'
-import { getSupabase } from '@/utils/supabase/queries'
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getServerTranslations()
@@ -39,31 +35,10 @@ const sectionClass = 'break-before-page space-y-4'
 
 export default async function LineageBookPage() {
   const { t } = await getServerTranslations()
-  const supabase = await getSupabase()
-
-  const [{ data: personsData }, { data: relsData }] = await Promise.all([
-    fetchAllRowsOrThrow((from, to) =>
-      supabase
-        .from('persons')
-        .select(BOOK_PERSON_COLUMNS)
-        .order('birth_year', { ascending: true, nullsFirst: false })
-        .order('id')
-        .range(from, to)
-    ),
-    fetchAllRowsOrThrow((from, to) =>
-      supabase
-        .from('relationships')
-        .select(RELATIONSHIP_COLUMNS)
-        .order('created_at')
-        .order('id')
-        .range(from, to)
-    )
+  const [persons, relationships] = await Promise.all([
+    getPersons(),
+    getRelationships()
   ])
-
-  // BOOK_PERSON_COLUMNS ('*') covers everything the book renders.
-  const persons = (personsData || []) as unknown as LineageBookPerson[]
-  // RELATIONSHIP_COLUMNS leaves out note/updated_at; no view reads them.
-  const relationships = (relsData || []) as unknown as Relationship[]
 
   const book = buildLineageBook(persons, relationships)
   const title = book.surname

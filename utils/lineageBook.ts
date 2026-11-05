@@ -303,9 +303,3 @@ export function formatSolarDate(
   if (month == null || day == null) return `${year}`
   return `${day}/${month}/${year}`
 }
-
-/**
- * Columns the book page reads from `persons`: the whole row, so that a
- * database without the burial_place column yet still prints the book.
- */
-export const BOOK_PERSON_COLUMNS = '*'

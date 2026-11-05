@@ -20,13 +20,7 @@ describe('messages', () => {
       'treeCanvasLabel',
       'treeKeyboardHint',
       'bubbleTreeLabel',
-      'bubbleNodeBorn',
-      'approvalEmailSubject',
-      'approvalEmailTitle',
-      'approvalEmailIntro',
-      'approvalEmailButton',
-      'approvalEmailExpiry',
-      'approvalEmailText'
+      'bubbleNodeBorn'
     ] as const
     for (const key of keys) {
       expect(messages.en[key]).not.toMatch(
@@ -39,13 +33,6 @@ describe('messages', () => {
     for (const locale of ['vi', 'en'] as const) {
       expect(messages[locale].mergeFailedGeneric).toBeTruthy()
       expect(messages[locale].mergeFailedGeneric).not.toContain('{')
-    }
-  })
-
-  test('aboutDescription names the site through {siteName}', () => {
-    for (const locale of ['vi', 'en'] as const) {
-      expect(messages[locale].aboutDescription).toContain('{siteName}')
-      expect(messages[locale].aboutDescription).not.toContain('Gia Phả OS')
     }
   })
 

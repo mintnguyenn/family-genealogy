@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, mock, test } from 'bun:test'
+import { describe, expect, test } from 'bun:test'
 
 import {
   detectImageType,
@@ -10,8 +10,11 @@ import {
 } from './imageUpload'
 
 const JPEG = [0xff, 0xd8, 0xff, 0xe0, 0, 0x10, 0x4a, 0x46, 0x49, 0x46, 0, 1]
+
 const PNG = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0x0d]
+
 const GIF = [0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 1, 0, 1, 0, 0, 0]
+
 const WEBP = [0x52, 0x49, 0x46, 0x46, 0x24, 0, 0, 0, 0x57, 0x45, 0x42, 0x50]
 
 function fileOf(bytes: number[], name: string, type: string, size?: number) {
@@ -123,46 +126,5 @@ describe('validateGallerySource', () => {
       ok: false,
       reason: 'unsupported-type'
     })
-  })
-})
-
-describe('uploadGalleryImage', () => {
-  const upload = mock(async () => ({ data: {}, error: null }))
-
-  mock.module('@/utils/supabase/client', () => ({
-    createClient: () => ({ storage: { from: () => ({ upload }) } })
-  }))
-
-  beforeEach(() => upload.mockClear())
-
-  test('invalid files never reach storage', async () => {
-    const { InvalidImageError, uploadGalleryImage } =
-      await import('./supabase/storage')
-    const renamed = new File(['plain text'], 'x.jpg', { type: 'image/jpeg' })
-    const big = fileOf(JPEG, 'big.jpg', 'image/jpeg', 12 * 1024 * 1024)
-    const errorLog = console.error
-    console.error = () => {}
-    try {
-      for (const file of [renamed, big]) {
-        const { path, error } = await uploadGalleryImage(file)
-        expect(path).toBeNull()
-        expect(error).toBeInstanceOf(InvalidImageError)
-      }
-    } finally {
-      console.error = errorLog
-    }
-    expect(upload).not.toHaveBeenCalled()
-  })
-
-  test('valid files are stored with the detected extension and type', async () => {
-    const { uploadGalleryImage } = await import('./supabase/storage')
-    const { path, error } = await uploadGalleryImage(
-      fileOf(WEBP, 'holiday.JPG', 'image/webp')
-    )
-    expect(error).toBeNull()
-    expect(path).toMatch(/^\d+-[a-z0-9]+\.webp$/)
-    expect(upload).toHaveBeenCalledTimes(1)
-    const options = (upload.mock.calls[0] as unknown[])[2]
-    expect(options).toMatchObject({ contentType: 'image/webp' })
   })
 })

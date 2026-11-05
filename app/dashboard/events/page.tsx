@@ -3,10 +3,9 @@ import { Suspense } from 'react'
 import EventsList from '@/components/EventsList'
 import MemberDetailModal from '@/components/modal/MemberDetailModal'
 import { MemberListProvider } from '@/context/MemberListContext'
+import { getIsAdmin } from '@/lib/auth'
+import { getCustomEvents, getPersons } from '@/lib/data'
 import { getServerTranslations } from '@/lib/i18n/server'
-import { EVENT_PERSON_COLUMNS, EVENT_PERSON_FILTER } from '@/utils/eventPersons'
-import { fetchAllRowsOrThrow } from '@/utils/supabase/fetchAll'
-import { getIsAdmin, getSupabase } from '@/utils/supabase/queries'
 
 export async function generateMetadata() {
   const { t } = await getServerTranslations()
@@ -14,33 +13,15 @@ export async function generateMetadata() {
 }
 
 export default async function EventsPage() {
-  const [{ t }, supabase, isAdmin] = await Promise.all([
+  const [{ t }, isAdmin] = await Promise.all([
     getServerTranslations(),
-    getSupabase(),
     getIsAdmin()
   ])
 
-  const [personsRes, customEventsRes] = await Promise.all([
-    fetchAllRowsOrThrow((from, to) =>
-      supabase
-        .from('persons')
-        .select(EVENT_PERSON_COLUMNS)
-        .or(EVENT_PERSON_FILTER)
-        .order('id')
-        .range(from, to)
-    ),
-    fetchAllRowsOrThrow((from, to) =>
-      supabase
-        .from('custom_events')
-        // '*' includes recurrence once the database has the column.
-        .select('*')
-        .order('id')
-        .range(from, to)
-    )
+  const [persons, customEvents] = await Promise.all([
+    getPersons(),
+    getCustomEvents()
   ])
-
-  const persons = personsRes.data || []
-  const customEvents = customEventsRes.data || []
 
   return (
     <Suspense fallback={null}>

@@ -5,9 +5,9 @@ import DataCheck from '@/components/DataCheck'
 import DataImportExport from '@/components/DataImportExport'
 import DuplicateScan from '@/components/DuplicateScan'
 import LunarRecompute from '@/components/LunarRecompute'
+import { getIsAdmin } from '@/lib/auth'
 import { getServerTranslations } from '@/lib/i18n/server'
 import { restoreMaxBytes } from '@/utils/restoreLimit'
-import { getIsAdmin } from '@/utils/supabase/queries'
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getServerTranslations()

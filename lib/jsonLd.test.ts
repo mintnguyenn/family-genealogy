@@ -1,10 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 
-import {
-  serializeJsonLd,
-  softwareApplicationJsonLd,
-  websiteJsonLd
-} from './jsonLd'
+import { serializeJsonLd, websiteJsonLd } from './jsonLd'
 
 describe('websiteJsonLd', () => {
   test('describes the site only', () => {
@@ -14,18 +10,6 @@ describe('websiteJsonLd', () => {
     expect(data.description).toBe('Desc')
     expect(data.inLanguage).toBe('vi')
     expect(String(data.url)).toMatch(/^https?:\/\//)
-  })
-})
-
-describe('softwareApplicationJsonLd', () => {
-  test('has the open source app fields', () => {
-    const data = softwareApplicationJsonLd({ description: 'D', locale: 'en' })
-    expect(data['@type']).toBe('SoftwareApplication')
-    expect(data.applicationCategory).toBeTruthy()
-    expect(data.inLanguage).toBe('en')
-    expect(String(data.url)).toEndWith('/about')
-    expect(data.license).toContain('MIT')
-    expect(data.codeRepository).toBe('https://github.com/homielab/giapha-os')
   })
 })
 

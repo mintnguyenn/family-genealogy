@@ -39,10 +39,6 @@ export interface LunarRecomputeRow {
   recomputed: LunarDate
 }
 
-/** Columns to select from `persons` for the recompute. */
-export const LUNAR_RECOMPUTE_COLUMNS =
-  'id, full_name, death_year, death_month, death_day, death_lunar_year, death_lunar_month, death_lunar_day'
-
 /** Most rows one apply request accepts (same as the restore limit). */
 export const MAX_RECOMPUTE_IDS = 10000
 

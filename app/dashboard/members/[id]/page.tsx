@@ -8,15 +8,11 @@ import MemberPhotoStrip from '@/components/MemberPhotoStrip'
 import PrintButton from '@/components/PrintButton'
 import ViewOnTreeLink from '@/components/ViewOnTreeLink'
 import MemberDetailContent from '@/context/MemberDetailContent'
+import { getIsAdmin } from '@/lib/auth'
+import { getPersonById, getPrivateDetails } from '@/lib/data'
 import { getServerTranslations } from '@/lib/i18n/server'
 import { loadMemberPhotos } from '@/utils/gallery'
 import { memberPrintTitle } from '@/utils/memberPrint'
-import { fetchPrivateDetails } from '@/utils/privateDetails'
-import {
-  getIsAdmin,
-  getPersonById,
-  getSupabase
-} from '@/utils/supabase/queries'
 import { isUuid } from '@/utils/uuid'
 
 interface PageProps {
@@ -30,7 +26,7 @@ export async function generateMetadata({
   if (!isUuid(id)) return { title: t('familyTree') }
 
   // Same cached row as the page below: one persons query per visit.
-  const { person } = await getPersonById(id)
+  const person = await getPersonById(id)
 
   return { title: person?.full_name || t('familyTree') }
 }
@@ -46,20 +42,17 @@ export default async function MemberDetailPage({ params }: PageProps) {
 
   const canEdit = isAdmin
 
-  const supabase = await getSupabase()
-
   // Fetch Person Public Data
   // A database error is thrown to the dashboard error page; only a missing
   // row is a 404.
-  const { person, error } = await getPersonById(id)
+  const person = await getPersonById(id)
 
-  if (error) throw error
   if (!person) notFound()
 
   // Fetch Private Data if Admin
   const [privateData, photos] = await Promise.all([
-    isAdmin ? fetchPrivateDetails(supabase, id) : null,
-    loadMemberPhotos(supabase, id)
+    isAdmin ? getPrivateDetails(id) : null,
+    loadMemberPhotos(id)
   ])
 
   return (

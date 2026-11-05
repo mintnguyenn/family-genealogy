@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next'
 
 import config from '@/app/config'
 
-// Only the public pages; everything else needs a signed-in member.
+// Index the landing page; keep family data out of the sitemap.
 const PUBLIC_PATHS = ['/']
 
 // Read SITE_NAME / APP_URL at request time: a Docker image is built without them.

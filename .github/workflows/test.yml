@@ -1,9 +1,10 @@
 name: Test
 
-# Release tags only (Boss 2026-11-21: no CI on push to main).
 on:
   push:
+    branches: [dev, master]
     tags: ['v*']
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -60,8 +61,5 @@ jobs:
         with:
           context: .
           push: false
-          build-args: |
-            NEXT_PUBLIC_SUPABASE_URL=https://example.supabase.co
-            NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=placeholder-publishable-key
           cache-from: type=gha
           cache-to: type=gha,mode=max

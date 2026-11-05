@@ -257,12 +257,7 @@ export default function DataImportExport({
       }
       setImportStatus({
         type: 'success',
-        message: [
-          t(append ? 'appendSuccess' : 'restoreSuccess', counts),
-          'warning' in result ? result.warning : undefined
-        ]
-          .filter(Boolean)
-          .join(' '),
+        message: t(append ? 'appendSuccess' : 'restoreSuccess', counts),
         appended: append
       })
       resetFile()

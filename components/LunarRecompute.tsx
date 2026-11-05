@@ -59,17 +59,20 @@ export default function LunarRecompute() {
     setIsApplying(true)
     setStatus(null)
     try {
-      const result = await applyLunarRecompute([...selected])
+      const result = await applyLunarRecompute(
+        (rows ?? [])
+          .filter((row) => selected.has(row.id))
+          .map(({ id, solar, stored }) => ({ id, solar, stored }))
+      )
       if ('error' in result) {
         setStatus({ type: 'error', message: result.error })
         return
       }
       setStatus({
-        type: result.failed > 0 ? 'error' : 'success',
+        type: 'success',
         message: t('lunarRecomputeResult', {
           updated: result.updated,
-          skipped: result.skipped,
-          failed: result.failed
+          skipped: result.skipped
         })
       })
       await loadPreview()

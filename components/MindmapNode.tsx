@@ -5,9 +5,9 @@ import { ChevronDown, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 import { memo, useMemo, useState } from 'react'
 
-import { useAvatarUrl } from '@/context/AvatarUrlContext'
 import { useI18n } from '@/lib/i18n/useI18n'
 import { Person, Relationship } from '@/types'
+import { getAvatarUrl } from '@/utils/avatar'
 import { EXPORT_IGNORE_PROPS } from '@/utils/exportFilter'
 import { lifeYearsLabel } from '@/utils/memberSearch'
 import { getAvatarBg } from '@/utils/styleHelpers'
@@ -51,7 +51,7 @@ const getTreeData = (personId: string, ctx: MindmapContextData) => {
 }
 
 function NodeAvatar({ person }: { person: Person }) {
-  const avatarUrl = useAvatarUrl()
+  const avatarUrl = getAvatarUrl
   return (
     <div className='relative shrink-0'>
       <div
@@ -159,7 +159,7 @@ function SpouseChips({
   spouses: { person: Person; note?: string | null }[]
   ctx: MindmapContextData
 }) {
-  const avatarUrl = useAvatarUrl()
+  const avatarUrl = getAvatarUrl
   const { t } = useI18n()
   return (
     <div className='relative z-30 ml-1 flex flex-wrap gap-1.5 pl-2 before:absolute before:top-1/2 before:left-0 before:h-[70%] before:w-px before:-translate-y-1/2 before:bg-stone-200/80'>
