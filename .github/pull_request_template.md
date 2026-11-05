@@ -5,8 +5,7 @@
 ## Checklist
 
 - [ ] `bun run lint`, `bun run format:check`, `bun run typecheck` and `bun run test` pass
-- [ ] New logic has a test next to the file it covers
+- [ ] Relevant tests cover the changed behavior
 - [ ] New interface text exists in both `vi` and `en` (`lib/i18n/messages.ts`)
-- [ ] Database changes are a new file in `docs/migrations/`
-- [ ] User-visible changes are in `CHANGELOG.md` under `## [Unreleased]`
+- [ ] Setup and storage changes are documented
 - [ ] No secrets, keys or real family data in the diff
