@@ -135,7 +135,6 @@ export default function UploadModal({
       // 2. Save to database (removes the new file if this fails, and the
       // replaced file once it succeeds)
       const supabase = createClient()
-      const { data: userData } = await supabase.auth.getUser()
 
       const savedId = await saveGalleryItem(supabase, {
         initialData,
@@ -146,7 +145,7 @@ export default function UploadModal({
         },
         imagePath: finalPath,
         uploadedPath: file ? finalPath : null,
-        createdBy: userData?.user?.id
+        createdBy: null
       })
 
       // 3. Tags: only when they changed, so a photo without tags never

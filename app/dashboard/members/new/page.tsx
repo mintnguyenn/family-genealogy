@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 import MemberForm from '@/components/MemberForm'
 import { getServerTranslations } from '@/lib/i18n/server'
-import { getProfile } from '@/utils/supabase/queries'
+import { getIsAdmin } from '@/utils/supabase/queries'
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getServerTranslations()
@@ -13,15 +13,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function NewMemberPage() {
-  const [{ t }, profile] = await Promise.all([
+  const [{ t }, isAdmin] = await Promise.all([
     getServerTranslations(),
-    getProfile()
+    getIsAdmin()
   ])
 
-  const isAdmin = profile?.role === 'admin' && profile.is_active
-  const canEdit =
-    profile?.is_active === true &&
-    (profile.role === 'admin' || profile.role === 'editor')
+  const canEdit = isAdmin
 
   // If user cannot edit, reject access
   if (!canEdit) {

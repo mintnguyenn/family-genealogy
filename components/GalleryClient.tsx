@@ -201,14 +201,16 @@ export default function GalleryClient({
           </nav>
         )}
 
-        <UploadModal
-          key={editingItem?.id || 'new'}
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          onSuccess={handleUploadSuccess}
-          initialData={editingItem}
-          persons={persons}
-        />
+        {isAdmin && (
+          <UploadModal
+            key={editingItem?.id || 'new'}
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            onSuccess={handleUploadSuccess}
+            initialData={editingItem}
+            persons={persons}
+          />
+        )}
       </>
     </GalleryImageErrorContext.Provider>
   )

@@ -57,14 +57,14 @@ describe('ViewOnTreeLink', () => {
 })
 
 describe('member modal header', () => {
-  test('viewers get the tree link but not view/edit', () => {
+  test('guests get the tree and profile links without editing', () => {
     const html = header(false)
     expect(html).toContain(`href="${treeHref}"`)
-    expect(html).not.toContain(`href="/dashboard/members/${id}"`)
+    expect(html).toContain(`href="/dashboard/members/${id}"`)
     expect(html).not.toContain('Chỉnh sửa thành viên')
   })
 
-  test('editors get the tree link next to view and edit', () => {
+  test('admins get the tree link next to view and edit', () => {
     const html = header(true)
     expect(html).toContain(`href="${treeHref}"`)
     expect(html).toContain(`href="/dashboard/members/${id}"`)

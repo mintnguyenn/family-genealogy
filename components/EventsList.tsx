@@ -240,12 +240,14 @@ export default function EventsList({
         </div>
 
         <div className='relative z-10 flex w-full flex-col gap-2 sm:w-auto'>
-          <button
-            onClick={handleOpenCreateModal}
-            className='btn-primary w-full sm:w-auto'>
-            <Plus className='size-5 text-stone-300' />
-            <span>{t('addEvent')}</span>
-          </button>
+          {isAdmin && (
+            <button
+              onClick={handleOpenCreateModal}
+              className='btn-primary w-full sm:w-auto'>
+              <Plus className='size-5 text-stone-300' />
+              <span>{t('addEvent')}</span>
+            </button>
+          )}
           <button
             onClick={handleDownloadIcs}
             title={t('addToCalendarHint')}
@@ -366,12 +368,14 @@ export default function EventsList({
         </button>
       )}
 
-      <CustomEventModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSuccess={handleModalSuccess}
-        eventToEdit={editingCustomEvent}
-      />
+      {isAdmin && (
+        <CustomEventModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSuccess={handleModalSuccess}
+          eventToEdit={editingCustomEvent}
+        />
+      )}
     </div>
   )
 }

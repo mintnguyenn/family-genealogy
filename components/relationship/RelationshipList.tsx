@@ -11,7 +11,6 @@ import { getAvatarBg } from '@/utils/styleHelpers'
 
 interface RelationshipListProps {
   relationships: EnrichedRelationship[]
-  isAdmin: boolean
   canEdit: boolean
   onPersonClick: (id: string) => void
   onDelete: (relId: string) => void
@@ -21,7 +20,6 @@ const GROUP_ORDER = ['parent', 'spouse', 'child', 'child_in_law'] as const
 
 export default function RelationshipList({
   relationships,
-  isAdmin,
   canEdit,
   onPersonClick,
   onDelete
@@ -46,7 +44,7 @@ export default function RelationshipList({
         if (group === 'child') title = t('relationChildren')
         if (group === 'child_in_law') title = t('relationInLawChildren')
 
-        if (items.length === 0 && !isAdmin) return null // Hide empty sections for members? Or show empty state?
+        if (items.length === 0) return null // Hide empty sections for members? Or show empty state?
 
         return (
           <div

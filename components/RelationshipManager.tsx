@@ -35,14 +35,12 @@ import {
 
 interface RelationshipManagerProps {
   person: Person
-  isAdmin: boolean
   canEdit?: boolean
   onStatsLoaded?: (stats: RelationshipStats) => void
 }
 
 export default function RelationshipManager({
   person,
-  isAdmin,
   canEdit = false,
   onStatsLoaded
 }: RelationshipManagerProps) {
@@ -174,7 +172,6 @@ export default function RelationshipManager({
   const relationshipList = (
     <RelationshipList
       relationships={relationships}
-      isAdmin={isAdmin}
       canEdit={canEdit}
       onPersonClick={handlePersonClick}
       onDelete={handleDelete}

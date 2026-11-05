@@ -8,14 +8,13 @@ import { AvatarUrlProvider } from '@/context/AvatarUrlContext'
 import { MemberListProvider } from '@/context/MemberListContext'
 import { getServerTranslations } from '@/lib/i18n/server'
 import { Person, Relationship } from '@/types'
-import { NO_SIGNED_AVATAR_URLS } from '@/utils/avatar'
 import { signAvatarUrls } from '@/utils/avatarSigning'
 import {
   PERSON_LIST_COLUMNS,
   RELATIONSHIP_COLUMNS
 } from '@/utils/personColumns'
 import { fetchAllRowsOrThrow } from '@/utils/supabase/fetchAll'
-import { getProfile, getSupabase } from '@/utils/supabase/queries'
+import { getIsAdmin, getSupabase } from '@/utils/supabase/queries'
 import { pickDefaultRootId } from '@/utils/treeRoot'
 import { parseViewMode } from '@/utils/viewMode'
 
@@ -33,10 +32,8 @@ export default async function FamilyTreePage({ searchParams }: PageProps) {
   const initialView = view === undefined ? undefined : parseViewMode(view)
   const initialShowAvatar = avatar !== 'hide'
 
-  const profile = await getProfile()
-  const canEdit =
-    profile?.is_active === true &&
-    (profile.role === 'admin' || profile.role === 'editor')
+  const isAdmin = await getIsAdmin()
+  const canEdit = isAdmin
 
   // If view is list, we only need persons, not relationships.
   // We fetch persons for all views to pass down as a prop if we want, or let components fetch.
@@ -72,9 +69,7 @@ export default async function FamilyTreePage({ searchParams }: PageProps) {
   // of one /api/avatar round trip per member. Storage RLS only lets active
   // users sign, the same rule the /api/avatar route applies; the same URLs
   // come back on the next load, so the browser serves the photos from cache.
-  const signedAvatarUrls = profile?.is_active
-    ? await signAvatarUrls(supabase, persons)
-    : NO_SIGNED_AVATAR_URLS
+  const signedAvatarUrls = await signAvatarUrls(supabase, persons)
 
   // Prepare map and roots for tree views
   const personsMap = new Map()

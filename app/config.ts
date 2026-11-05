@@ -4,9 +4,6 @@ const config = {
   siteName: process.env.SITE_NAME || 'Suối Nguồn Yêu Thương',
   // Shown under the icon when the app is installed on a phone's home screen.
   shortName: process.env.SHORT_NAME?.trim() || 'Gia Phả',
-  exampleEmail: process.env.EXAMPLE_EMAIL || '',
-  examplePassword: process.env.EXAMPLE_PASSWORD || '',
-  demoDomain: process.env.DEMO_DOMAIN || 'giapha-os.homielab.com',
   siteUrl: getSiteUrl()
 }
 

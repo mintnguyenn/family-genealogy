@@ -2,7 +2,6 @@ import { describe, expect, test } from 'bun:test'
 import type { ReactNode } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 
-import AdminUserRow from '@/components/admin/AdminUserRow'
 import { TreeExpandToggle } from '@/components/FamilyTreeNodeRenderer'
 import { ExpandToggle } from '@/components/MindmapNode'
 import { MindmapExpandControls } from '@/components/MindmapToolbar'
@@ -10,7 +9,6 @@ import { TreeToolbarControls } from '@/components/TreeToolbar'
 import { interpolate } from '@/lib/i18n/interpolate'
 import { messages } from '@/lib/i18n/messages'
 import { I18nContext } from '@/lib/i18n/useI18n'
-import type { AdminUserData } from '@/types'
 
 const noop = () => {}
 
@@ -179,34 +177,5 @@ describe('branch expand/collapse toggles', () => {
     ]) {
       expect(buttons(html)[0].attrs).toContain('data-export-ignore="true"')
     }
-  })
-})
-
-describe('admin user row', () => {
-  const user: AdminUserData = {
-    id: 'u2',
-    email: 'member@example.com',
-    role: 'member',
-    is_active: true,
-    created_at: '2026-01-02T00:00:00Z'
-  }
-
-  test('the delete button is named and does not submit forms', () => {
-    const html = render(
-      <table>
-        <tbody>
-          <AdminUserRow
-            user={user}
-            currentUserId='u1'
-            loadingId={null}
-            onRoleChange={noop}
-            onStatusChange={noop}
-            onDelete={noop}
-          />
-        </tbody>
-      </table>
-    )
-    const found = expectNamedButtons(html, 2)
-    expect(found[1].label).toBe('Xoá người dùng')
   })
 })

@@ -10,7 +10,7 @@ import {
   RELATIONSHIP_COLUMNS
 } from '@/utils/personColumns'
 import { fetchAllRowsOrThrow } from '@/utils/supabase/fetchAll'
-import { getProfile, getSupabase } from '@/utils/supabase/queries'
+import { getIsAdmin, getSupabase } from '@/utils/supabase/queries'
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getServerTranslations()
@@ -19,12 +19,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function LineagePage() {
-  const [{ t }, profile] = await Promise.all([
+  const [{ t }, isAdmin] = await Promise.all([
     getServerTranslations(),
-    getProfile()
+    getIsAdmin()
   ])
 
-  if (profile?.role !== 'admin' || !profile.is_active) {
+  if (!isAdmin) {
     redirect('/dashboard')
   }
 

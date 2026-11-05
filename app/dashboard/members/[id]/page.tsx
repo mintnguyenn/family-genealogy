@@ -13,8 +13,8 @@ import { loadMemberPhotos } from '@/utils/gallery'
 import { memberPrintTitle } from '@/utils/memberPrint'
 import { fetchPrivateDetails } from '@/utils/privateDetails'
 import {
+  getIsAdmin,
   getPersonById,
-  getProfile,
   getSupabase
 } from '@/utils/supabase/queries'
 import { isUuid } from '@/utils/uuid'
@@ -36,18 +36,15 @@ export async function generateMetadata({
 }
 
 export default async function MemberDetailPage({ params }: PageProps) {
-  const [{ t }, { id }, profile] = await Promise.all([
+  const [{ t }, { id }, isAdmin] = await Promise.all([
     getServerTranslations(),
     params,
-    getProfile()
+    getIsAdmin()
   ])
   // A shortened or mistyped link is a 404, not a database error.
   if (!isUuid(id)) notFound()
 
-  const isAdmin = profile?.role === 'admin' && profile.is_active
-  const canEdit =
-    profile?.is_active === true &&
-    (profile.role === 'admin' || profile.role === 'editor')
+  const canEdit = isAdmin
 
   const supabase = await getSupabase()
 

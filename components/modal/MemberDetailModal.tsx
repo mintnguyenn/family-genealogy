@@ -64,14 +64,14 @@ export function ModalHeaderActions({
               className='btn-amber text-sm'
               compact
             />
+            <Link
+              href={`/dashboard/members/${person.id}`}
+              className='btn-amber text-sm'>
+              <ExternalLink className='size-4' />
+              <span className='hidden sm:inline'>{t('view')}</span>
+            </Link>
             {canEdit && (
               <>
-                <Link
-                  href={`/dashboard/members/${person.id}`}
-                  className='btn-amber text-sm'>
-                  <ExternalLink className='size-4' />
-                  <span className='hidden sm:inline'>{t('view')}</span>
-                </Link>
                 <button onClick={onStartEdit} className='btn-amber text-sm'>
                   <Edit2 className='size-4' />
                   <span className='hidden sm:inline'>{t('editMember')}</span>
@@ -128,7 +128,7 @@ function ModalBody({
     panel = <LoadingPanel />
   } else if (error) {
     panel = <ErrorPanel error={error} onClose={onClose} />
-  } else if (isEditing && formInitialData) {
+  } else if (canEdit && isEditing && formInitialData) {
     panel = (
       <EditPanel
         formInitialData={formInitialData}
@@ -138,7 +138,7 @@ function ModalBody({
         onCancel={onEditCancel}
       />
     )
-  } else if (showCreateMember) {
+  } else if (canEdit && showCreateMember) {
     panel = (
       <CreatePanel
         isAdmin={isAdmin}
@@ -150,7 +150,7 @@ function ModalBody({
     panel = (
       <DetailPanel
         person={person}
-        privateData={privateData}
+        privateData={isAdmin ? privateData : null}
         isAdmin={isAdmin}
         canEdit={canEdit}
       />
@@ -169,7 +169,7 @@ export default function MemberDetailModal() {
     showCreateMember,
     setShowCreateMember
   } = useMemberListView()
-  const { isAdmin, isEditor: canEdit, supabase } = useUser()
+  const { isAdmin, canEdit, supabase } = useUser()
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
 
@@ -184,7 +184,7 @@ export default function MemberDetailModal() {
   // False when an admin's read of the private details failed: the edit form
   // locks those fields and never deletes the stored row.
   const [privateLoaded, setPrivateLoaded] = useState(true)
-  const isOpen = Boolean(memberId || showCreateMember)
+  const isOpen = Boolean(memberId || (canEdit && showCreateMember))
   // Only the latest member fetch may update the modal: opening A then B
   // quickly must not let a slow response for A replace B.
   const [fetchGuard] = useState(createLatestGuard)
@@ -278,13 +278,14 @@ export default function MemberDetailModal() {
     }
 
     return () => {
+      fetchGuard.invalidate()
       if (timeoutId) clearTimeout(timeoutId)
     }
   })
 
   useEffect(() => {
     return syncModalState(memberId)
-  }, [memberId, showCreateMember])
+  }, [memberId, showCreateMember, isAdmin, canEdit])
 
   // Called by MemberForm after a successful save
   const handleEditSuccess = (savedPersonId: string) => {
@@ -311,7 +312,7 @@ export default function MemberDetailModal() {
 
   // initialData for MemberForm — merge public + private
   const formInitialData = shownPerson
-    ? { ...shownPerson, ...(privateData ?? {}) }
+    ? { ...shownPerson, ...(isAdmin ? (privateData ?? {}) : {}) }
     : undefined
 
   return (
@@ -326,7 +327,7 @@ export default function MemberDetailModal() {
           aria-label={dialogLabel}
           className='items-center justify-center bg-stone-900/50 outline-none open:flex sm:p-6'>
           {/* Click-away backdrop (disabled while editing/creating to avoid accidental close) */}
-          {!isEditing && !showCreateMember && (
+          {(!canEdit || (!isEditing && !showCreateMember)) && (
             <button
               type='button'
               aria-label={t('close')}
@@ -349,7 +350,7 @@ export default function MemberDetailModal() {
             transition={{ duration: 0.15, ease: 'easeOut' }}
             className='relative flex h-full w-full max-w-4xl flex-col overflow-hidden bg-white sm:h-[90dvh] sm:rounded-3xl sm:border sm:border-stone-200'>
             <ModalHeaderActions
-              isEditing={isEditing}
+              isEditing={canEdit && isEditing}
               canEdit={canEdit}
               person={shownPerson}
               onBack={() => setIsEditing(false)}
@@ -361,7 +362,7 @@ export default function MemberDetailModal() {
               loading={loading}
               error={error}
               isEditing={isEditing}
-              showCreateMember={showCreateMember}
+              showCreateMember={canEdit && showCreateMember}
               person={shownPerson}
               privateData={privateData}
               privateLoaded={privateLoaded}

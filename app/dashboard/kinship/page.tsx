@@ -3,10 +3,9 @@ import { Suspense } from 'react'
 import KinshipFinder from '@/components/KinshipFinder'
 import { AvatarUrlProvider } from '@/context/AvatarUrlContext'
 import { getServerTranslations } from '@/lib/i18n/server'
-import { NO_SIGNED_AVATAR_URLS } from '@/utils/avatar'
 import { signAvatarUrls } from '@/utils/avatarSigning'
 import { fetchAllRowsOrThrow } from '@/utils/supabase/fetchAll'
-import { getProfile, getSupabase } from '@/utils/supabase/queries'
+import { getSupabase } from '@/utils/supabase/queries'
 
 export async function generateMetadata() {
   const { t } = await getServerTranslations()
@@ -14,10 +13,9 @@ export async function generateMetadata() {
 }
 
 export default async function KinshipPage() {
-  const [{ t }, supabase, profile] = await Promise.all([
+  const [{ t }, supabase] = await Promise.all([
     getServerTranslations(),
-    getSupabase(),
-    getProfile()
+    getSupabase()
   ])
 
   const [{ data: persons }, { data: relationships }] = await Promise.all([
@@ -40,9 +38,7 @@ export default async function KinshipPage() {
     )
   ])
 
-  const signedAvatarUrls = profile?.is_active
-    ? await signAvatarUrls(supabase, persons ?? [])
-    : NO_SIGNED_AVATAR_URLS
+  const signedAvatarUrls = await signAvatarUrls(supabase, persons ?? [])
 
   return (
     <div className='relative flex w-full flex-1 flex-col pb-12'>

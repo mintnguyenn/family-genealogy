@@ -58,7 +58,6 @@ describe('screen readers hear each person once, with gender', () => {
             note: null
           } as never
         ]}
-        isAdmin={false}
         canEdit={false}
         onPersonClick={noop}
         onDelete={noop}

@@ -13,6 +13,7 @@ export default function DashboardHeader() {
         <div className='flex items-center gap-4'>
           <Link
             href='/dashboard'
+            aria-label={config.siteName}
             className='group flex items-center gap-2 sm:gap-3'>
             <div className='relative size-10 shrink-0 overflow-hidden rounded-xl transition-colors'>
               <Image
@@ -23,15 +24,21 @@ export default function DashboardHeader() {
                 sizes='40px'
               />
             </div>
-            <span className='font-serif text-xl font-semibold text-stone-800 transition-colors group-hover:text-amber-700 sm:text-2xl'>
+            <span className='hidden font-serif text-xl font-semibold text-stone-800 transition-colors group-hover:text-amber-700 sm:block sm:text-2xl'>
               {config.siteName}
             </span>
           </Link>
         </div>
-        <div className='flex items-center gap-4'>
+        <div className='flex items-center gap-2 sm:gap-4'>
           <GlobalMemberSearch />
-          <LanguageSwitcher />
-          <HeaderMenu />
+          <div className='hidden sm:block'>
+            <LanguageSwitcher />
+          </div>
+          <HeaderMenu
+            loginEnabled={Boolean(
+              process.env.ADMIN_USERNAME && process.env.ADMIN_PASSWORD
+            )}
+          />
         </div>
       </div>
     </header>

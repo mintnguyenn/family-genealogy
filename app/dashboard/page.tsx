@@ -11,7 +11,6 @@ import {
   ListOrdered,
   Network,
   Star,
-  Users,
   type LucideIcon
 } from 'lucide-react'
 import type { Metadata } from 'next'
@@ -118,12 +117,6 @@ export default async function DashboardLaunchpad() {
   ]
 
   const adminFeatures: Feature[] = [
-    {
-      title: t('manageUsers'),
-      description: t('manageUsersDescription'),
-      icon: Users,
-      href: '/dashboard/users'
-    },
     {
       title: t('lineageOrder'),
       description: t('lineageDescription'),
