@@ -4,7 +4,6 @@ import path from 'path'
 import { ArrowLeft, Database, Play } from 'lucide-react'
 import Link from 'next/link'
 
-import Footer from '@/components/Footer'
 import { getServerTranslations } from '@/lib/i18n/server'
 
 import CopyButton from './CopyButton'
@@ -127,8 +126,6 @@ export default async function SetupPage() {
         <ArrowLeft className='size-4' />
         {t('backToLogin')}
       </Link>
-
-      <Footer className='relative z-10 mt-auto border-none bg-transparent' />
     </div>
   )
 }

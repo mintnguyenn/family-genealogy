@@ -12,6 +12,8 @@ export type { Locale, TranslationValues }
 export const messages = {
   vi: {
     ...globalErrorMessages.vi,
+    relationshipMemberList: 'Hoặc chọn trực tiếp từ danh sách thành viên',
+    relationshipSelectMember: '-- Chọn thành viên --',
     language: 'Ngôn ngữ',
     vietnamese: 'Tiếng Việt',
     english: 'English',
@@ -491,19 +493,9 @@ export const messages = {
       'Tài khoản của bạn đã được đăng ký thành công. Tuy nhiên, hệ thống yêu cầu Quản trị viên kích hoạt tài khoản của bạn trước khi bạn có thể xem các thông tin gia đình.',
     pendingNote:
       'Vui lòng liên hệ lại với người quản trị dòng họ để được cấp quyền sớm nhất.',
-    landingBadge: 'Nền tảng gia phả hiện đại & bảo mật',
     landingDescription:
       'Gìn giữ và lưu truyền những giá trị, cội nguồn và truyền thống tốt đẹp của dòng họ cho các thế hệ mai sau.',
     landingCta: 'Đăng nhập để xem thông tin',
-    featureMembers: 'Quản lý thành viên',
-    featureMembersDescription:
-      'Cập nhật thông tin chi tiết, tiểu sử và hình ảnh của từng thành viên trong dòng họ một cách nhanh chóng và bảo mật.',
-    featureTree: 'Sơ đồ sáng tạo',
-    featureTreeDescription:
-      'Xem trực quan sơ đồ phả hệ, thế hệ và mối quan hệ gia đình với giao diện cây hiện đại, dễ thao tác.',
-    featureSecurity: 'Bảo mật tối đa',
-    featureSecurityDescription:
-      'Dữ liệu riêng tư như số điện thoại, quê quán được phân quyền chặt chẽ, bảo vệ an toàn trên hệ thống đám mây.',
     login: 'Đăng nhập',
     signUp: 'Đăng ký',
     loginDescription: 'Đăng nhập để truy cập gia phả.',
@@ -1396,6 +1388,8 @@ export const messages = {
   },
   en: {
     ...globalErrorMessages.en,
+    relationshipMemberList: 'Or choose directly from the member list',
+    relationshipSelectMember: '-- Select a member --',
     language: 'Language',
     vietnamese: 'Tiếng Việt',
     english: 'English',
@@ -1882,19 +1876,9 @@ export const messages = {
       'Your account was registered successfully. However, an administrator must activate it before you can view family information.',
     pendingNote:
       'Please contact your family administrator to receive access as soon as possible.',
-    landingBadge: 'A modern and secure family tree platform',
     landingDescription:
       'Preserve and pass down your family values, roots, and traditions to future generations.',
     landingCta: 'Log in to view information',
-    featureMembers: 'Manage members',
-    featureMembersDescription:
-      'Quickly and securely update detailed information, biographies, and photos for every family member.',
-    featureTree: 'Creative visual maps',
-    featureTreeDescription:
-      'Explore family lines, generations, and relationships through a modern, easy-to-use tree interface.',
-    featureSecurity: 'Maximum security',
-    featureSecurityDescription:
-      'Private data such as phone numbers and hometowns is strictly permissioned and safely protected in the cloud.',
     login: 'Log in',
     signUp: 'Sign up',
     loginDescription: 'Log in to access the family tree.',
