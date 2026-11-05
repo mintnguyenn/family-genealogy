@@ -8,7 +8,6 @@ import {
   Flower2,
   GitMerge,
   Image as ImageIcon,
-  Info,
   ListOrdered,
   Network,
   Star,
@@ -115,12 +114,6 @@ export default async function DashboardLaunchpad() {
       description: t('galleryDescriptionShort'),
       icon: ImageIcon,
       href: '/dashboard/gallery'
-    },
-    {
-      title: t('about'),
-      description: t('aboutDescriptionShort'),
-      icon: Info,
-      href: '/about'
     }
   ]
 

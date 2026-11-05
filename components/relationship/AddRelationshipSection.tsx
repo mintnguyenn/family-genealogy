@@ -105,9 +105,10 @@ export default function AddRelationshipSection({
     [allPersons, searchTerm]
   )
 
-  const handleTargetSelect = (p: PickerPerson) => {
-    setSelectedTargetId(p.id)
-    setSearchTerm(p.full_name)
+  const handleTargetSelect = (p: PickerPerson | null) => {
+    setPendingWarning(null)
+    setSelectedTargetId(p?.id ?? null)
+    setSearchTerm(p?.full_name ?? '')
   }
 
   const handleSave = async (acceptWarnings = false) => {
@@ -199,9 +200,14 @@ export default function AddRelationshipSection({
         newRelType={newRelType}
         onTypeChange={setNewRelType}
         searchTerm={searchTerm}
-        onSearchTermChange={setSearchTerm}
+        onSearchTermChange={(value) => {
+          setSelectedTargetId(null)
+          setPendingWarning(null)
+          setSearchTerm(value)
+        }}
         searchResults={searchResults}
         recentMembers={recentMembers}
+        allMembers={allPersons}
         selectedTargetId={selectedTargetId}
         onTargetSelect={handleTargetSelect}
         processing={processing}

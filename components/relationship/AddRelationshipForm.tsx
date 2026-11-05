@@ -19,8 +19,9 @@ interface AddRelationshipFormProps {
   onSearchTermChange: (value: string) => void
   searchResults: PickerPerson[]
   recentMembers: PickerPerson[]
+  allMembers: PickerPerson[]
   selectedTargetId: string | null
-  onTargetSelect: (person: PickerPerson) => void
+  onTargetSelect: (person: PickerPerson | null) => void
   processing: boolean
   onSave: () => void
   onCancel: () => void
@@ -49,6 +50,7 @@ export default function AddRelationshipForm({
   onSearchTermChange,
   searchResults,
   recentMembers,
+  allMembers,
   selectedTargetId,
   onTargetSelect,
   processing,
@@ -242,6 +244,32 @@ export default function AddRelationshipForm({
               {t('selectedPerson', { name: searchTerm })}
             </p>
           )}
+        </div>
+
+        <div>
+          <label
+            htmlFor='rel-member'
+            className='mb-1 block text-sm font-medium text-stone-600'>
+            {t('relationshipMemberList')}
+          </label>
+          <select
+            id='rel-member'
+            name='rel-member'
+            value={selectedTargetId ?? ''}
+            onChange={(e) =>
+              onTargetSelect(
+                allMembers.find((p) => p.id === e.target.value) ?? null
+              )
+            }
+            className='block w-full rounded-lg border border-stone-300 bg-white p-2 text-sm text-stone-900 transition-colors focus:border-amber-500 focus:ring-amber-500 sm:p-2.5'>
+            <option value=''>{t('relationshipSelectMember')}</option>
+            {allMembers.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.full_name}
+                {p.birth_year ? ` (${p.birth_year})` : ''}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className='flex gap-2 pt-2'>

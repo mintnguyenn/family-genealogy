@@ -4,7 +4,6 @@ import React from 'react'
 
 import config from '@/app/config'
 import DashboardHeader from '@/components/DashboardHeader'
-import Footer from '@/components/Footer'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import LogoutButton from '@/components/LogoutButton'
 import { UserProvider } from '@/components/UserProvider'
@@ -69,7 +68,6 @@ export default async function DashboardLayout({
             </p>
           </div>
         </main>
-        <Footer className='mt-auto border-t border-stone-200 bg-white' />
       </div>
     )
   }
@@ -79,10 +77,6 @@ export default async function DashboardLayout({
       <div className='flex min-h-screen flex-col bg-neutral font-sans text-primary print:bg-white'>
         <DashboardHeader />
         {children}
-        <Footer
-          className='mt-auto border-t border-stone-200 bg-white'
-          showDisclaimer={true}
-        />
       </div>
     </UserProvider>
   )

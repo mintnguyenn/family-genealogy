@@ -18,7 +18,6 @@ import {
   SsoNotice
 } from '@/components/auth/AuthFormParts'
 import SsoButtons from '@/components/auth/SsoButtons'
-import Footer from '@/components/Footer'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import { useI18n } from '@/lib/i18n/useI18n'
 import { authErrorKey } from '@/utils/authErrors'
@@ -302,8 +301,6 @@ export default function LoginPage() {
           </form>
         </m.div>
       </div>
-
-      <Footer className='relative z-10 mt-auto border-none bg-transparent' />
     </div>
   )
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { m, Variants } from 'framer-motion'
-import { ArrowRight, Network, ShieldCheck, Sparkles, Users } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
 import { useI18n } from '@/lib/i18n/useI18n'
@@ -29,23 +29,6 @@ interface LandingHeroProps {
 
 export default function LandingHero({ siteName }: LandingHeroProps) {
   const { t } = useI18n()
-  const features = [
-    {
-      icon: <Users className='size-6 text-amber-700' />,
-      title: t('featureMembers'),
-      desc: t('featureMembersDescription')
-    },
-    {
-      icon: <Network className='size-6 text-amber-700' />,
-      title: t('featureTree'),
-      desc: t('featureTreeDescription')
-    },
-    {
-      icon: <ShieldCheck className='size-6 text-amber-700' />,
-      title: t('featureSecurity'),
-      desc: t('featureSecurityDescription')
-    }
-  ]
 
   return (
     <m.div
@@ -56,19 +39,11 @@ export default function LandingHero({ siteName }: LandingHeroProps) {
       <m.div
         className='flex flex-col items-center space-y-6 sm:space-y-8'
         variants={fadeIn}>
-        <m.div
-          whileHover={{ scale: 1.05 }}
-          className='group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full border border-amber-200/50 bg-white/60 px-4 py-2 text-sm font-medium text-amber-800'>
-          <Sparkles className='size-4 text-amber-500' />
-          {t('landingBadge')}
-          <div className='absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/50 to-transparent transition-transform duration-1000 ease-in-out group-hover:translate-x-full'></div>
-        </m.div>
-
         <h1 className='max-w-4xl font-serif text-5xl leading-[1.1] font-semibold text-stone-900 sm:text-6xl md:text-7xl lg:text-[5rem]'>
           <span className='block'>{siteName}</span>
         </h1>
 
-        <p className='mx-auto max-w-2xl text-sm leading-relaxed font-light text-stone-600'>
+        <p className='mx-auto max-w-3xl text-sm leading-relaxed font-light text-stone-600'>
           {t('landingDescription')}
         </p>
       </m.div>
@@ -85,29 +60,6 @@ export default function LandingHero({ siteName }: LandingHeroProps) {
             <ArrowRight className='size-5 transition-transform group-hover:translate-x-1.5' />
           </span>
         </Link>
-      </m.div>
-
-      <m.div
-        className='relative mt-24 grid grid-cols-1 gap-6 border-t border-stone-200/50 text-left sm:gap-8 md:grid-cols-3'
-        variants={staggerContainer}>
-        {features.map((feature) => (
-          <m.div
-            key={feature.title}
-            variants={fadeIn}
-            whileHover={{ y: -5 }}
-            className='card-feature group relative flex flex-col items-start overflow-hidden'>
-            <div className='absolute top-0 right-0 h-32 w-32 rounded-bl-[100px] bg-linear-to-br from-amber-100/50 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100'></div>
-            <div className='relative z-10 mb-6 rounded-2xl bg-white p-3.5 shadow-sm ring-1 ring-stone-100 transition duration-300 group-hover:scale-110 group-hover:shadow-md'>
-              {feature.icon}
-            </div>
-            <h2 className='relative z-10 mb-3 font-serif text-xl font-semibold text-stone-800 transition-colors group-hover:text-amber-900 sm:text-2xl'>
-              {feature.title}
-            </h2>
-            <p className='relative z-10 text-sm leading-relaxed text-stone-600'>
-              {feature.desc}
-            </p>
-          </m.div>
-        ))}
       </m.div>
     </m.div>
   )

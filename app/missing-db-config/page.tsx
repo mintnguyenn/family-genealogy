@@ -4,7 +4,6 @@ import { m } from 'framer-motion'
 import { ArrowLeft, Database, Settings, Terminal } from 'lucide-react'
 import Link from 'next/link'
 
-import Footer from '@/components/Footer'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import { useI18n } from '@/lib/i18n/useI18n'
 
@@ -101,8 +100,6 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=your_supabase_anon_key`}
         <ArrowLeft className='size-4' />
         {t('home')}
       </Link>
-
-      <Footer className='relative z-10 mt-auto border-none bg-transparent' />
     </div>
   )
 }

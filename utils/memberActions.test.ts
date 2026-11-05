@@ -57,7 +57,8 @@ mock.module('@/lib/i18n/server', () => ({
   })
 }))
 mock.module('next/cache', () => ({ revalidatePath }))
-mock.module('next/navigation', () => ({ redirect }))
+const navigation = await import('next/navigation')
+mock.module('next/navigation', () => ({ ...navigation, redirect }))
 
 // The query string loads the real module even when another test file
 // (utils/memberFormSubmit.test.ts) has mocked '@/app/actions/member': bun
