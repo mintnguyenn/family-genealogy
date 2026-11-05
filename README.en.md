@@ -1,102 +1,46 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/homielab/giapha-os/main/public/icon.png" alt="Gia Pha OS Icon" width="100" height="100" style="border-radius: 22%; border: 0.5px solid rgba(0,0,0,0.1);" />
-</p>
+# Personal family genealogy
 
-# Gia Pha OS (Gia Pha Open Source)
+A personal fork of [Gia Phả OS](https://github.com/homielab/giapha-os).
 
-[English](README.en.md) | [Tiếng Việt](README.md)
+## Run locally
 
-An open-source family genealogy application with an intuitive interface for exploring family trees, managing members, and finding Vietnamese kinship terms.
+Install Bun and Node.js. Prepare your own workbook at `data/Family_Genealogy.xlsx` using the structure below, then start the app:
 
-The project was created to solve a practical need: a cloud-based system that allows family members in different places to update information together, such as marriages and births, instead of relying on a single local computer. Self-hosting this open-source project gives your family full control over sensitive data rather than handing it to third-party services. I initially built it for my own family, but decided to share it publicly after receiving interest from others.
+```sh
+bun install
+bun run dev
+```
 
-Designed primarily for Vietnamese families.
+Open http://localhost:3000/dashboard. On first setup, copy `.env.example` to `.env.local` and choose your own `ADMIN_USERNAME` and `ADMIN_PASSWORD` to enable login. Other settings are optional. There are no built-in credentials; without both values the app is read-only for guests.
 
-## Documentation
+## Current state
 
-| Document                                    | What it covers                                                              |
-| ------------------------------------------- | --------------------------------------------------------------------------- |
-| [Installation](docs/en/install.md)          | Supabase database, Vercel deploy, running locally, Docker, sign-up errors   |
-| [Accounts and sign-in](docs/en/accounts.md) | First account, approving new accounts, email notifications, Google/Facebook |
-| [Upgrading](docs/en/upgrade.md)             | Upgrades in the Dashboard, database migrations, updating the source code    |
-| [Features in detail](docs/en/features.md)   | Lunar calendar and anniversaries, .ics files, data checks, backups, photos  |
-| [GEDCOM](docs/en/gedcom.md)                 | GEDCOM export and import with Gramps, MyHeritage and other programs         |
+- Guests can browse; log in with the privately configured account to add, edit and delete data in the workbook.
+- Members and relationships are stored in `data/Family_Genealogy.xlsx`. The repository contains no Excel data files.
+- Edit through the website, or save the workbook in Excel and reload the page. Close Excel before saving from the website.
+- Data reads are defined in `lib/data.ts`. Local authentication is implemented in `app/actions/auth.ts` and `lib/auth.ts`.
+- Tree components, kinship calculations, lunar dates and JSON/CSV/GEDCOM import/export reuse the original repository's code.
+- Uploaded images are stored in `uploads/` alongside the workbook and served through `/uploads/` routes.
 
-## Key features
+See the [feature guide](docs/en/features.md) and [GEDCOM import and export guide](docs/en/gedcom.md).
 
-- **Interactive family trees**: explore the family as a Tree, Mindmap or Bubble view; drag and zoom with a mouse, touch or the keyboard.
-- **Image and PDF export**: export the tree as an image, a single-page PDF, or a multi-page A4/A3 PDF to print and glue together.
-- **Kinship finder**: work out the correct Vietnamese form of address (Bác, Chú, Cô, Dì...) between two members.
-- **Members and relationships**: details, profile photos, burial place and branch order; polygamous marriages and adopted children are supported. Press ⌘/Ctrl + K to find a member quickly.
-- **Data checks**: warnings for impossible relationships, wrong dates and possible duplicates; merge two duplicate profiles.
-- **Statistics and events**: birthdays, death anniversaries on the Vietnamese lunar calendar, custom events and family statistics; add them all to Google/Apple Calendar with an .ics file.
-- **Profiles and family book**: print one member's profile, or the whole family tree as a book, generation by generation.
-- **Photo gallery**: keep family photos and tag the members in them.
-- **Backup and restore**: export and import JSON, CSV and GEDCOM; replace the whole tree or add a branch to the current one.
-- **Security**: Admin, Editor and Member roles, with data protected by Supabase.
-- **Responsive, bilingual**: works on desktop and mobile, switches between Vietnamese and English, and can be added to the home screen.
+## Excel data
 
-Every feature in full: [docs/en/features.md](docs/en/features.md).
+Edit `data/Family_Genealogy.xlsx`. The workbook has two required sheets with column names in the first row:
 
-## Demo
+- `persons`: required columns `id`, `full_name`, `gender` (`male`, `female`, `other`). Optional date parts such as `birth_year`, `birth_month`, `birth_day` may be left blank. Other public fields follow `types/index.ts`; boolean fields use `TRUE`/`FALSE` and default to `FALSE`.
+- `relationships`: required columns `id`, `type`, `person_a`, `person_b`. For `biological_child`/`adopted_child`, A is the parent and B is the child. Store each `marriage` once.
 
-- Demo: [giapha-os.homielab.com](https://giapha-os.homielab.com)
-- Account: `giaphaos@homielab.com`
-- Password: `giaphaos`
+IDs must be unique UUIDs and stay unchanged when names are edited. Invalid IDs, dates and relationship graphs cause an error rather than being silently skipped. Row timestamps reflect the workbook modification time.
 
-## Screenshots
+All files under `data/`, including the workbook, its `.bak` backup and images, are ignored by Git. Override `FAMILY_DATA_FILE` in `.env.local` if you prefer another path. Restart after changing this configuration; subsequent workbook edits only require saving and reloading the page. The server reads the workbook outside `public/`; deploy it together with its `uploads/` directory and configure its path there.
 
-![Family tree](docs/screenshots/tree.png)
+Docker Compose mounts the `family-data` volume at `/app/data` and retains it across container replacements. The image contains no workbook; supply your own workbook and images in the volume before use. This volume is separate from the host's `data/` directory. Compose sets `FAMILY_DATA_FILE` to the container path. Running `docker compose down -v` deletes the volume and its data.
 
-![Kinship finder](docs/screenshots/kinship.png)
+The application creates `person_details_private`, `custom_events`, `gallery` and `gallery_item_persons` sheets as needed. The last sheet stores `gallery_item_id`, `person_id` pairs for photo tags; use the web interface rather than editing it manually. Private details are only returned to admins. Other sheets, custom columns and supported styles are preserved. This is a data workbook; advanced Excel features such as macros are not supported.
 
-More screenshots: [docs/screenshots/](docs/screenshots/)
+Writes use an inter-process lock, validate the current data and detect external edits before atomic replacement. The previous workbook is saved as `.bak`. Saving fails explicitly if Excel has the workbook open or the form is stale. The data directory needs Modify permission. Multiple server processes must share the same workbook and lock directory. Birthdays are derived from member dates. Legacy `.xls` and direct CSV data sources are not supported.
 
-## Installation
+Keep `.env.local`, workbooks, backups and images out of Git and `public/`. Credentials are read only on the server; changing them invalidates old sessions. Configure private environment variables on your deployment server. Back up the workbook together with `uploads/`; JSON/CSV/GEDCOM exports do not include image files.
 
-The easiest way takes about 5 minutes, with no keys to copy and no commands to run:
-
-1. Press [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fhomielab%2Fgiapha-os&project-name=giapha-os&repository-name=giapha-os&env=SITE_NAME&envDescription=The+name+shown+on+your+family+tree+site%2C+for+example%3A+Nguyen+family+tree&stores=%5B%7B%22type%22%3A%22integration%22%2C%22integrationSlug%22%3A%22supabase%22%2C%22productSlug%22%3A%22supabase%22%7D%5D), sign in to Vercel (a GitHub account is recommended) and enter the name of your family tree.
-2. At the **Supabase** step, create a new database. Vercel creates a free database and fills in every setting.
-3. When the deploy finishes, open the site: the **Set up the database** page appears; press **Install the database**.
-4. Register: the first account automatically becomes **admin**.
-
-To let other people register, also follow "Let other people register" in the guide. To use an existing Supabase project, run locally or use Docker: see [docs/en/install.md](docs/en/install.md).
-
-### Sign in with Google and Facebook
-
-Enable Google or Facebook in Supabase (**Authentication → Sign In / Providers**), then add your domain under **Authentication → URL Configuration**. If you have not set this up, set `NEXT_PUBLIC_DISABLE_SSO=true` and deploy again. Full guide: [docs/en/accounts.md](docs/en/accounts.md#sign-in-with-google-and-facebook).
-
-### Source code updates
-
-When `/dashboard/upgrade` says the source code is out of date, update **the whole source code** to the latest version (do not just change `version` in `package.json`):
-
-- **Vercel**: sync the deployed branch with `main` of `homielab/giapha-os` and wait for Vercel to finish deploying.
-- **Locally or self-hosted**: run `git pull --ff-only origin main`, `bun install` and `bun run build`, then restart the app. With Docker, run `docker compose --env-file .env.local up -d --build` again.
-
-Then open `/dashboard/upgrade` to run any missing database migrations. Back up your data first. Details for each migration: [docs/en/upgrade.md](docs/en/upgrade.md).
-
-## User roles
-
-1. **Admin**: full access to the system.
-2. **Editor**: can add, edit and delete member profiles and relationships.
-3. **Member**: can view the family tree and statistics, and add, edit or delete the custom events they created.
-
-Accounts registered after the first one are **Members** and wait for admin approval. See [docs/en/accounts.md](docs/en/accounts.md).
-
-## Contributing
-
-Issue reports and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md). Found a security problem? Report it privately as described in [SECURITY.md](SECURITY.md), not in a public issue.
-
-## Disclaimer and privacy
-
-> **This project provides source code only. The author does not collect or store any personal data.**
-
-- **Fully self-hosted:** all family tree data (names, birth dates, relationships, contact information and more) is stored **in your own Supabase account**. The project author has no access to that database.
-- **No data collection:** the source code includes no analytics, tracking or telemetry.
-- **You control your data:** you can delete, export or move it at any time.
-- **Public demo:** the demo at `giapha-os.homielab.com` uses fictional sample data. Do not enter real personal information on the demo site.
-
-## License
-
-This project is distributed under the [MIT License](LICENSE). Copyright (c) 2026 HomieLab.
+Run `bun run lint`, `bun run typecheck`, `bun test` and `bun run build` to validate changes. Follow [DESIGN.md](DESIGN.md) for UI work. The original attribution and MIT license are in [LICENSE](LICENSE).

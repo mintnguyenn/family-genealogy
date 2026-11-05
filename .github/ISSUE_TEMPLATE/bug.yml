@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        For a security problem, do not use this form: see [SECURITY.md](https://github.com/homielab/giapha-os/blob/main/SECURITY.md).
+        For security problems, contact the repository owner privately. Do not include credentials or real family data in this form.
         Never paste real family data, keys or `.env` contents here.
   - type: textarea
     id: what
