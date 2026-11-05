@@ -9,8 +9,7 @@ import {
   GitMerge,
   Image as ImageIcon,
   Network,
-  Star,
-  Users
+  Star
 } from 'lucide-react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
@@ -127,15 +126,6 @@ export default async function DashboardLaunchpad() {
   ]
 
   const adminFeatures = [
-    {
-      title: t('manageUsers'),
-      description: t('manageUsersDescription'),
-      icon: <Users className='size-8 text-rose-600' />,
-      href: '/dashboard/users',
-      bgColor: 'bg-rose-50',
-      borderColor: 'border-rose-200/60',
-      hoverColor: 'hover:border-rose-400 '
-    },
     {
       title: t('lineageOrder'),
       description: t('lineageDescription'),

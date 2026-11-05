@@ -15,20 +15,7 @@ export async function GET(request: Request) {
   }
 
   const supabase = createClient(await cookies())
-  const {
-    data: { user }
-  } = await supabase.auth.getUser()
-
-  if (!user) return new NextResponse('Unauthorized', { status: 401 })
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('is_active')
-    .eq('id', user.id)
-    .maybeSingle()
-
-  if (!profile?.is_active) return new NextResponse('Forbidden', { status: 403 })
-
+  // Guest access is still governed by the avatars bucket's storage policies.
   const { data, error } = await supabase.storage.from('avatars').download(path)
 
   if (error || !data) return new NextResponse('Not found', { status: 404 })

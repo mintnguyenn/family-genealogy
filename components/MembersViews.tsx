@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import { useSearchParams } from 'next/navigation'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import MemberList from '@/components/MemberList'
 import RootSelector from '@/components/RootSelector'
@@ -43,10 +43,26 @@ interface MembersViewsProps {
 }
 
 export default function MembersViews({
-  persons,
-  relationships,
+  persons: incomingPersons,
+  relationships: incomingRelationships,
   canEdit = false
 }: MembersViewsProps) {
+  // Auth refreshes return new arrays for the same data. Keep their references
+  // stable so tree layouts retain pan, zoom and manually expanded branches.
+  const dataKey = JSON.stringify([incomingPersons, incomingRelationships])
+  const [data, setData] = useState({
+    key: dataKey,
+    persons: incomingPersons,
+    relationships: incomingRelationships
+  })
+  if (data.key !== dataKey) {
+    setData({
+      key: dataKey,
+      persons: incomingPersons,
+      relationships: incomingRelationships
+    })
+  }
+  const { persons, relationships } = data
   const { view: currentView, rootId, setRootId } = useMemberListView()
   const searchParams = useSearchParams()
   const hasRestored = useRef(false)

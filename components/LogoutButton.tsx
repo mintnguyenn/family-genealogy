@@ -1,34 +1,41 @@
 'use client'
 
 import { LogOut } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
 
+import { logout } from '@/app/actions/auth'
 import { useI18n } from '@/lib/i18n/useI18n'
 import { memberSearchCache } from '@/utils/memberSearchCache'
-import { createClient } from '@/utils/supabase/client'
 
-export default function LogoutButton() {
+export default function LogoutButton({
+  onSuccess
+}: {
+  onSuccess?: () => void
+}) {
   const router = useRouter()
-  const supabase = createClient()
+  const pathname = usePathname()
   const { t } = useI18n()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [hasError, setHasError] = useState(false)
 
   const handleLogout = async () => {
     setIsLoggingOut(true)
-    setError(null)
+    setHasError(false)
     try {
-      // signOut reports failure in `error` instead of throwing
-      const { error: signOutError } = await supabase.auth.signOut()
-      if (signOutError) throw signOutError
-      // The next account on this browser must not see this tree's names.
+      await logout()
       memberSearchCache.clear()
-      router.push('/login')
-      router.refresh() // Refresh to clear any cached Server Component data
-    } catch (err) {
-      console.error('Sign out failed:', err)
-      setError(t('logoutFailed'))
+      // Forms have no read-only mode; return to the corresponding reading page.
+      if (pathname === '/dashboard/members/new') {
+        router.replace('/dashboard/members')
+      } else if (/^\/dashboard\/members\/[^/]+\/edit$/.test(pathname)) {
+        router.replace(pathname.slice(0, -5))
+      }
+      onSuccess?.()
+    } catch (error) {
+      console.error('Lỗi đăng xuất:', error)
+      setHasError(true)
+    } finally {
       setIsLoggingOut(false)
     }
   }
@@ -42,9 +49,9 @@ export default function LogoutButton() {
         <LogOut className='size-4' />
         {isLoggingOut ? t('processing') : t('logout')}
       </button>
-      {error && (
-        <p role='alert' className='px-4 pb-2 text-xs text-rose-600'>
-          {error}
+      {hasError && (
+        <p role='alert' className='px-4 py-2 text-sm text-error'>
+          {t('logoutFailed')}
         </p>
       )}
     </>

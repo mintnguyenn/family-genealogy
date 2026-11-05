@@ -5,7 +5,6 @@ import {
   type TranslationKey,
   type TranslationValues
 } from '@/lib/i18n/messages'
-import type { Profile } from '@/types'
 
 import {
   fakeSupabase,
@@ -14,17 +13,13 @@ import {
 } from './testing/fakeSupabase'
 
 // Member server actions in app/actions/member.ts with Supabase, translations
-// and the Next.js helpers replaced. Only an active admin or editor may write;
+// and the Next.js helpers replaced. Only a local admin session may write;
 // everyone else is refused before any query.
 const vi = getMessages('vi')
 
 const MEMBER_ID = '11111111-1111-4111-8111-111111111111'
 
-let user: { id: string } | null = { id: 'u1' }
-let profile: Partial<Profile> | null = {
-  role: 'editor',
-  is_active: true
-}
+let isAdmin = true
 let respond: (call: FakeCall) => FakeResult = () => ({ data: [] })
 let calls: FakeCall[] = []
 const getSupabase = mock(async () => {
@@ -40,9 +35,7 @@ const redirect = mock((path: string) => {
 })
 
 mock.module('@/utils/supabase/queries', () => ({
-  getUser: async () => user,
-  getProfile: async () => profile,
-  getIsAdmin: async () => profile?.role === 'admin' && profile.is_active,
+  getIsAdmin: async () => isAdmin,
   getPersonById: async () => ({ person: null, error: null }),
   getSupabase
 }))
@@ -64,8 +57,7 @@ const { deleteMemberProfile, updateDescendantGenerationsAction } =
   await import('@/app/actions/member')
 
 beforeEach(() => {
-  user = { id: 'u1' }
-  profile = { role: 'editor', is_active: true }
+  isAdmin = true
   respond = () => ({ data: [] })
   calls = []
   getSupabase.mockClear()
@@ -83,27 +75,10 @@ describe('member write actions', () => {
   test.each(Object.entries(writers))(
     '%s refuses a signed-out visitor before the database',
     async (_name, run) => {
-      user = null
+      isAdmin = false
       const result = (await run()) as { error?: string }
       expect(result.error).toBeDefined()
       expect(getSupabase).not.toHaveBeenCalled()
-      expect(calls).toEqual([])
-    }
-  )
-
-  test.each(Object.entries(writers))(
-    '%s refuses a member, a viewer and an inactive editor',
-    async (_name, run) => {
-      for (const p of [
-        null,
-        { role: 'member', is_active: true },
-        { role: 'editor', is_active: false },
-        { role: 'admin', is_active: false }
-      ] as Array<Partial<Profile> | null>) {
-        profile = p
-        const result = (await run()) as { error?: string }
-        expect(result.error).toBeDefined()
-      }
       expect(calls).toEqual([])
       expect(revalidatePath).not.toHaveBeenCalled()
       expect(redirect).not.toHaveBeenCalled()
@@ -117,22 +92,6 @@ describe('deleteMemberProfile', () => {
       error: vi.invalidProfile
     })
     expect(calls).toEqual([])
-  })
-
-  test('reports a failed relationship check and deletes nothing', async () => {
-    respond = () => ({ error: { message: 'down' } })
-    expect(await deleteMemberProfile(MEMBER_ID)).toEqual({
-      error: vi.relationshipCheckError
-    })
-    expect(calls.some((c) => c.op === 'delete')).toBe(false)
-  })
-
-  test('keeps a member who still has relationships', async () => {
-    respond = () => ({ data: [{ id: 'r1' }] })
-    expect(await deleteMemberProfile(MEMBER_ID)).toEqual({
-      error: vi.memberHasRelationships
-    })
-    expect(calls.some((c) => c.op === 'delete')).toBe(false)
   })
 
   test('reports a row that row-level security would not delete', async () => {
@@ -168,6 +127,8 @@ describe('deleteMemberProfile', () => {
       'NEXT_REDIRECT /dashboard/members'
     )
     expect(revalidatePath).toHaveBeenCalledWith('/dashboard/members')
+    // The foreign key cascades atomically; no separate relationship deletion.
+    expect(calls.every((call) => call.table === 'persons')).toBe(true)
   })
 })
 

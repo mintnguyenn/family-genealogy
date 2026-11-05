@@ -12,8 +12,6 @@ export type { Locale, TranslationValues }
 export const messages = {
   vi: {
     ...globalErrorMessages.vi,
-    relationshipMemberList: 'Hoặc chọn trực tiếp từ danh sách thành viên',
-    relationshipSelectMember: '-- Chọn thành viên --',
     language: 'Ngôn ngữ',
     vietnamese: 'Tiếng Việt',
     english: 'English',
@@ -302,7 +300,7 @@ export const messages = {
     csvTooFewFields: 'dòng này có ít ô hơn dòng tiêu đề.',
     csvTooManyFields: 'dòng này có nhiều ô hơn dòng tiêu đề.',
     csvBrokenQuotes: 'dấu nháy kép (") không được đóng hoặc đặt sai chỗ.',
-    logoutFailed: 'Không đăng xuất được, hãy thử lại.',
+    logoutFailed: 'Không thể đăng xuất. Vui lòng thử lại.',
     usageGuide: 'Hướng dẫn sử dụng',
     kinshipReference: 'Bảng danh xưng',
     regionalTerms: 'Quy đổi danh xưng',
@@ -419,14 +417,14 @@ export const messages = {
     lineageUpdateError: 'Lỗi khi cập nhật dữ liệu.',
     invalidProfile: 'Hồ sơ không hợp lệ.',
     memberDeleteAccessDenied:
-      'Từ chối truy cập. Chỉ Admin hoặc Editor mới có quyền xoá hồ sơ.',
+      'Từ chối truy cập. Chỉ quản trị viên mới có quyền xoá hồ sơ.',
     relationshipCheckError: 'Lỗi kiểm tra mối quan hệ gia đình.',
     memberHasRelationships:
       'Không thể xoá. Vui lòng xoá hết các mối quan hệ gia đình của người này trước.',
     memberDeleteError: 'Đã xảy ra lỗi khi xoá hồ sơ.',
     invalidGenerationDelta: 'Giá trị thay đổi thế hệ không hợp lệ.',
     memberEditAccessDenied:
-      'Từ chối truy cập. Chỉ Admin hoặc Editor mới có quyền chỉnh sửa.',
+      'Từ chối truy cập. Chỉ quản trị viên mới có quyền chỉnh sửa.',
     relationshipsFetchError: 'Lỗi lấy danh sách quan hệ',
     generationsFetchError: 'Lỗi lấy thông tin thế hệ',
     descendantGenerationUpdateError:
@@ -495,10 +493,10 @@ export const messages = {
       'Vui lòng liên hệ lại với người quản trị dòng họ để được cấp quyền sớm nhất.',
     landingDescription:
       'Gìn giữ và lưu truyền những giá trị, cội nguồn và truyền thống tốt đẹp của dòng họ cho các thế hệ mai sau.',
-    landingCta: 'Đăng nhập để xem thông tin',
+    landingCta: 'Xem thông tin gia phả',
     login: 'Đăng nhập',
     signUp: 'Đăng ký',
-    loginDescription: 'Đăng nhập để truy cập gia phả.',
+    loginDescription: 'Đăng nhập để thêm và chỉnh sửa thông tin gia đình.',
     signUpDescription: 'Tạo tài khoản thành viên mới.',
     demoNotice: 'Website Demo. Dữ liệu đều không có thật.',
     password: 'Mật khẩu',
@@ -1384,12 +1382,21 @@ export const messages = {
     deleteRelationshipError: 'Không thể xóa: {error}',
     spouseOf: 'Vợ/chồng của {name}',
     daughterInLawOf: 'Con dâu (vợ của {name})',
-    sonInLawOf: 'Con rể (chồng của {name})'
+    sonInLawOf: 'Con rể (chồng của {name})',
+    guest: 'Khách',
+    loginTitle: 'Đăng nhập quản trị',
+    username: 'Tên đăng nhập',
+    loggingIn: 'Đang đăng nhập…',
+    loginInvalidCredentials: 'Tên đăng nhập hoặc mật khẩu không đúng.',
+    loginFailed: 'Không thể đăng nhập. Vui lòng thử lại.',
+    backToDashboard: 'Quay lại bảng điều khiển',
+    relationshipMemberList: 'Hoặc chọn trực tiếp từ danh sách thành viên',
+    relationshipSelectMember: '-- Chọn thành viên --',
+    relationshipMarriageExists:
+      'Hai thành viên này đã được liên kết vợ/chồng trước đó.'
   },
   en: {
     ...globalErrorMessages.en,
-    relationshipMemberList: 'Or choose directly from the member list',
-    relationshipSelectMember: '-- Select a member --',
     language: 'Language',
     vietnamese: 'Tiếng Việt',
     english: 'English',
@@ -1683,7 +1690,7 @@ export const messages = {
     csvTooFewFields: 'this row has fewer cells than the header row.',
     csvTooManyFields: 'this row has more cells than the header row.',
     csvBrokenQuotes: 'a double quote (") is not closed or is misplaced.',
-    logoutFailed: 'Could not log out, please try again.',
+    logoutFailed: 'Unable to log out. Please try again.',
     usageGuide: 'How to use',
     kinshipReference: 'Kinship reference',
     regionalTerms: 'Regional terms',
@@ -1802,14 +1809,13 @@ export const messages = {
     lineageUpdateError: 'Could not update the data.',
     invalidProfile: 'Invalid profile.',
     memberDeleteAccessDenied:
-      'Access denied. Only Admins or Editors can delete profiles.',
+      'Access denied. Only the admin can delete profiles.',
     relationshipCheckError: 'Could not check family relationships.',
     memberHasRelationships:
       'Cannot delete this profile. Remove all family relationships first.',
     memberDeleteError: 'An error occurred while deleting the profile.',
     invalidGenerationDelta: 'The generation change value is invalid.',
-    memberEditAccessDenied:
-      'Access denied. Only Admins or Editors can edit profiles.',
+    memberEditAccessDenied: 'Access denied. Only the admin can edit profiles.',
     relationshipsFetchError: 'Could not load relationships.',
     generationsFetchError: 'Could not load generations.',
     descendantGenerationUpdateError:
@@ -1878,10 +1884,10 @@ export const messages = {
       'Please contact your family administrator to receive access as soon as possible.',
     landingDescription:
       'Preserve and pass down your family values, roots, and traditions to future generations.',
-    landingCta: 'Log in to view information',
+    landingCta: 'View family tree',
     login: 'Log in',
     signUp: 'Sign up',
-    loginDescription: 'Log in to access the family tree.',
+    loginDescription: 'Log in to add and edit family information.',
     signUpDescription: 'Create a new member account.',
     demoNotice: 'Demo website. All data is fictional.',
     password: 'Password',
@@ -2775,7 +2781,17 @@ export const messages = {
     deleteRelationshipError: 'Could not delete: {error}',
     spouseOf: 'Spouse of {name}',
     daughterInLawOf: 'Daughter-in-law (wife of {name})',
-    sonInLawOf: 'Son-in-law (husband of {name})'
+    sonInLawOf: 'Son-in-law (husband of {name})',
+    guest: 'Guest',
+    loginTitle: 'Admin login',
+    username: 'Username',
+    loggingIn: 'Logging in…',
+    loginInvalidCredentials: 'Incorrect username or password.',
+    loginFailed: 'Unable to log in. Please try again.',
+    backToDashboard: 'Back to dashboard',
+    relationshipMemberList: 'Or choose directly from the member list',
+    relationshipSelectMember: '-- Select a member --',
+    relationshipMarriageExists: 'These members are already linked as spouses.'
   }
 } as const
 

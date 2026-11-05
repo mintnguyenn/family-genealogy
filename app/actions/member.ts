@@ -11,51 +11,25 @@ import {
   collectDescendants
 } from '@/utils/generationUpdates'
 import { fetchAllRows, fetchInChunks } from '@/utils/supabase/fetchAll'
-import { getProfile, getSupabase, getUser } from '@/utils/supabase/queries'
+import { getIsAdmin, getSupabase } from '@/utils/supabase/queries'
 import { isUuid } from '@/utils/uuid'
 import { PersonNotDeletedError } from '@/utils/writeErrors'
 
 export async function deleteMemberProfile(memberId: string) {
-  const [user, { t }] = await Promise.all([getUser(), getServerTranslations()])
-
-  if (!user) {
-    return { error: t('memberDeleteAccessDenied') }
-  }
+  const { t } = await getServerTranslations()
 
   if (!isUuid(memberId)) {
     return { error: t('invalidProfile') }
   }
 
-  const [profile, supabase] = await Promise.all([getProfile(), getSupabase()])
-
-  if (
-    !profile?.is_active ||
-    (profile.role !== 'admin' && profile.role !== 'editor')
-  ) {
+  if (!(await getIsAdmin())) {
     return {
       error: t('memberDeleteAccessDenied')
     }
   }
 
-  // 2. Check for existing relationships
-  const { data: relationships, error: relationshipError } = await supabase
-    .from('relationships')
-    .select('id')
-    .or(`person_a.eq.${memberId},person_b.eq.${memberId}`)
-    .limit(1)
-
-  if (relationshipError) {
-    console.error('Error checking relationships:', relationshipError)
-    return { error: t('relationshipCheckError') }
-  }
-
-  if (relationships && relationships.length > 0) {
-    return {
-      error: t('memberHasRelationships')
-    }
-  }
-
-  // 3. Delete the member row, then its avatar file
+  const supabase = await getSupabase()
+  // ON DELETE CASCADE removes relationships atomically with the person.
   try {
     await deleteMember(supabase, memberId)
   } catch (err) {
@@ -66,7 +40,6 @@ export async function deleteMemberProfile(memberId: string) {
     return { error: t('memberDeleteError') }
   }
 
-  // 4. Revalidate and redirect
   revalidatePath('/dashboard/members')
   redirect('/dashboard/members')
 }
@@ -75,11 +48,7 @@ export async function updateDescendantGenerationsAction(
   personId: string,
   generationDelta: number
 ) {
-  const [user, { t }] = await Promise.all([getUser(), getServerTranslations()])
-
-  if (!user) {
-    return { error: t('memberEditAccessDenied') }
-  }
+  const { t } = await getServerTranslations()
 
   if (!isUuid(personId)) {
     return { error: t('invalidProfile') }
@@ -95,17 +64,13 @@ export async function updateDescendantGenerationsAction(
       : { error: t('invalidGenerationDelta') }
   }
 
-  const [profile, supabase] = await Promise.all([getProfile(), getSupabase()])
-
-  if (
-    !profile?.is_active ||
-    (profile.role !== 'admin' && profile.role !== 'editor')
-  ) {
+  if (!(await getIsAdmin())) {
     return {
       error: t('memberEditAccessDenied')
     }
   }
 
+  const supabase = await getSupabase()
   // 1. Fetch all parent-child relationships
   const { data: relationships, error: relError } = await fetchAllRows<{
     person_a: string
