@@ -64,7 +64,7 @@ export function rootMetadata({
   return {
     metadataBase: new URL(config.siteUrl),
     applicationName: config.siteName,
-    title: { default: config.siteName, template: `%s | ${config.siteName}` },
+    title: config.siteName,
     manifest: MANIFEST_PATH,
     icons: { apple: APPLE_TOUCH_ICON },
     ...publicPageMetadata({ description, locale })

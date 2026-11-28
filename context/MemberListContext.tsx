@@ -33,17 +33,17 @@ export function MemberListProvider({
 
   // Initialize state directly from URL to avoid flash of wrong view
   const [memberModalId, setMemberModalId] = useState<string | null>(
-    () => searchParams.get('memberModalId') ?? null
+    () => searchParams?.get('memberModalId') ?? null
   )
   const [showCreateMember, setShowCreateMember] = useState(false)
   const [showAvatar, setShowAvatar] = useState<boolean>(
-    () => initialShowAvatar ?? searchParams.get('avatar') !== 'hide'
+    () => initialShowAvatar ?? searchParams?.get('avatar') !== 'hide'
   )
   const [view, setViewState] = useState<ViewMode>(
-    () => initialView ?? parseViewMode(searchParams.get('view'))
+    () => initialView ?? parseViewMode(searchParams?.get('view'))
   )
   const [rootId, setRootIdState] = useState<string | null>(
-    () => initialRootId ?? searchParams.get('rootId') ?? null
+    () => initialRootId ?? searchParams?.get('rootId') ?? null
   )
 
   // Initialize from URL and listen to Next.js route changes

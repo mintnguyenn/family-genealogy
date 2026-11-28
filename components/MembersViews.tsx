@@ -98,7 +98,7 @@ export default function MembersViews({
   useEffect(() => {
     try {
       const action = savedRootAction(
-        searchParams.get('rootId'),
+        searchParams?.get('rootId') ?? null,
         rootId,
         localStorage.getItem(ROOT_STORAGE_KEY),
         (id) => personsMap.has(id)

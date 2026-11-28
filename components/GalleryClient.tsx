@@ -24,7 +24,8 @@ export default function GalleryClient({
   isAdmin,
   persons,
   memberId,
-  photoId
+  photoId,
+  pdfUrl
 }: {
   items: GalleryItem[]
   page: number
@@ -36,6 +37,7 @@ export default function GalleryClient({
   memberId: string | null
   /** Photo to open at first (`?photo=`), if any. */
   photoId: string | null
+  pdfUrl: string | null
 }) {
   // Hide deleted items right away; router.refresh() then brings the new page.
   const [deletedIds, setDeletedIds] = useState<Set<string>>(() => new Set())
@@ -43,6 +45,7 @@ export default function GalleryClient({
   const viewMode = useGalleryView()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<GalleryItem | null>(null)
+  const [showPdf, setShowPdf] = useState(false)
   const router = useRouter()
   const { t } = useI18n()
   const member = memberId ? persons.find((p) => p.id === memberId) : undefined
@@ -107,6 +110,39 @@ export default function GalleryClient({
           )}
         </div>
       </div>
+
+      {pdfUrl && (
+        <section className='mb-8 rounded-3xl border border-border bg-surface p-4'>
+          <div className='flex flex-wrap items-center gap-3'>
+            <button
+              type='button'
+              className='btn-outline'
+              aria-expanded={showPdf}
+              aria-controls='gallery-pdf'
+              onClick={() => setShowPdf(!showPdf)}>
+              {t('galleryPdfTitle')}
+            </button>
+            {showPdf && (
+              <a
+                href={pdfUrl}
+                target='_blank'
+                rel='noopener'
+                className='btn-outline'>
+                {t('galleryPdfNewTab')}
+              </a>
+            )}
+          </div>
+          <div id='gallery-pdf' hidden={!showPdf}>
+            {showPdf && (
+              <iframe
+                src={pdfUrl}
+                title={t('galleryPdfTitle')}
+                className='mt-4 h-[70vh] w-full rounded-xl border border-border'
+              />
+            )}
+          </div>
+        </section>
+      )}
 
       {viewMode && memberId && items.length === 0 ? (
         <p

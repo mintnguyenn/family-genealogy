@@ -49,10 +49,10 @@ export default function KinshipFinder({ persons, relationships }: Props) {
   // `undefined` = not chosen yet (neither in the URL nor by the user): the
   // saved selection is shown instead.
   const [chosenP1, setP1Id] = useState<string | null | undefined>(
-    () => searchParams.get('p1') ?? undefined
+    () => searchParams?.get('p1') ?? undefined
   )
   const [chosenP2, setP2Id] = useState<string | null | undefined>(
-    () => searchParams.get('p2') ?? undefined
+    () => searchParams?.get('p2') ?? undefined
   )
   const savedP1 = useSyncExternalStore(
     subscribeToNothing,
@@ -88,7 +88,8 @@ export default function KinshipFinder({ persons, relationships }: Props) {
     setP1Id(nextP1)
     setP2Id(nextP2)
 
-    const params = new URLSearchParams(searchParams.toString())
+    if (!pathname) return
+    const params = new URLSearchParams(searchParams?.toString())
     if (nextP1) params.set('p1', nextP1)
     else params.delete('p1')
     if (nextP2) params.set('p2', nextP2)

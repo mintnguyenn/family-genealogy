@@ -1,6 +1,9 @@
+import { stat } from 'node:fs/promises'
+
 import GalleryClient from '@/components/GalleryClient'
 import { getIsAdmin } from '@/lib/auth'
 import { getPersons } from '@/lib/data'
+import { galleryPdfPath, galleryPdfUrl } from '@/lib/galleryPdf'
 import { getServerTranslations } from '@/lib/i18n/server'
 import { loadGalleryPage, parseGalleryPage } from '@/utils/gallery'
 import { parseGalleryMember, parseGalleryPhoto } from '@/utils/galleryTags'
@@ -19,10 +22,17 @@ export default async function GalleryPage({
     photo?: string | string[]
   }>
 }) {
-  const [isAdmin, params, persons] = await Promise.all([
+  const [isAdmin, params, persons, hasPdf] = await Promise.all([
     getIsAdmin(),
     searchParams,
-    getPersons()
+    getPersons(),
+    stat(/* turbopackIgnore: true */ galleryPdfPath()).then(
+      (info) => info.isFile() && info.size > 0,
+      (error: NodeJS.ErrnoException) => {
+        if (error.code === 'ENOENT') return false
+        throw error
+      }
+    )
   ])
   const memberId = parseGalleryMember(params.member)
   const photoId = parseGalleryPhoto(params.photo)
@@ -36,6 +46,7 @@ export default async function GalleryPage({
         persons={persons}
         memberId={memberId}
         photoId={photoId}
+        pdfUrl={hasPdf ? galleryPdfUrl : null}
       />
     </main>
   )

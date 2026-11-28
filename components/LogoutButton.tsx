@@ -28,7 +28,10 @@ export default function LogoutButton({
       // Forms have no read-only mode; return to the corresponding reading page.
       if (pathname === '/dashboard/members/new') {
         router.replace('/dashboard/members')
-      } else if (/^\/dashboard\/members\/[^/]+\/edit$/.test(pathname)) {
+      } else if (
+        pathname &&
+        /^\/dashboard\/members\/[^/]+\/edit$/.test(pathname)
+      ) {
         router.replace(pathname.slice(0, -5))
       }
       onSuccess?.()
